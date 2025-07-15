@@ -69,9 +69,10 @@
                         </div>
 
                         <div class="tab-pane fade" id="recs-tab-pane" role="tabpanel" aria-labelledby="recs-tab" tabindex="0">
-                                <th:block th:if="${!#lists.isEmpty(recommendations)}">
+                                <th:block th:if="${recommendations != null and !#lists.isEmpty(recommendations)}">
                                         <th:block th:replace="~{fragments/advisorFragments :: recomendationsTable(${recommendations})}"></th:block>
                                 </th:block>
+                                <p th:if="${recommendations == null or #lists.isEmpty(recommendations)}">No results found.</p>
                                 <div th:if="${newRecommendations != null}">
                                         <h5 class="mt-4">Other Recommended Advisors:</h5>
                                         <ul>
@@ -81,7 +82,7 @@
                         </div>
 
                         <div class="tab-pane fade" id="matches-tab-pane" role="tabpanel" aria-labelledby="matches-tab" tabindex="0">
-                                <th:block th:if="${!#lists.isEmpty(matches)}">
+                                <th:block th:if="${matches != null and !#lists.isEmpty(matches)}">
                                         <table class="table table-bordered">
                                                 <thead>
                                                         <tr>
@@ -101,6 +102,7 @@
                                                 </tbody>
                                         </table>
                                 </th:block>
+                                <p th:if="${matches == null or #lists.isEmpty(matches)}">No results found.</p>
                         </div>
 
                         <div class="tab-pane fade" id="projects-tab-pane" role="tabpanel" aria-labelledby="projects-tab" tabindex="0">
@@ -120,6 +122,7 @@
                                                 </tr>
                                         </tbody>
                                 </table>
+                                <p th:if="${studentProjects == null or #lists.isEmpty(studentProjects)}">No results found.</p>
                                 <a href="/project/new" class="btn btn-outline-primary mt-3">Propose New Project</a>
                         </div>
                 </div>
