@@ -111,7 +111,7 @@
 			<th:block th:if="${!#lists.isEmpty(recommendations)}">
 				<hr>
 				<h4>Recommendations</h4>
-				<th:block th:replace="~{fragments/advisorFragments :: recomendationsTable(${recommendations})}"></th:block>
+                                <th:block th:replace="~{fragments/advisorFragments :: recommendationsTable(${recommendations})}"></th:block>
 			</th:block>
 
 			<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
