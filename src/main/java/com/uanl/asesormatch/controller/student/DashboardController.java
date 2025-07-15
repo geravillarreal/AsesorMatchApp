@@ -49,14 +49,14 @@ public class DashboardController {
 		List<Project> studentProjects = projectRepository.findByStudent(user);
 
 		if (profile != null) {			
-			List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(profile.getDTO());
+			List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
 			model.addAttribute("recommendations", recommendations);
 			//matchingService.createMatches(user, recommendations);
 			
 			if (studentProjects != null) {
 				for (Project p : studentProjects) {
 					if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
-						List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(profile.getDTO());
+						List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(user.getId());
 						List<RecommendationDTO> filtered = newRecs.stream().filter(
 								rec -> !rec.getAdvisorId().toString().equals(p.getRejectedByAdvisor().getId().toString()))
 								.toList();

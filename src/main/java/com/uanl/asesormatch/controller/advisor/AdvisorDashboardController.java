@@ -32,7 +32,8 @@ public class AdvisorDashboardController {
 
     @GetMapping("/advisor-dashboard")
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-        User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+        //User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+        User advisor = userRepository.findByEmail("advisor.john.doe@uanl.edu.mx").orElseThrow();
         List<Match> acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED);
 
         List<Project> availableProjects = new ArrayList<>();
