@@ -1,13 +1,12 @@
 package com.uanl.asesormatch.controller.student;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.uanl.asesormatch.dto.BookDTO;
@@ -32,24 +31,26 @@ public class StudentProfileController {
 		this.profileRepository = profileRepository;
 	}
 
-	@GetMapping("/edit")
-	public String editProfileForm(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
-		model.addAttribute("profile", user.getProfile() == null ? new Profile() : user.getProfile());
-		return "edit-profile";
-	}
+        @GetMapping("/{id}/edit")
+        public String editProfileForm(@PathVariable Long id, Model model) {
+                User user = userRepository.findById(id).orElseThrow();
+                Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
+                if (profile.getUser() == null) profile.setUser(user);
+                model.addAttribute("profile", profile);
+                return "edit-profile";
+        }
 
-	@PostMapping("/edit")
-	public String updateProfile(@AuthenticationPrincipal OidcUser oidcUser,
-			@Valid @ModelAttribute("profile") ProfileDTO dto, BindingResult result, Model model) {
+        @PostMapping("/{id}/edit")
+        public String updateProfile(@PathVariable Long id,
+                        @Valid @ModelAttribute("profile") ProfileDTO dto, BindingResult result, Model model) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("profile", dto);
 			return "edit-profile";
 		}
 
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
-		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
+                User user = userRepository.findById(id).orElseThrow();
+                Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
 
 		profile.setAreas(dto.getAreas());
 		profile.setAvailability(dto.getAvailability());

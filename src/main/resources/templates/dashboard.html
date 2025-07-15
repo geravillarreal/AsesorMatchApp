@@ -65,7 +65,7 @@
                                         <p>No profile information found.</p>
                                 </div>
 
-                                <a href="/profile/edit" class="btn btn-primary mt-3">Edit Profile</a>
+                                <a th:href="@{/profile/{id}/edit(id=${user.id})}" class="btn btn-primary mt-3">Edit Profile</a>
                         </div>
 
                         <div class="tab-pane fade" id="recs-tab-pane" role="tabpanel" aria-labelledby="recs-tab" tabindex="0">
