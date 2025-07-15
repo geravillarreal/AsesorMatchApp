@@ -69,16 +69,12 @@
                         </div>
 
                         <div class="tab-pane fade" id="recs-tab-pane" role="tabpanel" aria-labelledby="recs-tab" tabindex="0">
-                                <th:block th:if="${recommendations != null and !#lists.isEmpty(recommendations)}">
-                                        <th:block th:replace="~{fragments/advisorFragments :: recomendationsTable(${recommendations})}"></th:block>
-                                </th:block>
-                                <p th:if="${recommendations == null or #lists.isEmpty(recommendations)}">No results found.</p>
-                                <div th:if="${newRecommendations != null}">
-                                        <h5 class="mt-4">Other Recommended Advisors:</h5>
-                                        <ul>
-                                                <li th:each="rec : ${newRecommendations}"><span th:text="${rec.name}">Advisor</span> — score: <span th:text="${rec.score}">0.0</span></li>
-                                        </ul>
+                                <div id="recs-loader" class="my-3 text-center d-none">
+                                        <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                        </div>
                                 </div>
+                                <div id="recs-content"></div>
                         </div>
 
                         <div class="tab-pane fade" id="matches-tab-pane" role="tabpanel" aria-labelledby="matches-tab" tabindex="0">
@@ -131,7 +127,7 @@
                 <div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
         </div>
 	<script>
-	/* ------------- utils ---------------- */
+        /* ------------- utils ---------------- */
         function buildProfileHTML(user) {
             const p = user.profile ?? {};
             const books = (p.books ?? []).map(b =>
@@ -152,40 +148,99 @@
                 <p><strong>Language:</strong> ${p.language ?? '—'}</p>
             `;
         }
-	
-	/* ------------- view-profile buttons ---------------- */
-	document.querySelectorAll('.view-profile').forEach(btn => {
-	    btn.addEventListener('click', async () => {
-	        const id  = btn.dataset.advisorId;
-	        const mod = new bootstrap.Modal('#profileModal');
-	        const url = `/api/advisors/profile/${id}`;
-	
-	        try {
-	            const res  = await fetch(url,
-	                                     {headers:{'X-Requested-With':'XMLHttpRequest'}});
-	            if (!res.ok) throw new Error(res.status);
-	            const user = await res.json();
-	
-	            document.getElementById('profileModalTitle').textContent = user.fullName;
-	            document.getElementById('profileModalBody').innerHTML    = buildProfileHTML(user);
-	        } catch (e) {
-	            document.getElementById('profileModalTitle').textContent = 'Error';
-	            document.getElementById('profileModalBody').innerHTML =
-	                `<p class="text-danger">Unable to load profile (status ${e}).</p>`;
-	        }
-	        mod.show();
-	    });
-	});
-	
-	/* ------------- request-match buttons ---------------- */
-	document.querySelectorAll('.request-match').forEach(btn => {
-	    btn.addEventListener('click', () => {
-	        document.getElementById('matchAdvisorId').value         = btn.dataset.advisorId;
-	        document.getElementById('matchAdvisorName').textContent = btn.dataset.advisorName;
-	        document.getElementById('score').value        		    = btn.dataset.advisorScore;
-	        new bootstrap.Modal('#matchModal').show();
-	    });
-	});
-	</script>
+
+        function buildRecommendationsTable(recs) {
+            if (!recs.length) {
+                return '<p>No results found.</p>';
+            }
+            const rows = recs.map(r => `
+                <tr>
+                    <td>${r.name}</td>
+                    <td>${r.score}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1 view-profile" data-advisor-id="${r.advisorId}" title="View profile">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm request-match" data-advisor-id="${r.advisorId}" data-advisor-name="${r.name}" data-advisor-score="${r.score}" title="Request match">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            return `
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Advisor</th>
+                            <th>Score</th>
+                            <th style="width: 110px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        function buildNewRecommendationsList(recs) {
+            if (!recs.length) return '';
+            const items = recs.map(r => `<li><span>${r.name}</span> — score: <span>${r.score}</span></li>`).join('');
+            return `<h5 class="mt-4">Other Recommended Advisors:</h5><ul>${items}</ul>`;
+        }
+
+        function attachRecButtons() {
+            document.querySelectorAll('#recs-tab-pane .view-profile').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id  = btn.dataset.advisorId;
+                    const mod = new bootstrap.Modal('#profileModal');
+                    const url = `/api/advisors/profile/${id}`;
+
+                    try {
+                        const res  = await fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}});
+                        if (!res.ok) throw new Error(res.status);
+                        const user = await res.json();
+
+                        document.getElementById('profileModalTitle').textContent = user.fullName;
+                        document.getElementById('profileModalBody').innerHTML    = buildProfileHTML(user);
+                    } catch (e) {
+                        document.getElementById('profileModalTitle').textContent = 'Error';
+                        document.getElementById('profileModalBody').innerHTML =
+                            `<p class="text-danger">Unable to load profile (status ${e}).</p>`;
+                    }
+                    mod.show();
+                });
+            });
+
+            document.querySelectorAll('#recs-tab-pane .request-match').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('matchAdvisorId').value         = btn.dataset.advisorId;
+                    document.getElementById('matchAdvisorName').textContent = btn.dataset.advisorName;
+                    document.getElementById('score').value                  = btn.dataset.advisorScore;
+                    new bootstrap.Modal('#matchModal').show();
+                });
+            });
+
+        /* ------------- recommendations tab loader ---------------- */
+        let recsLoaded = false;
+        document.getElementById('recs-tab').addEventListener('shown.bs.tab', async () => {
+            if (recsLoaded) return;
+            recsLoaded = true;
+            const loader  = document.getElementById('recs-loader');
+            const content = document.getElementById('recs-content');
+            loader.classList.remove('d-none');
+            content.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/recommendations', {headers:{'X-Requested-With':'XMLHttpRequest'}});
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+
+                content.innerHTML = buildRecommendationsTable(data.recommendations || []);
+                content.insertAdjacentHTML('beforeend', buildNewRecommendationsList(data.newRecommendations || []));
+                attachRecButtons();
+            } catch (e) {
+                content.innerHTML = '<p class="text-danger">Unable to load recommendations.</p>';
+            }
+            loader.classList.add('d-none');
+        });
+        </script>
 </body>
 </html>
