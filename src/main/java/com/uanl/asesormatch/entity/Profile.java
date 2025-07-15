@@ -125,12 +125,13 @@ public class Profile {
 		dto.setLevel(level);
 		dto.setModality(modality);
 		
-		for (Book book : this.getBooks()) {
-			BookDTO dtoBook = new BookDTO();
-			dtoBook.setTitle(book.getTitle());
-			dtoBook.setDescription(book.getDescription());
-			dto.getBooks().add(dtoBook);
-		}
+                for (Book book : this.getBooks()) {
+                        BookDTO dtoBook = new BookDTO();
+                        dtoBook.setId(book.getId());
+                        dtoBook.setTitle(book.getTitle());
+                        dtoBook.setDescription(book.getDescription());
+                        dto.getBooks().add(dtoBook);
+                }
 		
 		return dto;
 	}
