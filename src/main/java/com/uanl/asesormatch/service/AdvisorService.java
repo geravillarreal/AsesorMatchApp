@@ -17,11 +17,14 @@ public class AdvisorService {
 		this.userRepo = userRepo;
 	}
 
-	public Optional<AdvisorProfileDTO> getProfile(Long id) {
-		return userRepo.findById(id).filter(u -> u.getRole() == Role.ADVISOR)
-				.map(u -> new AdvisorProfileDTO(u.getId(), u.getFullName(), u.getEmail(), u.getFaculty(),
-						u.getProfile() != null ? u.getProfile().getAreas() : List.of(),
-						u.getProfile() != null ? u.getProfile().getInterests() : List.of(),
-						u.getProfile() != null ? u.getProfile().getLanguage() : null));
-	}
+        public Optional<AdvisorProfileDTO> getProfile(Long id) {
+                return userRepo.findById(id)
+                                .filter(u -> u.getRole() == Role.ADVISOR)
+                                .map(u -> new AdvisorProfileDTO(
+                                                u.getId(),
+                                                u.getFullName(),
+                                                u.getEmail(),
+                                                u.getFaculty(),
+                                                u.getProfile() != null ? u.getProfile().getDTO() : null));
+        }
 }
