@@ -1,5 +1,7 @@
 package com.uanl.asesormatch.controller.student;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,26 +33,27 @@ public class StudentProfileController {
 		this.profileRepository = profileRepository;
 	}
 
-        @GetMapping("/{id}/edit")
-        public String editProfileForm(@PathVariable Long id, Model model) {
-                User user = userRepository.findById(id).orElseThrow();
-                Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
-                if (profile.getUser() == null) profile.setUser(user);
-                model.addAttribute("profile", profile);
-                return "edit-profile";
-        }
+	@GetMapping("/{id}/edit")
+	public String editProfileForm(@PathVariable Long id, Model model) {
+		User user = userRepository.findById(id).orElseThrow();
+		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
+		if (profile.getUser() == null)
+			profile.setUser(user);
+		model.addAttribute("profile", profile);
+		return "edit-profile";
+	}
 
-        @PostMapping("/{id}/edit")
-        public String updateProfile(@PathVariable Long id,
-                        @Valid @ModelAttribute("profile") ProfileDTO dto, BindingResult result, Model model) {
+	@PostMapping("/edit")
+	public String updateProfile(@AuthenticationPrincipal OidcUser oidcUser,
+			@Valid @ModelAttribute("profile") ProfileDTO dto, BindingResult result, Model model) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("profile", dto);
 			return "edit-profile";
 		}
 
-                User user = userRepository.findById(id).orElseThrow();
-                Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
+		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
 
 		profile.setAreas(dto.getAreas());
 		profile.setAvailability(dto.getAvailability());
@@ -72,5 +75,4 @@ public class StudentProfileController {
 		profileRepository.save(profile);
 		return "redirect:/dashboard";
 	}
-
 }
