@@ -3,7 +3,6 @@ package com.uanl.asesormatch.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.uanl.asesormatch.entity.User;
 
 import jakarta.validation.constraints.NotEmpty;
 
@@ -21,8 +20,7 @@ public class ProfileDTO {
 	private List<BookDTO> books = new ArrayList<>();
 	private String level = null;
 	private String modality = null;
-	private User user = null;
-	private String language = null;
+        private String language = null;
 
 	public Long getId() {
 		return id;
@@ -80,26 +78,18 @@ public class ProfileDTO {
 		this.modality = modality;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
+        public String getLanguage() {
+                return language;
+        }
 
 	public void setLanguage(String language) {
 		this.language = language;
 	}
 
-	@Override
-	public String toString() {
-		return "ProfileDTO [id=" + id + ", interests=" + interests + ", areas=" + areas + ", availability="
-				+ availability + ", books=" + books + ", level=" + level + ", modality=" + modality + ", user=" + user
-				+ ", language=" + language + "]";
-	}
+        @Override
+        public String toString() {
+                return "ProfileDTO [id=" + id + ", interests=" + interests + ", areas=" + areas + ", availability="
+                                + availability + ", books=" + books + ", level=" + level + ", modality=" + modality
+                                + ", language=" + language + "]";
+        }
 }
