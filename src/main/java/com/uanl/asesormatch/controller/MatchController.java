@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.service.MatchingService;
 import com.uanl.asesormatch.service.UserService;
+import com.uanl.asesormatch.enums.MatchStatus;
 
 @RestController
 @RequestMapping("/match")
@@ -28,16 +29,31 @@ public class MatchController {
 		this.userService = userService;
 	}
 
-	@PostMapping("/request")
-	public ResponseEntity<Void> requestMatch(@AuthenticationPrincipal OidcUser principal,
-			@RequestParam Long advisorId, @RequestParam Double score) {
+        @PostMapping("/request")
+        public ResponseEntity<Void> requestMatch(@AuthenticationPrincipal OidcUser principal,
+                        @RequestParam Long advisorId, @RequestParam Double score) {
 
 		User student = userService.findByEmail(principal.getEmail())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
 		matchingService.requestMatch(student.getId(), advisorId, score);
 
-		URI location = URI.create("/dashboard?matchRequested"); // optional query flag
-		return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
-	}
+                URI location = URI.create("/dashboard?matchRequested"); // optional query flag
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+        }
+
+        @PostMapping("/decision")
+        public ResponseEntity<Void> decideMatch(@RequestParam Long matchId, @RequestParam String action) {
+                MatchStatus status;
+                try {
+                        status = MatchStatus.valueOf(action.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
+                }
+
+                matchingService.updateMatchStatus(matchId, status);
+
+                URI location = URI.create("/advisor-dashboard");
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+        }
 }
