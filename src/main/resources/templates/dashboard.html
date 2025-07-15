@@ -132,18 +132,26 @@
         </div>
 	<script>
 	/* ------------- utils ---------------- */
-	function buildProfileHTML(user) {
-	    const p = user.profile ?? {};
-	    return `
-	        <p><strong>Name:</strong> ${user.fullName}</p>
-	        <p><strong>Email:</strong> <a href="mailto:${user.email}">${user.email}</a></p>
-	        <p><strong>Faculty:</strong> ${user.faculty ?? '—'}</p>
-	        <hr>
-	        <p><strong>Areas:</strong> ${(p.areas ?? []).join(', ') || '—'}</p>
-	        <p><strong>Interests:</strong> ${(p.interests ?? []).join(', ') || '—'}</p>
-	        <p><strong>Language:</strong> ${p.language ?? '—'}</p>
-	    `;
-	}
+        function buildProfileHTML(user) {
+            const p = user.profile ?? {};
+            const books = (p.books ?? []).map(b =>
+                `<li><strong>${b.title}</strong><br>${b.description ?? ''}</li>`
+            ).join('');
+            return `
+                <p><strong>Name:</strong> ${user.fullName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${user.email}">${user.email}</a></p>
+                <p><strong>Faculty:</strong> ${user.faculty ?? '—'}</p>
+                <hr>
+                <p><strong>Areas:</strong> ${(p.areas ?? []).join(', ') || '—'}</p>
+                <p><strong>Interests:</strong> ${(p.interests ?? []).join(', ') || '—'}</p>
+                <p><strong>Availability:</strong> ${(p.availability ?? []).join(', ') || '—'}</p>
+                <p><strong>Books:</strong></p>
+                <ul>${books || '<li>—</li>'}</ul>
+                <p><strong>Level:</strong> ${p.level ?? '—'}</p>
+                <p><strong>Modality:</strong> ${p.modality ?? '—'}</p>
+                <p><strong>Language:</strong> ${p.language ?? '—'}</p>
+            `;
+        }
 	
 	/* ------------- view-profile buttons ---------------- */
 	document.querySelectorAll('.view-profile').forEach(btn => {
