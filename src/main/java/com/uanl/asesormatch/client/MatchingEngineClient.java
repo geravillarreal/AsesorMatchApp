@@ -37,8 +37,8 @@ public class MatchingEngineClient {
         payload.put("modality", studentVector.getModality());
         payload.put("language", studentVector.getLanguage());
 
-        if (studentVector.getUser() != null) {
-            payload.put("userId", studentVector.getUser().getId());
+        if (studentVector.getUserId() != null) {
+            payload.put("userId", studentVector.getUserId());
         }
 
         if (studentVector.getBooks() != null) {

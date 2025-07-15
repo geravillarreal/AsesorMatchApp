@@ -124,7 +124,9 @@ public class Profile {
 		dto.setLanguage(language);
 		dto.setLevel(level);
 		dto.setModality(modality);
-		dto.setUser(user);
+               if (user != null) {
+                       dto.setUserId(user.getId());
+               }
 		
 		for (Book book : this.getBooks()) {
 			BookDTO dtoBook = new BookDTO();
