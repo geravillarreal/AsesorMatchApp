@@ -32,8 +32,7 @@ public class AdvisorDashboardController {
 
     @GetMapping("/advisor-dashboard")
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-        //User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
-    	User advisor = userRepository.findByEmail("advisor.john.doe@uanl.edu.mx").orElseThrow();
+        User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
         List<Match> acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED);
 
         List<Project> availableProjects = new ArrayList<>();
@@ -46,7 +45,14 @@ public class AdvisorDashboardController {
             }
         }
 
+        int matchCount = matchRepository.findByAdvisor(advisor).size();
+        int projectCount = projectRepository.findByAdvisor(advisor).size();
+        int availableProjectCount = availableProjects.size();
+
         model.addAttribute("availableProjects", availableProjects);
+        model.addAttribute("matchCount", matchCount);
+        model.addAttribute("projectCount", projectCount);
+        model.addAttribute("availableProjectCount", availableProjectCount);
         model.addAttribute("advisor", advisor);
         model.addAttribute("matches", matchRepository.findByAdvisor(advisor));
         model.addAttribute("projects", projectRepository.findByAdvisor(advisor));
