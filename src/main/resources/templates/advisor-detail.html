@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Advisor Profile</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+</head>
+<body>
+	<div class="container mt-4">
+		<h2 th:text="${advisor.fullName}">Advisor Name</h2>
+		<p>
+			<strong>Email:</strong> <span th:text="${advisor.email}">email</span>
+		</p>
+		<p>
+			<strong>Faculty:</strong> <span th:text="${advisor.faculty}">faculty</span>
+		</p>
+
+		<hr>
+		<div th:if="${profile != null}">
+			<p>
+				<strong>Expertise Areas:</strong> <span
+					th:text="${profile.expertiseAreas}">-</span>
+			</p>
+			<p>
+				<strong>Languages:</strong> <span th:text="${profile.languages}">-</span>
+			</p>
+			<p>
+				<strong>Work Style:</strong> <span th:text="${profile.workStyle}">-</span>
+			</p>
+			<p>
+				<strong>Preferred Modality:</strong> <span
+					th:text="${profile.preferredModality}">-</span>
+			</p>
+			<p>
+				<strong>Bibliography:</strong> <span
+					th:text="${profile.recommendedBibliography}">-</span>
+			</p>
+		</div>
+
+		<a href="/dashboard" class="btn btn-secondary mt-3">Back to
+			Dashboard</a>
+	</div>
+</body>
+</html>

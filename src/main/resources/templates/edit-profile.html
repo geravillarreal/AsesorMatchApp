@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Edit Profile</title>
+
+<!-- Bootstrap -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- Tagify -->
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css"
+	rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+</head>
+<body>
+	<div class="container my-4">
+		<h2>Edit your profile</h2>
+
+		<form th:action="@{/profile/edit}" th:object="${profile}"
+			method="post" class="mt-3">
+
+			<!-- ─── Interests (List<String>) ────────────────────────────── -->
+			<div class="mb-3">
+				<label class="form-label">Interests</label> <input
+					id="interests-input" class="form-control" type="text"
+					th:value="${#strings.arrayJoin(profile.interests, ',')}" />
+				<div id="interests-hidden"></div>
+
+				<div class="text-danger" th:if="${#fields.hasErrors('interests')}"
+					th:errors="*{interests}"></div>
+			</div>
+
+			<!-- ─── Areas (List<String>) ────────────────────────────────── -->
+			<div class="mb-3">
+				<label class="form-label">Areas</label> <input id="areas-input"
+					class="form-control" type="text"
+					th:value="${#strings.arrayJoin(profile.areas, ',')}" />
+				<div id="areas-hidden"></div>
+
+				<div class="text-danger" th:if="${#fields.hasErrors('areas')}"
+					th:errors="*{areas}"></div>
+			</div>
+
+			<!-- ─── Availability (List<String>) ─────────────────────────── -->
+			<div class="mb-3">
+				<label class="form-label">Availability</label> <input
+					id="availability-input" class="form-control" type="text"
+					th:value="${#strings.arrayJoin(profile.availability, ',')}" />
+				<div id="availability-hidden"></div>
+
+				<div class="text-danger"
+					th:if="${#fields.hasErrors('availability')}"
+					th:errors="*{availability}"></div>
+			</div>
+
+			<!-- ─── Books (List<BookDTO>) ──────────────────────────────── -->
+			<h5 class="mt-4 mb-2">Books</h5>
+			<div id="books-container">
+				<!-- pinta los libros ya existentes -->
+				<th:block th:each="book,stat : *{books}">
+					<div class="book-entry border rounded p-3 position-relative mb-3">
+						<button type="button"
+							class="btn-close position-absolute top-0 end-0"
+							onclick="removeBook(this)"></button>
+
+						<input type="hidden" th:field="*{books[__${stat.index}__].id}" />
+
+						<label class="form-label">Title</label> <input
+							class="form-control mb-2"
+							th:field="*{books[__${stat.index}__].title}" /> <label
+							class="form-label mt-2">Description</label> <input
+							class="form-control"
+							th:field="*{books[__${stat.index}__].description}" />
+					</div>
+				</th:block>
+			</div>
+
+			<!-- plantilla clonable -->
+			<template id="book-template">
+				<div class="book-entry border rounded p-3 position-relative mb-3">
+					<button type="button"
+						class="btn-close position-absolute top-0 end-0"
+						onclick="removeBook(this)"></button>
+
+					<label class="form-label">Title</label> <input
+						class="form-control mb-2" name="books[__idx__].title" /> <label
+						class="form-label mt-2">Description</label> <input
+						class="form-control" name="books[__idx__].description" />
+				</div>
+			</template>
+
+			<button type="button" class="btn btn-outline-primary mb-3"
+				onclick="addBook()">Add book</button>
+
+			<!-- ─── Campos simples ─────────────────────────────────────── -->
+			<div class="mb-3">
+				<label class="form-label">Level</label> <input class="form-control"
+					th:field="*{level}" />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Modality</label> <input
+					class="form-control" th:field="*{modality}" />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Language</label> <input
+					class="form-control" th:field="*{language}" />
+			</div>
+
+			<button type="submit" class="btn btn-success">Save</button>
+			<a href="/dashboard" class="btn btn-secondary">Cancel</a>
+		</form>
+	</div>
+
+	<!-- ======================  SCRIPTS  ====================== -->
+	<script>
+    /* ——— Tagify -> genera inputs ocultos tipo interests[0] ——— */
+    function initTagify(visibleId, hiddenWrapperId, initialList) {
+        const visible = document.getElementById(visibleId);
+        const tagify  = new Tagify(visible);
+        if (initialList.length) tagify.addTags(initialList);
+
+        const wrapper = document.getElementById(hiddenWrapperId);
+        const sync = () => {
+            wrapper.innerHTML = '';                                // limpia
+            tagify.value.forEach((t, i) => {
+                const h = document.createElement('input');
+                h.type  = 'hidden';
+                h.name  = visibleId.replace('-input', '') + '[' + i + ']';
+                h.value = t.value;
+                wrapper.appendChild(h);
+            });
+        };
+        tagify.on('add', sync).on('remove', sync).on('edit', sync);
+        sync();                                                   // 1ª vez
+    }
+
+    /* listas iniciales que Thymeleaf inyecta como arrays JS */
+    const initInterests    = /*[[${profile.interests}]]*/ [];
+    const initAreas        = /*[[${profile.areas}]]*/ [];
+    const initAvailability = /*[[${profile.availability}]]*/ [];
+
+    initTagify('interests-input',   'interests-hidden',   initInterests);
+    initTagify('areas-input',       'areas-hidden',       initAreas);
+    initTagify('availability-input','availability-hidden',initAvailability);
+
+    /* ——— Books dinámicos ——— */
+    let bookIndex = document.querySelectorAll('#books-container .book-entry').length;
+
+    function addBook() {
+        const clone = document.getElementById('book-template').content.cloneNode(true);
+        clone.querySelectorAll('[name]').forEach(el =>
+            el.name = el.name.replace('__idx__', bookIndex)
+        );
+        document.getElementById('books-container').appendChild(clone);
+        bookIndex++;
+    }
+    function removeBook(btn) { btn.closest('.book-entry').remove(); }
+</script>
+</body>
+</html>

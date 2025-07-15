@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Dashboard</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+	<div class="container mt-4">
+		<h2>
+			Welcome, <span th:text="${user.fullName}">User</span>!
+		</h2>
+
+		<p>
+			<strong>Email:</strong> <span th:text="${user.email}">email</span>
+		</p>
+		<p>
+			<strong>University ID:</strong> <span th:text="${user.universityId}">id</span>
+		</p>
+		<p>
+			<strong>Role:</strong> <span th:text="${user.role}">role</span>
+		</p>
+		<p>
+			<strong>Last login:</strong> <span th:text="${user.lastLogin}">date</span>
+		</p>
+
+		<hr>
+
+		<h4>Your Profile</h4>
+		<div th:if="${profile != null}">
+			<p>
+				<strong>Interests:</strong>
+			</p>
+			<div>
+				<span class="badge bg-primary me-1 mb-1"
+					th:each="interest : ${profile.interests}" th:text="${interest}">Interest</span>
+			</div>
+			<p class="mt-3">
+				<strong>Areas:</strong>
+			</p>
+			<div>
+				<span class="badge bg-success me-1 mb-1"
+					th:each="area : ${profile.areas}" th:text="${area}">Area</span>
+			</div>
+			<p class="mt-3">
+				<strong>Availability:</strong>
+			</p>
+			<div>
+				<span class="badge bg-info text-dark me-1 mb-1"
+					th:each="slot : ${profile.availability}" th:text="${slot}">Availability</span>
+			</div>
+			<p class="mt-3">
+				<strong>Books:</strong>
+			</p>
+			<ul class="list-group">
+				<li class="list-group-item" th:each="book : ${profile.books}">
+					<strong th:text="${book.title}">Title</strong><br> <span
+					th:text="${#strings.abbreviate(book.description, 100)}">Short
+						description...</span>
+				</li>
+			</ul>
+			<p class="mt-3">
+				<strong>Level:</strong> <span th:text="${profile.level}">--</span>
+			</p>
+			<p>
+				<strong>Modality:</strong> <span th:text="${profile.modality}">--</span>
+			</p>
+			<p>
+				<strong>Language:</strong> <span th:text="${profile.language}">--</span>
+			</p>
+		</div>
+
+		<div th:if="${profile == null}">
+			<p>No profile information found.</p>
+		</div>
+
+		<a href="/profile/edit" class="btn btn-primary mt-3">Edit Profile</a>
+
+		<div th:if="${profile != null}">
+			<th:block th:if="${!#lists.isEmpty(matches)}">
+				<hr>
+				<h4>Matching History</h4>
+				<div>
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Advisor</th>
+								<th>Score</th>
+								<th>Status</th>
+								<th>Requested Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="match : ${matches}">
+								<td><a th:href="@{'/advisor/' + ${match.advisor.id}}"
+									th:text="${match.advisor.fullName}">Advisor</a></td>
+								<td th:text="${match.compatibilityScore}">0.00</td>
+								<td th:text="${match.status}">PENDING</td>
+								<td th:text="${match.createdAt}">2025-06-25</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</th:block>
+			<th:block th:if="${!#lists.isEmpty(recommendations)}">
+				<hr>
+				<h4>Recommendations</h4>
+				<th:block th:replace="~{fragments/advisorFragments :: recomendationsTable(${recommendations})}"></th:block>
+			</th:block>
+
+			<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
+			<div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
+		</div>
+		<hr>
+		<h4>Your Projects</h4>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Description</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="p : ${studentProjects}">
+					<td th:text="${p.title}">Title</td>
+					<td th:text="${p.description}">Description</td>
+					<td th:text="${p.status}">Status</td>
+				</tr>
+			</tbody>
+		</table>
+		<a href="/project/new" class="btn btn-outline-primary mt-3">Propose
+			New Project</a>
+		<hr>
+		<div th:if="${newRecommendations != null}">
+			<h5>Other Recommended Advisors:</h5>
+			<ul>
+				<li th:each="rec : ${newRecommendations}"><span
+					th:text="${rec.name}">Advisor</span> — score: <span
+					th:text="${rec.score}">0.0</span></li>
+			</ul>
+		</div>
+	</div>
+	<script>
+	/* ------------- utils ---------------- */
+	function buildProfileHTML(user) {
+	    const p = user.profile ?? {};
+	    return `
+	        <p><strong>Name:</strong> ${user.fullName}</p>
+	        <p><strong>Email:</strong> <a href="mailto:${user.email}">${user.email}</a></p>
+	        <p><strong>Faculty:</strong> ${user.faculty ?? '—'}</p>
+	        <hr>
+	        <p><strong>Areas:</strong> ${(p.areas ?? []).join(', ') || '—'}</p>
+	        <p><strong>Interests:</strong> ${(p.interests ?? []).join(', ') || '—'}</p>
+	        <p><strong>Language:</strong> ${p.language ?? '—'}</p>
+	    `;
+	}
+	
+	/* ------------- view-profile buttons ---------------- */
+	document.querySelectorAll('.view-profile').forEach(btn => {
+	    btn.addEventListener('click', async () => {
+	        const id  = btn.dataset.advisorId;
+	        const mod = new bootstrap.Modal('#profileModal');
+	        const url = `/api/advisors/profile/${id}`;
+	
+	        try {
+	            const res  = await fetch(url,
+	                                     {headers:{'X-Requested-With':'XMLHttpRequest'}});
+	            if (!res.ok) throw new Error(res.status);
+	            const user = await res.json();
+	
+	            document.getElementById('profileModalTitle').textContent = user.fullName;
+	            document.getElementById('profileModalBody').innerHTML    = buildProfileHTML(user);
+	        } catch (e) {
+	            document.getElementById('profileModalTitle').textContent = 'Error';
+	            document.getElementById('profileModalBody').innerHTML =
+	                `<p class="text-danger">Unable to load profile (status ${e}).</p>`;
+	        }
+	        mod.show();
+	    });
+	});
+	
+	/* ------------- request-match buttons ---------------- */
+	document.querySelectorAll('.request-match').forEach(btn => {
+	    btn.addEventListener('click', () => {
+	        document.getElementById('matchAdvisorId').value         = btn.dataset.advisorId;
+	        document.getElementById('matchAdvisorName').textContent = btn.dataset.advisorName;
+	        document.getElementById('score').value        		    = btn.dataset.advisorScore;
+	        new bootstrap.Modal('#matchModal').show();
+	    });
+	});
+	</script>
+</body>
+</html>

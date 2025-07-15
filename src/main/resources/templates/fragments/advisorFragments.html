@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Fragments</title>
+</head>
+<body>
+	<table class="table table-striped align-middle" th:fragment="recomendationsTable (recommendations)">
+		<thead class="table-light">
+			<tr>
+				<th>Advisor</th>
+				<th>Score</th>
+				<th style="width: 110px;">Actions</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr th:each="adv : ${recommendations}">
+				<td th:text="${adv.name}">John Doe</td>
+				<td th:text="${adv.score}">0.90</td>
+				<td class="text-center">
+					<button type="button"
+						class="btn btn-outline-secondary btn-sm me-1 view-profile"
+						th:data-advisor-id="${adv.advisorId}" title="View profile">
+						<i class="bi bi-eye"></i>
+					</button>
+
+					<button type="button"
+						class="btn btn-outline-primary btn-sm request-match"
+						th:data-advisor-id="${adv.advisorId}" th:data-advisor-name="${adv.name}" th:data-advisor-score="${adv.score}"
+						title="Request match">
+						<i class="bi bi-hand-thumbs-up"></i>
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div th:fragment="profileModal">
+		<div class="modal fade" id="profileModal" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 id="profileModalTitle" class="modal-title">Advisor</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body" id="profileModalBody">
+						<!-- Ajax will inject profile HTML here -->
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:fragment="matchModal">
+		<div class="modal fade" id="matchModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form th:action="@{/match/request}" method="post">
+						<div class="modal-header">
+							<h5 class="modal-title">Confirm match</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						</div>
+						<div class="modal-body">
+							<p>
+								Do you really want to request a match with <strong
+									id="matchAdvisorName">advisor</strong>?
+							</p>
+							<input type="hidden" name="advisorId" id="matchAdvisorId" />
+							<input type="hidden" name="score" id="score" />
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" type="submit">Yes,
+								request</button>
+							<button class="btn btn-secondary" type="button"
+								data-bs-dismiss="modal">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
