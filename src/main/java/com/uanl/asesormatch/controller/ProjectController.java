@@ -102,4 +102,17 @@ public class ProjectController {
 
                 return "redirect:/advisor-dashboard";
         }
+
+        @PostMapping("/delete")
+        public String deleteProject(@AuthenticationPrincipal OidcUser oidcUser,
+                                    @RequestParam Long projectId) {
+                User student = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                Project project = projectRepository.findById(projectId).orElseThrow();
+
+                if (project.getStudent().getId().equals(student.getId())) {
+                        projectRepository.delete(project);
+                }
+
+                return "redirect:/dashboard";
+        }
 }
