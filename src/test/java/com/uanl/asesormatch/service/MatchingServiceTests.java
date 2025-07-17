@@ -99,4 +99,52 @@ class MatchingServiceTests {
         String msg = notifications.get(0).getMessage();
         assertEquals("El maestro " + advisor.getFullName() + " no acept\u00F3 ser tu tutor.", msg);
     }
+
+    @Test
+    void acceptingMatchCancelsOtherMatchesForStudent() {
+        User student = new User();
+        student.setFullName("Student Test");
+        student.setEmail("student@test.com");
+        student.setRole(Role.STUDENT);
+        userRepository.save(student);
+
+        User advisor1 = new User();
+        advisor1.setFullName("Advisor One");
+        advisor1.setEmail("advisor1@test.com");
+        advisor1.setRole(Role.ADVISOR);
+        userRepository.save(advisor1);
+
+        User advisor2 = new User();
+        advisor2.setFullName("Advisor Two");
+        advisor2.setEmail("advisor2@test.com");
+        advisor2.setRole(Role.ADVISOR);
+        userRepository.save(advisor2);
+
+        Match match1 = new Match();
+        match1.setStudent(student);
+        match1.setAdvisor(advisor1);
+        match1.setCompatibilityScore(0.6);
+        match1.setStatus(MatchStatus.PENDING);
+        matchRepository.save(match1);
+
+        Match match2 = new Match();
+        match2.setStudent(student);
+        match2.setAdvisor(advisor2);
+        match2.setCompatibilityScore(0.7);
+        match2.setStatus(MatchStatus.PENDING);
+        matchRepository.save(match2);
+
+        matchingService.updateMatchStatus(match1.getId(), MatchStatus.ACCEPTED);
+
+        Match updated1 = matchRepository.findById(match1.getId()).orElseThrow();
+        Match updated2 = matchRepository.findById(match2.getId()).orElseThrow();
+
+        assertEquals(MatchStatus.ACCEPTED, updated1.getStatus());
+        assertEquals(MatchStatus.REJECTED, updated2.getStatus());
+
+        var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
+        assertEquals(1, notifications.size());
+        String msg = notifications.get(0).getMessage();
+        assertEquals("El maestro " + advisor1.getFullName() + " aprob\u00F3 ser tu tutor.", msg);
+    }
 }
