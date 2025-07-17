@@ -1,15 +1,11 @@
 package com.uanl.asesormatch.controller.advisor;
 
-import com.uanl.asesormatch.entity.Match;
-import com.uanl.asesormatch.entity.Project;
+import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.entity.User;
-import com.uanl.asesormatch.enums.MatchStatus;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -34,26 +30,15 @@ public class AdvisorDashboardController {
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
         //User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
         User advisor = userRepository.findByEmail("advisor.john.doe@uanl.edu.mx").orElseThrow();
-        List<Match> acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED);
-
-        List<Project> availableProjects = new ArrayList<>();
-        for (Match m : acceptedMatches) {
-            List<Project> studentProjects = projectRepository.findByStudent(m.getStudent());
-            for (Project p : studentProjects) {
-                if (p.getAdvisor() == null) {
-                    availableProjects.add(p);
-                }
-            }
-        }
+        long completedProjectCount =
+                projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
         int matchCount = matchRepository.findByAdvisor(advisor).size();
         int projectCount = projectRepository.findByAdvisor(advisor).size();
-        int availableProjectCount = availableProjects.size();
 
-        model.addAttribute("availableProjects", availableProjects);
         model.addAttribute("matchCount", matchCount);
         model.addAttribute("projectCount", projectCount);
-        model.addAttribute("availableProjectCount", availableProjectCount);
+        model.addAttribute("completedProjectCount", completedProjectCount);
         model.addAttribute("advisor", advisor);
         model.addAttribute("matches", matchRepository.findByAdvisor(advisor));
         model.addAttribute("projects", projectRepository.findByAdvisor(advisor));
