@@ -9,7 +9,7 @@
                                 <p class="card-text mb-0"><strong>Email:</strong> <span th:text="${user.email}">email</span></p>
                                 <p class="card-text mb-0"><strong>University ID:</strong> <span th:text="${user.universityId}">id</span></p>
                                 <p class="card-text mb-0"><strong>Role:</strong> <span th:text="${user.role}">role</span></p>
-                                <p class="card-text"><strong>Last login:</strong> <span th:text="${user.lastLogin}">date</span></p>
+                                <p class="card-text"><strong>Last login:</strong> <span th:text="${#temporals.format(user.lastLogin, 'dd/MM/yyyy')}">date</span></p>
                         </div>
                 </div>
 
@@ -93,7 +93,7 @@
                                                                 <td><a th:href="@{'/advisor/' + ${match.advisor.id}}" th:text="${match.advisor.fullName}">Advisor</a></td>
                                                                 <td th:text="${match.compatibilityScore}">0.00</td>
                                                                 <td th:text="${match.status}">PENDING</td>
-                                                                <td th:text="${match.createdAt}">2025-06-25</td>
+                                                                <td th:text="${#temporals.format(match.createdAt, 'dd/MM/yyyy')}">2025-06-25</td>
                                                         </tr>
                                                 </tbody>
                                         </table>
