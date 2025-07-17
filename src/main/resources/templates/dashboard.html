@@ -105,22 +105,31 @@
                         </div>
 
                         <div class="tab-pane fade" id="projects-tab-pane" role="tabpanel" aria-labelledby="projects-tab" tabindex="0">
-                                <table class="table">
-                                        <thead>
-                                                <tr>
-                                                        <th>Title</th>
-                                                        <th>Description</th>
-                                                        <th>Status</th>
-                                                </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr th:each="p : ${studentProjects}">
-                                                        <td th:text="${p.title}">Title</td>
-                                                        <td th:text="${p.description}">Description</td>
-                                                        <td th:text="${p.status}">Status</td>
-                                                </tr>
-                                        </tbody>
-                                </table>
+                                <th:block th:if="${studentProjects != null and !#lists.isEmpty(studentProjects)}">
+                                        <table class="table">
+                                                <thead>
+                                                        <tr>
+                                                                <th>Title</th>
+                                                                <th>Description</th>
+                                                                <th>Status</th>
+                                                                <th></th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr th:each="p : ${studentProjects}">
+                                                                <td th:text="${p.title}">Title</td>
+                                                                <td th:text="${p.description}">Description</td>
+                                                                <td th:text="${p.status}">Status</td>
+                                                                <td>
+                                                                        <form th:action="@{/project/delete}" method="post" style="display:inline;">
+                                                                                <input type="hidden" name="projectId" th:value="${p.id}" />
+                                                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                                        </form>
+                                                                </td>
+                                                        </tr>
+                                                </tbody>
+                                        </table>
+                                </th:block>
                                 <p th:if="${studentProjects == null or #lists.isEmpty(studentProjects)}">No results found.</p>
                                 <a href="/project/new" class="btn btn-outline-primary mt-3">Propose New Project</a>
                         </div>
