@@ -47,7 +47,7 @@
 			<tbody>
 				<tr th:each="match : ${matches}">
 					<td th:text="${match.student.fullName}">Student Name</td>
-					<td th:text="${match.compatibilityScore}">0.00</td>
+                                        <td th:text="${T(java.lang.Math).round(match.compatibilityScore * 100)} + '%'">0%</td>
 					<td th:text="${match.status}">PENDING</td>
                                         <td th:text="${#temporals.format(match.createdAt, 'dd/MM/yyyy')}">date</td>
                                         <td>
