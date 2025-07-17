@@ -1,8 +1,10 @@
 package com.uanl.asesormatch.service;
 
 import com.uanl.asesormatch.entity.Match;
+import com.uanl.asesormatch.entity.Project;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.MatchStatus;
+import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
@@ -149,7 +151,7 @@ class MatchingServiceTests {
 	}
 
 	@Test
-	void requestMatchFailsIfAcceptedMatchExists() {
+        void requestMatchFailsIfAcceptedMatchExists() {
 		User student = new User();
 		student.setFullName("Student Test");
 		student.setEmail("student2@test.com");
@@ -168,14 +170,63 @@ class MatchingServiceTests {
 		advisor2.setRole(Role.ADVISOR);
 		userRepository.save(advisor2);
 
-		Match match = new Match();
-		match.setStudent(student);
-		match.setAdvisor(advisor1);
-		match.setCompatibilityScore(0.9);
-		match.setStatus(MatchStatus.ACCEPTED);
-		matchRepository.save(match);
+                Match match = new Match();
+                match.setStudent(student);
+                match.setAdvisor(advisor1);
+                match.setCompatibilityScore(0.9);
+                match.setStatus(MatchStatus.ACCEPTED);
+                matchRepository.save(match);
 
-		assertThrows(IllegalStateException.class,
-				() -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
-	}
+                Project project = new Project();
+                project.setTitle("P1");
+                project.setDescription("D1");
+                project.setStatus(ProjectStatus.IN_PROGRESS);
+                project.setStudent(student);
+                project.setAdvisor(advisor1);
+                projectRepository.save(project);
+
+                assertThrows(IllegalStateException.class,
+                                () -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
+        }
+
+        @Test
+        void requestMatchAllowedAfterProjectCompleted() {
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("student3@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                User advisor1 = new User();
+                advisor1.setFullName("Advisor One");
+                advisor1.setEmail("advisor1b@test.com");
+                advisor1.setRole(Role.ADVISOR);
+                userRepository.save(advisor1);
+
+                User advisor2 = new User();
+                advisor2.setFullName("Advisor Two");
+                advisor2.setEmail("advisor2b@test.com");
+                advisor2.setRole(Role.ADVISOR);
+                userRepository.save(advisor2);
+
+                Match match = new Match();
+                match.setStudent(student);
+                match.setAdvisor(advisor1);
+                match.setCompatibilityScore(0.9);
+                match.setStatus(MatchStatus.ACCEPTED);
+                matchRepository.save(match);
+
+                Project project = new Project();
+                project.setTitle("P1");
+                project.setDescription("D1");
+                project.setStatus(ProjectStatus.COMPLETED);
+                project.setStudent(student);
+                project.setAdvisor(advisor1);
+                projectRepository.save(project);
+
+                matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8);
+
+                List<Match> matches = matchRepository.findAll();
+                assertEquals(2, matches.size());
+        }
 }

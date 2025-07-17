@@ -102,10 +102,10 @@ public class MatchingService {
 		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
 		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
 
-		boolean alreadyAssigned = matchRepository.existsByStudentIdAndStatus(studentId, MatchStatus.ACCEPTED);
-		if (alreadyAssigned) {
-			throw new IllegalStateException("student already has an accepted match");
-		}
+                boolean ongoingProject = projectRepository.existsByStudentAndStatus(student, ProjectStatus.IN_PROGRESS);
+                if (ongoingProject) {
+                        throw new IllegalStateException("student already has an accepted match");
+                }
 
 		Match match = new Match();
 		match.setStudent(student);
