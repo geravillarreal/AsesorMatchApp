@@ -90,7 +90,7 @@
                                                 </thead>
                                                 <tbody>
                                                         <tr th:each="match : ${matches}">
-                                                                <td><a th:href="@{'/advisor/' + ${match.advisor.id}}" th:text="${match.advisor.fullName}">Advisor</a></td>
+                                                                <td><a href="#" class="view-profile" th:data-advisor-id="${match.advisor.id}" th:text="${match.advisor.fullName}">Advisor</a></td>
                                                                 <td th:text="${match.compatibilityScore}">0.00</td>
                                                                 <td th:text="${match.status}">PENDING</td>
                                                                 <td th:text="${#temporals.format(match.createdAt, 'dd/MM/yyyy')}">2025-06-25</td>
@@ -206,7 +206,7 @@
         }
 
         function attachRecButtons() {
-            document.querySelectorAll('#recs-tab-pane .view-profile').forEach(btn => {
+            document.querySelectorAll('#recs-tab-pane .view-profile, #matches-tab-pane .view-profile').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const id  = btn.dataset.advisorId;
                     const mod = new bootstrap.Modal('#profileModal');
@@ -237,6 +237,8 @@
                 });
             });
         }
+
+        attachRecButtons();
 
         /* ------------- recommendations tab loader ---------------- */
         let recsLoaded = false;
