@@ -26,7 +26,7 @@
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Proyectos completados con los estudiantes</h5>
+                        <h5 class="card-title">Projects completed with students</h5>
                         <p class="display-6" th:text="${completedProjectCount}">0</p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                                                 </form>
                                                 <form th:if="${match.status == T(com.uanl.asesormatch.enums.MatchStatus).ACCEPTED}" th:action="@{/project/complete}" method="post" style="display: inline;">
                                                         <input type="hidden" name="matchId" th:value="${match.id}" />
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Completado</button>
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
                                                 </form>
                                         </td>
 
@@ -97,7 +97,7 @@
                         </tbody>
                 </table>
 
-                <h4 class="mt-5">Proyectos completados con los estudiantes</h4>
+                <h4 class="mt-5">Projects completed with students</h4>
                 <table class="table table-hover">
                         <thead>
                                 <tr>

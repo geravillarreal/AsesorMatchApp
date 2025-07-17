@@ -45,7 +45,7 @@
 			<!-- ─── Books (List<BookDTO>) ──────────────────────────────── -->
 			<h5 class="mt-4 mb-2">Books</h5>
 			<div id="books-container">
-				<!-- pinta los libros ya existentes -->
+				<!-- display existing books -->
 				<th:block th:each="book,stat : *{books}">
 					<div class="book-entry border rounded p-3 position-relative mb-3">
 						<button type="button"
@@ -64,7 +64,7 @@
 				</th:block>
 			</div>
 
-			<!-- plantilla clonable -->
+			<!-- cloneable template -->
 			<template id="book-template">
 				<div class="book-entry border rounded p-3 position-relative mb-3">
 					<button type="button"
@@ -81,7 +81,7 @@
 			<button type="button" class="btn btn-outline-primary mb-3"
 				onclick="addBook()">Add book</button>
 
-			<!-- ─── Campos simples ─────────────────────────────────────── -->
+			<!-- ─── Simple fields ─────────────────────────────────────── -->
                         <div class="mb-3">
                                 <label class="form-label">Level</label>
                                 <input class="form-control" th:field="*{level}" list="level-suggestions" />
@@ -113,7 +113,7 @@
 
 	<!-- ======================  SCRIPTS  ====================== -->
 	<script>
-    /* ——— Tagify -> genera inputs ocultos tipo interests[0] ——— */
+    /* ——— Tagify -> generates hidden inputs like interests[0] ——— */
     function initTagify(visibleId, hiddenWrapperId, initialList, suggestions) {
         const visible = document.getElementById(visibleId);
         const tagify  = new Tagify(visible, {whitelist: suggestions, dropdown: {maxItems: 20, enabled: 0}});
@@ -121,7 +121,7 @@
 
         const wrapper = document.getElementById(hiddenWrapperId);
         const sync = () => {
-            wrapper.innerHTML = '';                                // limpia
+            wrapper.innerHTML = '';                                // clear
             tagify.value.forEach((t, i) => {
                 const h = document.createElement('input');
                 h.type  = 'hidden';
@@ -131,10 +131,10 @@
             });
         };
         tagify.on('add', sync).on('remove', sync).on('edit', sync);
-        sync();                                                   // 1ª vez
+        sync();                                                   // first time
     }
 
-    /* listas iniciales que Thymeleaf inyecta como arrays JS */
+    /* initial lists that Thymeleaf injects as JS arrays */
     const initInterests    = /*[[${profile.interests}]]*/ [];
     const initAreas        = /*[[${profile.areas}]]*/ [];
     const initAvailability = /*[[${profile.availability}]]*/ [];
@@ -146,7 +146,7 @@
     initTagify('areas-input',       'areas-hidden',       initAreas, suggestionsAreas);
     initTagify('availability-input','availability-hidden',initAvailability, suggestionsAvailability);
 
-    /* ——— Books dinámicos ——— */
+    /* ——— Dynamic books ——— */
     let bookIndex = document.querySelectorAll('#books-container .book-entry').length;
 
     function addBook() {
