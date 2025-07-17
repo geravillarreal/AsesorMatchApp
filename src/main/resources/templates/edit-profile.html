@@ -9,33 +9,33 @@
 			method="post" class="mt-3">
 
 			<!-- ─── Interests (List<String>) ────────────────────────────── -->
-			<div class="mb-3">
-				<label class="form-label">Interests</label> <input
-					id="interests-input" class="form-control" type="text"
-					th:value="${#strings.arrayJoin(profile.interests, ',')}" />
-				<div id="interests-hidden"></div>
+                        <div class="mb-3">
+                                <label class="form-label">Interests</label> <input
+                                        id="interests-input" class="form-control" type="text"
+                                        th:value="${#strings.arrayJoin(profile.interests, ',')}" />
+                                <div id="interests-hidden"></div>
 
 				<div class="text-danger" th:if="${#fields.hasErrors('interests')}"
 					th:errors="*{interests}"></div>
 			</div>
 
 			<!-- ─── Areas (List<String>) ────────────────────────────────── -->
-			<div class="mb-3">
-				<label class="form-label">Areas</label> <input id="areas-input"
-					class="form-control" type="text"
-					th:value="${#strings.arrayJoin(profile.areas, ',')}" />
-				<div id="areas-hidden"></div>
+                        <div class="mb-3">
+                                <label class="form-label">Areas</label> <input id="areas-input"
+                                        class="form-control" type="text"
+                                        th:value="${#strings.arrayJoin(profile.areas, ',')}" />
+                                <div id="areas-hidden"></div>
 
 				<div class="text-danger" th:if="${#fields.hasErrors('areas')}"
 					th:errors="*{areas}"></div>
 			</div>
 
 			<!-- ─── Availability (List<String>) ─────────────────────────── -->
-			<div class="mb-3">
-				<label class="form-label">Availability</label> <input
-					id="availability-input" class="form-control" type="text"
-					th:value="${#strings.arrayJoin(profile.availability, ',')}" />
-				<div id="availability-hidden"></div>
+                        <div class="mb-3">
+                                <label class="form-label">Availability</label> <input
+                                        id="availability-input" class="form-control" type="text"
+                                        th:value="${#strings.arrayJoin(profile.availability, ',')}" />
+                                <div id="availability-hidden"></div>
 
 				<div class="text-danger"
 					th:if="${#fields.hasErrors('availability')}"
@@ -82,20 +82,29 @@
 				onclick="addBook()">Add book</button>
 
 			<!-- ─── Campos simples ─────────────────────────────────────── -->
-			<div class="mb-3">
-				<label class="form-label">Level</label> <input class="form-control"
-					th:field="*{level}" />
-			</div>
+                        <div class="mb-3">
+                                <label class="form-label">Level</label>
+                                <input class="form-control" th:field="*{level}" list="level-suggestions" />
+                                <datalist id="level-suggestions">
+                                        <option th:each="item : ${levelSuggestions}" th:value="${item}"></option>
+                                </datalist>
+                        </div>
 
-			<div class="mb-3">
-				<label class="form-label">Modality</label> <input
-					class="form-control" th:field="*{modality}" />
-			</div>
+                        <div class="mb-3">
+                                <label class="form-label">Modality</label>
+                                <input class="form-control" th:field="*{modality}" list="modality-suggestions" />
+                                <datalist id="modality-suggestions">
+                                        <option th:each="item : ${modalitySuggestions}" th:value="${item}"></option>
+                                </datalist>
+                        </div>
 
-			<div class="mb-3">
-				<label class="form-label">Language</label> <input
-					class="form-control" th:field="*{language}" />
-			</div>
+                        <div class="mb-3">
+                                <label class="form-label">Language</label>
+                                <input class="form-control" th:field="*{language}" list="language-suggestions" />
+                                <datalist id="language-suggestions">
+                                        <option th:each="item : ${languageSuggestions}" th:value="${item}"></option>
+                                </datalist>
+                        </div>
 
 			<button type="submit" class="btn btn-success">Save</button>
 			<a href="/dashboard" class="btn btn-secondary">Cancel</a>
@@ -105,9 +114,9 @@
 	<!-- ======================  SCRIPTS  ====================== -->
 	<script>
     /* ——— Tagify -> genera inputs ocultos tipo interests[0] ——— */
-    function initTagify(visibleId, hiddenWrapperId, initialList) {
+    function initTagify(visibleId, hiddenWrapperId, initialList, suggestions) {
         const visible = document.getElementById(visibleId);
-        const tagify  = new Tagify(visible);
+        const tagify  = new Tagify(visible, {whitelist: suggestions, dropdown: {maxItems: 20, enabled: 0}});
         if (initialList.length) tagify.addTags(initialList);
 
         const wrapper = document.getElementById(hiddenWrapperId);
@@ -129,10 +138,13 @@
     const initInterests    = /*[[${profile.interests}]]*/ [];
     const initAreas        = /*[[${profile.areas}]]*/ [];
     const initAvailability = /*[[${profile.availability}]]*/ [];
+    const suggestionsInterests    = /*[[${interestSuggestions}]]*/ [];
+    const suggestionsAreas        = /*[[${areaSuggestions}]]*/ [];
+    const suggestionsAvailability = /*[[${availabilitySuggestions}]]*/ [];
 
-    initTagify('interests-input',   'interests-hidden',   initInterests);
-    initTagify('areas-input',       'areas-hidden',       initAreas);
-    initTagify('availability-input','availability-hidden',initAvailability);
+    initTagify('interests-input',   'interests-hidden',   initInterests, suggestionsInterests);
+    initTagify('areas-input',       'areas-hidden',       initAreas, suggestionsAreas);
+    initTagify('availability-input','availability-hidden',initAvailability, suggestionsAvailability);
 
     /* ——— Books dinámicos ——— */
     let bookIndex = document.querySelectorAll('#books-container .book-entry').length;
