@@ -94,7 +94,7 @@
                                                 <tbody>
                                                         <tr th:each="match : ${matches}">
                                                                 <td><a href="#" class="view-profile" th:data-advisor-id="${match.advisor.id}" th:text="${match.advisor.fullName}">Advisor</a></td>
-                                                                <td th:text="${match.compatibilityScore}">0.00</td>
+                                                                <td th:text="${T(java.lang.Math).round(match.compatibilityScore * 100)} + '%'">0%</td>
                                                                 <td th:text="${match.status}">PENDING</td>
                                                                 <td th:text="${#temporals.format(match.createdAt, 'dd/MM/yyyy')}">2025-06-25</td>
                                                         </tr>

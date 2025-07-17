@@ -16,7 +16,7 @@
 		<tbody>
 			<tr th:each="adv : ${recommendations}">
 				<td th:text="${adv.name}">John Doe</td>
-				<td th:text="${adv.score}">0.90</td>
+                                <td th:text="${T(java.lang.Math).round(adv.score * 100)} + '%'">90%</td>
 				<td class="text-center">
 					<button type="button"
 						class="btn btn-outline-secondary btn-sm me-1 view-profile"
