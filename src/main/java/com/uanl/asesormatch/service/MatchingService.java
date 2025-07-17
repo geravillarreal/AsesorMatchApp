@@ -81,6 +81,15 @@ public class MatchingService {
                                         }
                                 }
 
+                                // Cancel other matches for this student
+                                var allMatches = matchRepository.findByStudent(m.getStudent());
+                                for (var other : allMatches) {
+                                        if (!other.getId().equals(m.getId()) && other.getStatus() != MatchStatus.REJECTED) {
+                                                other.setStatus(MatchStatus.REJECTED);
+                                                matchRepository.save(other);
+                                        }
+                                }
+
                                 String msg = "El maestro " + m.getAdvisor().getFullName()
                                                 + " aprob\u00F3 ser tu tutor.";
                                 notificationService.notify(m.getStudent(), msg);
