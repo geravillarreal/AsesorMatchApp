@@ -8,6 +8,7 @@ import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.service.NotificationService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -22,14 +23,16 @@ public class ProjectController {
 
 	private final UserRepository userRepository;
 	private final ProjectRepository projectRepository;
-	private final MatchRepository matchRepository;
+    private final MatchRepository matchRepository;
+    private final NotificationService notificationService;
 
-	public ProjectController(UserRepository userRepository, ProjectRepository projectRepository,
-			MatchRepository matchRepository) {
-		this.userRepository = userRepository;
-		this.projectRepository = projectRepository;
-		this.matchRepository = matchRepository;
-	}
+    public ProjectController(UserRepository userRepository, ProjectRepository projectRepository,
+                        MatchRepository matchRepository, NotificationService notificationService) {
+                this.userRepository = userRepository;
+                this.projectRepository = projectRepository;
+                this.matchRepository = matchRepository;
+                this.notificationService = notificationService;
+        }
 
 	@GetMapping("/new")
 	public String newProjectForm(Model model) {
@@ -98,9 +101,11 @@ public class ProjectController {
                 optProject.ifPresent(p -> {
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
+                        String msg = "Tu proyecto '" + p.getTitle() + "' fue marcado como completado. Por favor da tu feedback.";
+                        notificationService.notify(match.getStudent(), msg + " /dashboard?feedbackMatchId=" + matchId);
                 });
 
-                return "redirect:/advisor-dashboard";
+                return "redirect:/advisor-dashboard?feedbackMatchId=" + matchId;
         }
 
         @PostMapping("/delete")

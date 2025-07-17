@@ -54,11 +54,11 @@
 		</div>
 	</div>
 
-	<div th:fragment="matchModal">
-		<div class="modal fade" id="matchModal" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<form th:action="@{/match/request}" method="post">
+        <div th:fragment="matchModal">
+                <div class="modal fade" id="matchModal" tabindex="-1">
+                        <div class="modal-dialog">
+                                <div class="modal-content">
+                                        <form th:action="@{/match/request}" method="post">
 						<div class="modal-header">
 							<h5 class="modal-title">Confirm match</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -77,10 +77,46 @@
 							<button class="btn btn-secondary" type="button"
 								data-bs-dismiss="modal">Cancel</button>
 						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                                        </form>
+                                </div>
+                        </div>
+                </div>
+        </div>
+
+        <div th:fragment="feedbackModal">
+                <div class="modal fade" id="feedbackModal" tabindex="-1">
+                        <div class="modal-dialog">
+                                <div class="modal-content">
+                                        <form th:action="@{/feedback/submit}" method="post">
+                                                <input type="hidden" name="matchId" id="feedbackMatchId" />
+                                                <div class="modal-header">
+                                                        <h5 class="modal-title">Feedback</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                        <div class="mb-3">
+                                                                <label class="form-label" for="rating">Rating</label>
+                                                                <select class="form-select" id="rating" name="rating">
+                                                                        <option value="1">1</option>
+                                                                        <option value="2">2</option>
+                                                                        <option value="3">3</option>
+                                                                        <option value="4">4</option>
+                                                                        <option value="5" selected>5</option>
+                                                                </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                                <label class="form-label" for="comment">Comment</label>
+                                                                <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                                                        </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                        </form>
+                                </div>
+                        </div>
+                </div>
+        </div>
 </body>
 </html>

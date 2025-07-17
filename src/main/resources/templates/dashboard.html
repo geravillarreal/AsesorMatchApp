@@ -137,6 +137,7 @@
 
                 <div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
                 <div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
+                <div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
         </div>
 	<script>
         /* ------------- utils ---------------- */
@@ -275,6 +276,12 @@
             }
             loader.classList.add('d-none');
         });
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('feedbackMatchId')) {
+            document.getElementById('feedbackMatchId').value = params.get('feedbackMatchId');
+            new bootstrap.Modal('#feedbackModal').show();
+        }
         </script>
 </body>
 </html>

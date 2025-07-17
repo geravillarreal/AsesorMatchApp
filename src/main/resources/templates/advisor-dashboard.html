@@ -115,6 +115,7 @@
                         </tbody>
                 </table>
                 <div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
+                <div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
         </div>
         <script>
         function buildStudentProfileHTML(user) {
@@ -174,6 +175,12 @@
                 mod.show();
             });
         });
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('feedbackMatchId')) {
+            document.getElementById('feedbackMatchId').value = params.get('feedbackMatchId');
+            new bootstrap.Modal('#feedbackModal').show();
+        }
         </script>
 </body>
 </html>
