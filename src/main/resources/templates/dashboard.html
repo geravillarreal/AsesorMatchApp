@@ -177,7 +177,7 @@
             const rows = filtered.map(r => {
                 const percent  = Math.round(r.score * 100);
                 const badge    = r.score > 0.70 ?
-                    ' <span class="badge bg-success ms-2">Este maestro es perfecto para ti</span>' : '';
+                    ' <span class="badge bg-success ms-2">This advisor is perfect for you</span>' : '';
                 const rowClass = r.score > 0.70 ? ' class="table-success"' : '';
                 return `
                 <tr${rowClass}>
@@ -207,7 +207,7 @@
                 </table>`;
 
             if (!hasAboveTen) {
-                return `<div class="alert alert-warning">Por ahora no pudimos encontrar un maestro en base a tu perfil</div>` + table;
+                return `<div class="alert alert-warning">For now we couldn't find an advisor based on your profile</div>` + table;
             }
             return table;
         }
