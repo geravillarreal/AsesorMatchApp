@@ -1,22 +1,40 @@
 package com.uanl.asesormatch.dto;
 
 public class ProjectDTO {
-	private String title;
-	private String description;
+        private Long id;
+        private String title;
+        private String description;
+        private String status;
 
-	public String getTitle() {
-		return title;
-	}
+        public Long getId() {
+                return id;
+        }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+        public void setId(Long id) {
+                this.id = id;
+        }
 
-	public String getDescription() {
-		return description;
-	}
+        public String getTitle() {
+                return title;
+        }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+        public void setTitle(String title) {
+                this.title = title;
+        }
+
+        public String getDescription() {
+                return description;
+        }
+
+        public void setDescription(String description) {
+                this.description = description;
+        }
+
+        public String getStatus() {
+                return status;
+        }
+
+        public void setStatus(String status) {
+                this.status = status;
+        }
 }

@@ -50,22 +50,27 @@
 					<td th:text="${match.compatibilityScore}">0.00</td>
 					<td th:text="${match.status}">PENDING</td>
                                         <td th:text="${#temporals.format(match.createdAt, 'dd/MM/yyyy')}">date</td>
-					<td>
-						<form th:action="@{/match/decision}" method="post"
-							style="display: inline;">
-							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
-								type="hidden" name="action" value="ACCEPTED" />
-							<button type="submit" class="btn btn-success btn-sm"
-								th:disabled="${match.status != 'PENDING'}">Accept</button>
-						</form>
-						<form th:action="@{/match/decision}" method="post"
-							style="display: inline;">
-							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
-								type="hidden" name="action" value="REJECTED" />
-							<button type="submit" class="btn btn-danger btn-sm"
-								th:disabled="${match.status != 'PENDING'}">Reject</button>
-						</form>
-					</td>
+                                        <td>
+                                                <button type="button"
+                                                        class="btn btn-outline-secondary btn-sm me-1 view-student-profile"
+                                                        th:data-student-id="${match.student.id}" title="View profile">
+                                                        <i class="bi bi-eye"></i>
+                                                </button>
+                                                <form th:action="@{/match/decision}" method="post"
+                                                        style="display: inline;">
+                                                        <input type="hidden" name="matchId" th:value="${match.id}" /> <input
+                                                                type="hidden" name="action" value="ACCEPTED" />
+                                                        <button type="submit" class="btn btn-success btn-sm"
+                                                                th:disabled="${match.status != 'PENDING'}">Accept</button>
+                                                </form>
+                                                <form th:action="@{/match/decision}" method="post"
+                                                        style="display: inline;">
+                                                        <input type="hidden" name="matchId" th:value="${match.id}" /> <input
+                                                                type="hidden" name="action" value="REJECTED" />
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                                th:disabled="${match.status != 'PENDING'}">Reject</button>
+                                                </form>
+                                        </td>
 
 				</tr>
 			</tbody>
@@ -90,35 +95,95 @@
 			</tbody>
 		</table>
 		<h4 class="mt-5">Unassigned Projects from Matched Students</h4>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Student</th>
-					<th>Title</th>
-					<th>Description</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="project : ${availableProjects}">
-					<td th:text="${project.student.fullName}">Student Name</td>
-					<td th:text="${project.title}">Title</td>
-					<td th:text="${project.description}">Description</td>
-					<td>
-						<form th:action="@{/project/assign}" method="post"
-							style="display: inline;">
-							<input type="hidden" name="projectId" th:value="${project.id}" />
-							<button type="submit" class="btn btn-sm btn-success">Accept</button>
-						</form>
-						<form th:action="@{/project/reject}" method="post"
-							style="display: inline;">
-							<input type="hidden" name="projectId" th:value="${project.id}" />
-							<button type="submit" class="btn btn-sm btn-danger">Reject</button>
-						</form>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+                <table class="table">
+                        <thead>
+                                <tr>
+                                        <th>Student</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Action</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr th:each="project : ${availableProjects}">
+                                        <td th:text="${project.student.fullName}">Student Name</td>
+                                        <td th:text="${project.title}">Title</td>
+                                        <td th:text="${project.description}">Description</td>
+                                        <td>
+                                                <form th:action="@{/project/assign}" method="post"
+                                                        style="display: inline;">
+                                                        <input type="hidden" name="projectId" th:value="${project.id}" />
+                                                        <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                                </form>
+                                                <form th:action="@{/project/reject}" method="post"
+                                                        style="display: inline;">
+                                                        <input type="hidden" name="projectId" th:value="${project.id}" />
+                                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                </form>
+                                        </td>
+                                </tr>
+                        </tbody>
+                </table>
+                <div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
+        </div>
+        <script>
+        function buildStudentProfileHTML(user) {
+            const p = user.profile ?? {};
+            const books = (p.books ?? []).map(b =>
+                `<li><strong>${b.title}</strong><br>${b.description ?? ''}</li>`
+            ).join('');
+            const projects = (user.projects ?? []).map(pr => `
+                <tr>
+                    <td>${pr.title}</td>
+                    <td>${pr.description ?? ''}</td>
+                    <td>${pr.status}</td>
+                </tr>`).join('');
+            const projectTable = projects ? `
+                <h5 class="mt-4">Projects</h5>
+                <table class="table">
+                    <thead>
+                        <tr><th>Title</th><th>Description</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>${projects}</tbody>
+                </table>` : '<p>No projects found.</p>';
+            return `
+                <p><strong>Name:</strong> ${user.fullName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${user.email}">${user.email}</a></p>
+                <p><strong>Faculty:</strong> ${user.faculty ?? '—'}</p>
+                <hr>
+                <p><strong>Areas:</strong> ${(p.areas ?? []).join(', ') || '—'}</p>
+                <p><strong>Interests:</strong> ${(p.interests ?? []).join(', ') || '—'}</p>
+                <p><strong>Availability:</strong> ${(p.availability ?? []).join(', ') || '—'}</p>
+                <p><strong>Books:</strong></p>
+                <ul>${books || '<li>—</li>'}</ul>
+                <p><strong>Level:</strong> ${p.level ?? '—'}</p>
+                <p><strong>Modality:</strong> ${p.modality ?? '—'}</p>
+                <p><strong>Language:</strong> ${p.language ?? '—'}</p>
+                ${projectTable}
+            `;
+        }
+
+        document.querySelectorAll('.view-student-profile').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id  = btn.dataset.studentId;
+                const mod = new bootstrap.Modal('#profileModal');
+                const url = `/api/students/profile/${id}`;
+
+                try {
+                    const res  = await fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}});
+                    if (!res.ok) throw new Error(res.status);
+                    const user = await res.json();
+
+                    document.getElementById('profileModalTitle').textContent = user.fullName;
+                    document.getElementById('profileModalBody').innerHTML    = buildStudentProfileHTML(user);
+                } catch (e) {
+                    document.getElementById('profileModalTitle').textContent = 'Error';
+                    document.getElementById('profileModalBody').innerHTML =
+                        `<p class="text-danger">Unable to load profile (status ${e}).</p>`;
+                }
+                mod.show();
+            });
+        });
+        </script>
 </body>
 </html>
