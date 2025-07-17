@@ -11,6 +11,7 @@ import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.service.MatchingService;
+import com.uanl.asesormatch.service.NotificationService;
 
 import java.util.List;
 
@@ -27,14 +28,17 @@ public class DashboardController {
 	private final UserRepository userRepository;
 	private final MatchingEngineClient matchingEngineClient;
 	private final MatchingService matchingService;
-	private final ProjectRepository projectRepository;
+        private final ProjectRepository projectRepository;
+        private final NotificationService notificationService;
 
         public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
-                        MatchingService matchingService, ProjectRepository projectRepository) {
+                        MatchingService matchingService, ProjectRepository projectRepository,
+                        NotificationService notificationService) {
                 this.userRepository = userRepository;
                 this.matchingEngineClient = matchingEngineClient;
                 this.matchingService = matchingService;
                 this.projectRepository = projectRepository;
+                this.notificationService = notificationService;
         }
 
         @GetMapping("/api/recommendations")
@@ -66,8 +70,8 @@ public class DashboardController {
         }
 
 	@GetMapping("/dashboard")
-	public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+        public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
+                User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
 			return "redirect:/advisor-dashboard";
@@ -76,11 +80,13 @@ public class DashboardController {
                 Profile profile = user.getProfile();
                 List<Match> matchHistory = matchingService.getMatchesForStudent(user);
                 List<Project> studentProjects = projectRepository.findByStudent(user);
+                var notifications = notificationService.getNotificationsFor(user);
 
-		model.addAttribute("user", user);
-		model.addAttribute("profile", profile);
-		model.addAttribute("matches", matchHistory);
-		model.addAttribute("studentProjects", studentProjects);
+                model.addAttribute("user", user);
+                model.addAttribute("profile", profile);
+                model.addAttribute("matches", matchHistory);
+                model.addAttribute("studentProjects", studentProjects);
+                model.addAttribute("notifications", notifications);
 
 		return "dashboard";
 	}

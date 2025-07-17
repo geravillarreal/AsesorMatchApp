@@ -12,6 +12,9 @@
                                 <p class="card-text"><strong>Last login:</strong> <span th:text="${#temporals.format(user.lastLogin, 'dd/MM/yyyy')}">date</span></p>
                         </div>
                 </div>
+                <div th:if="${notifications != null and !#lists.isEmpty(notifications)}" class="mb-4">
+                        <div class="alert alert-info" th:each="n : ${notifications}" th:text="${n.message}"></div>
+                </div>
 
                 <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
                         <li class="nav-item" role="presentation">
