@@ -26,8 +26,8 @@
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Unassigned</h5>
-                        <p class="display-6" th:text="${availableProjectCount}">0</p>
+                        <h5 class="card-title">Proyectos completados con los estudiantes</h5>
+                        <p class="display-6" th:text="${completedProjectCount}">0</p>
                     </div>
                 </div>
             </div>
@@ -94,36 +94,6 @@
 				</tr>
 			</tbody>
 		</table>
-		<h4 class="mt-5">Unassigned Projects from Matched Students</h4>
-                <table class="table">
-                        <thead>
-                                <tr>
-                                        <th>Student</th>
-                                        <th>Title</th>
-                                        <th>Description</th>
-                                        <th>Action</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <tr th:each="project : ${availableProjects}">
-                                        <td th:text="${project.student.fullName}">Student Name</td>
-                                        <td th:text="${project.title}">Title</td>
-                                        <td th:text="${project.description}">Description</td>
-                                        <td>
-                                                <form th:action="@{/project/assign}" method="post"
-                                                        style="display: inline;">
-                                                        <input type="hidden" name="projectId" th:value="${project.id}" />
-                                                        <button type="submit" class="btn btn-sm btn-success">Accept</button>
-                                                </form>
-                                                <form th:action="@{/project/reject}" method="post"
-                                                        style="display: inline;">
-                                                        <input type="hidden" name="projectId" th:value="${project.id}" />
-                                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                                                </form>
-                                        </td>
-                                </tr>
-                        </tbody>
-                </table>
                 <div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
         </div>
         <script>
