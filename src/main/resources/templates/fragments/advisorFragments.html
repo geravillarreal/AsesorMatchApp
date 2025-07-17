@@ -4,7 +4,8 @@
 <title>Fragments</title>
 </head>
 <body>
-	<table class="table table-striped align-middle" th:fragment="recomendationsTable (recommendations)">
+	<table class="table table-striped align-middle"
+		th:fragment="recomendationsTable (recommendations)">
 		<thead class="table-light">
 			<tr>
 				<th>Advisor</th>
@@ -16,7 +17,7 @@
 		<tbody>
 			<tr th:each="adv : ${recommendations}">
 				<td th:text="${adv.name}">John Doe</td>
-                                <td th:text="${T(java.lang.Math).round(adv.score * 100)} + '%'">90%</td>
+				<td th:text="${T(java.lang.Math).round(adv.score * 100)} + '%'">90%</td>
 				<td class="text-center">
 					<button type="button"
 						class="btn btn-outline-secondary btn-sm me-1 view-profile"
@@ -26,8 +27,9 @@
 
 					<button type="button"
 						class="btn btn-outline-primary btn-sm request-match"
-						th:data-advisor-id="${adv.advisorId}" th:data-advisor-name="${adv.name}" th:data-advisor-score="${adv.score}"
-						title="Request match">
+						th:data-advisor-id="${adv.advisorId}"
+						th:data-advisor-name="${adv.name}"
+						th:data-advisor-score="${adv.score}" title="Request match">
 						<i class="bi bi-hand-thumbs-up"></i>
 					</button>
 				</td>
@@ -54,11 +56,11 @@
 		</div>
 	</div>
 
-        <div th:fragment="matchModal">
-                <div class="modal fade" id="matchModal" tabindex="-1">
-                        <div class="modal-dialog">
-                                <div class="modal-content">
-                                        <form th:action="@{/match/request}" method="post">
+	<div th:fragment="matchModal">
+		<div class="modal fade" id="matchModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form th:action="@{/match/request}" method="post">
 						<div class="modal-header">
 							<h5 class="modal-title">Confirm match</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -68,8 +70,8 @@
 								Do you really want to request a match with <strong
 									id="matchAdvisorName">advisor</strong>?
 							</p>
-							<input type="hidden" name="advisorId" id="matchAdvisorId" />
-							<input type="hidden" name="score" id="score" />
+							<input type="hidden" name="advisorId" id="matchAdvisorId" /> <input
+								type="hidden" name="score" id="score" />
 						</div>
 						<div class="modal-footer">
 							<button class="btn btn-primary" type="submit">Yes,
@@ -77,46 +79,48 @@
 							<button class="btn btn-secondary" type="button"
 								data-bs-dismiss="modal">Cancel</button>
 						</div>
-                                        </form>
-                                </div>
-                        </div>
-                </div>
-        </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
-        <div th:fragment="feedbackModal">
-                <div class="modal fade" id="feedbackModal" tabindex="-1">
-                        <div class="modal-dialog">
-                                <div class="modal-content">
-                                        <form th:action="@{/feedback/submit}" method="post">
-                                                <input type="hidden" name="matchId" id="feedbackMatchId" />
-                                                <div class="modal-header">
-                                                        <h5 class="modal-title">Feedback</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                        <div class="mb-3">
-                                                                <label class="form-label" for="rating">Rating</label>
-                                                                <select class="form-select" id="rating" name="rating">
-                                                                        <option value="1">1</option>
-                                                                        <option value="2">2</option>
-                                                                        <option value="3">3</option>
-                                                                        <option value="4">4</option>
-                                                                        <option value="5" selected>5</option>
-                                                                </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                                <label class="form-label" for="comment">Comment</label>
-                                                                <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
-                                                        </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                </div>
-                                        </form>
-                                </div>
-                        </div>
-                </div>
-        </div>
+	<div th:fragment="feedbackModal">
+		<div class="modal fade" id="feedbackModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form th:action="@{/feedback/submit}" method="post">
+						<input type="hidden" name="matchId" id="feedbackMatchId" />
+						<div class="modal-header">
+							<h5 class="modal-title">Feedback</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label" for="rating">Rating</label> <select
+									class="form-select" id="rating" name="rating">
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5" selected>5</option>
+								</select>
+							</div>
+							<div class="mb-3">
+								<label class="form-label" for="comment">Comment</label>
+								<textarea class="form-control" id="comment" name="comment"
+									rows="3"></textarea>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" type="submit">Submit</button>
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

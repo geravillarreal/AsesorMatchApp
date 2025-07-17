@@ -30,65 +30,63 @@ public class DashboardController {
 	private final UserRepository userRepository;
 	private final MatchingEngineClient matchingEngineClient;
 	private final MatchingService matchingService;
-        private final ProjectRepository projectRepository;
-        private final NotificationService notificationService;
+	private final ProjectRepository projectRepository;
+	private final NotificationService notificationService;
 
-        public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
-                        MatchingService matchingService, ProjectRepository projectRepository,
-                        NotificationService notificationService) {
-                this.userRepository = userRepository;
-                this.matchingEngineClient = matchingEngineClient;
-                this.matchingService = matchingService;
-                this.projectRepository = projectRepository;
-                this.notificationService = notificationService;
-        }
+	public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
+			MatchingService matchingService, ProjectRepository projectRepository,
+			NotificationService notificationService) {
+		this.userRepository = userRepository;
+		this.matchingEngineClient = matchingEngineClient;
+		this.matchingService = matchingService;
+		this.projectRepository = projectRepository;
+		this.notificationService = notificationService;
+	}
 
-        @GetMapping("/api/recommendations")
-        @ResponseBody
-        public Map<String, List<RecommendationDTO>> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
-                User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+	@GetMapping("/api/recommendations")
+	@ResponseBody
+	public Map<String, List<RecommendationDTO>> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
+		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
-                Map<String, List<RecommendationDTO>> result = new HashMap<>();
-                if (user.getProfile() != null) {
-                        List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
-                        result.put("recommendations", recommendations);
+		Map<String, List<RecommendationDTO>> result = new HashMap<>();
+		if (user.getProfile() != null) {
+			List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
+			result.put("recommendations", recommendations);
 
-                        List<Project> studentProjects = projectRepository.findByStudent(user);
-                        if (studentProjects != null) {
-                                for (Project p : studentProjects) {
-                                        if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
-                                                List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(user.getId());
-                                                List<RecommendationDTO> filtered = newRecs.stream()
-                                                                .filter(rec -> !rec.getAdvisorId().toString()
-                                                                                .equals(p.getRejectedByAdvisor().getId().toString()))
-                                                                .toList();
-                                                result.put("newRecommendations", filtered);
-                                                break;
-                                        }
-                                }
-                        }
-                }
-                return result;
-        }
+			List<Project> studentProjects = projectRepository.findByStudent(user);
+			if (studentProjects != null) {
+				for (Project p : studentProjects) {
+					if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
+						List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(user.getId());
+						List<RecommendationDTO> filtered = newRecs.stream().filter(rec -> !rec.getAdvisorId().toString()
+								.equals(p.getRejectedByAdvisor().getId().toString())).toList();
+						result.put("newRecommendations", filtered);
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	}
 
 	@GetMapping("/dashboard")
-        public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-                User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+	public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
+		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
 			return "redirect:/advisor-dashboard";
 		}
 
-                Profile profile = user.getProfile();
-                List<Match> matchHistory = matchingService.getMatchesForStudent(user);
-                List<Project> studentProjects = projectRepository.findByStudent(user);
-                var notifications = notificationService.getNotificationsFor(user);
+		Profile profile = user.getProfile();
+		List<Match> matchHistory = matchingService.getMatchesForStudent(user);
+		List<Project> studentProjects = projectRepository.findByStudent(user);
+		var notifications = notificationService.getNotificationsFor(user);
 
-                model.addAttribute("user", user);
-                model.addAttribute("profile", profile);
-                model.addAttribute("matches", matchHistory);
-                model.addAttribute("studentProjects", studentProjects);
-                model.addAttribute("notifications", notifications);
+		model.addAttribute("user", user);
+		model.addAttribute("profile", profile);
+		model.addAttribute("matches", matchHistory);
+		model.addAttribute("studentProjects", studentProjects);
+		model.addAttribute("notifications", notifications);
 
 		return "dashboard";
 	}

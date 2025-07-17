@@ -33,24 +33,24 @@ public class StudentProfileController {
 		this.profileRepository = profileRepository;
 	}
 
-        @GetMapping("/{id}/edit")
-        public String editProfileForm(@PathVariable Long id, Model model) {
-                User user = userRepository.findById(id).orElseThrow();
-                Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
-                if (profile.getUser() == null)
-                        profile.setUser(user);
+	@GetMapping("/{id}/edit")
+	public String editProfileForm(@PathVariable Long id, Model model) {
+		User user = userRepository.findById(id).orElseThrow();
+		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
+		if (profile.getUser() == null)
+			profile.setUser(user);
 
-                model.addAttribute("profile", profile);
+		model.addAttribute("profile", profile);
 
-                model.addAttribute("interestSuggestions", profileRepository.findDistinctInterests());
-                model.addAttribute("areaSuggestions", profileRepository.findDistinctAreas());
-                model.addAttribute("availabilitySuggestions", profileRepository.findDistinctAvailability());
-                model.addAttribute("levelSuggestions", profileRepository.findDistinctLevels());
-                model.addAttribute("modalitySuggestions", profileRepository.findDistinctModalities());
-                model.addAttribute("languageSuggestions", profileRepository.findDistinctLanguages());
+		model.addAttribute("interestSuggestions", profileRepository.findDistinctInterests());
+		model.addAttribute("areaSuggestions", profileRepository.findDistinctAreas());
+		model.addAttribute("availabilitySuggestions", profileRepository.findDistinctAvailability());
+		model.addAttribute("levelSuggestions", profileRepository.findDistinctLevels());
+		model.addAttribute("modalitySuggestions", profileRepository.findDistinctModalities());
+		model.addAttribute("languageSuggestions", profileRepository.findDistinctLanguages());
 
-                return "edit-profile";
-        }
+		return "edit-profile";
+	}
 
 	@PostMapping("/edit")
 	public String updateProfile(@AuthenticationPrincipal OidcUser oidcUser,

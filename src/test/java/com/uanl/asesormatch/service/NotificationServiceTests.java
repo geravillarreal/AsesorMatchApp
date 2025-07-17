@@ -1,3 +1,5 @@
+package com.uanl.asesormatch.service;
+
 import com.uanl.asesormatch.entity.Notification;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.Role;
@@ -14,51 +16,51 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class NotificationServiceTests {
-    @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private NotificationRepository notificationRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    private NotificationService notificationService;
+	private NotificationService notificationService;
 
-    @BeforeEach
-    void setUp() {
-        notificationService = new NotificationService(notificationRepository);
-    }
+	@BeforeEach
+	void setUp() {
+		notificationService = new NotificationService(notificationRepository);
+	}
 
-    @Test
-    void notifyPersistsNotification() {
-        User user = new User();
-        user.setFullName("User Test");
-        user.setEmail("user@test.com");
-        user.setRole(Role.STUDENT);
-        userRepository.save(user);
+	@Test
+	void notifyPersistsNotification() {
+		User user = new User();
+		user.setFullName("User Test");
+		user.setEmail("user@test.com");
+		user.setRole(Role.STUDENT);
+		userRepository.save(user);
 
-        notificationService.notify(user, "Hello");
+		notificationService.notify(user, "Hello");
 
-        List<Notification> list = notificationRepository.findByUserOrderByCreatedAtDesc(user);
-        assertEquals(1, list.size());
-        Notification n = list.get(0);
-        assertEquals("Hello", n.getMessage());
-        assertFalse(n.isRead());
-        assertNotNull(n.getCreatedAt());
-        assertEquals(user.getId(), n.getUser().getId());
-    }
+		List<Notification> list = notificationRepository.findByUserOrderByCreatedAtDesc(user);
+		assertEquals(1, list.size());
+		Notification n = list.get(0);
+		assertEquals("Hello", n.getMessage());
+		assertFalse(n.isRead());
+		assertNotNull(n.getCreatedAt());
+		assertEquals(user.getId(), n.getUser().getId());
+	}
 
-    @Test
-    void getNotificationsForReturnsDescending() {
-        User user = new User();
-        user.setFullName("User Test");
-        user.setEmail("user@test.com");
-        user.setRole(Role.STUDENT);
-        userRepository.save(user);
+	@Test
+	void getNotificationsForReturnsDescending() {
+		User user = new User();
+		user.setFullName("User Test");
+		user.setEmail("user@test.com");
+		user.setRole(Role.STUDENT);
+		userRepository.save(user);
 
-        notificationService.notify(user, "First");
-        notificationService.notify(user, "Second");
+		notificationService.notify(user, "First");
+		notificationService.notify(user, "Second");
 
-        List<Notification> list = notificationService.getNotificationsFor(user);
-        assertEquals(2, list.size());
-        assertEquals("Second", list.get(0).getMessage());
-        assertEquals("First", list.get(1).getMessage());
-    }
+		List<Notification> list = notificationService.getNotificationsFor(user);
+		assertEquals(2, list.size());
+		assertEquals("Second", list.get(0).getMessage());
+		assertEquals("First", list.get(1).getMessage());
+	}
 }

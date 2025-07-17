@@ -36,9 +36,9 @@ public class User {
 	private String faculty;
 
 	private LocalDateTime lastLogin;
-	
+
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Profile profile;
+	private Profile profile;
 
 	public Long getId() {
 		return id;

@@ -7,7 +7,6 @@ import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
-import com.uanl.asesormatch.service.NotificationService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,18 +17,18 @@ import java.util.Map;
 @Service
 public class MatchingService {
 
-    private final MatchRepository matchRepository;
-    private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
-    private final NotificationService notificationService;
+	private final MatchRepository matchRepository;
+	private final UserRepository userRepository;
+	private final ProjectRepository projectRepository;
+	private final NotificationService notificationService;
 
-    public MatchingService(MatchRepository matchRepository, UserRepository userRepository,
-                          ProjectRepository projectRepository, NotificationService notificationService) {
-        this.matchRepository = matchRepository;
-        this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
-        this.notificationService = notificationService;
-    }
+	public MatchingService(MatchRepository matchRepository, UserRepository userRepository,
+			ProjectRepository projectRepository, NotificationService notificationService) {
+		this.matchRepository = matchRepository;
+		this.userRepository = userRepository;
+		this.projectRepository = projectRepository;
+		this.notificationService = notificationService;
+	}
 
 	public List<Match> createMatches(User student, List<Map<String, Object>> recommendations) {
 		List<Match> matches = new ArrayList<>();
@@ -63,56 +62,54 @@ public class MatchingService {
 		return matchRepository.findByStudent(student);
 	}
 
-        public void updateMatchStatus(Long matchId, MatchStatus status) {
-                var matchOpt = matchRepository.findById(matchId);
-                matchOpt.ifPresent(m -> {
-                        m.setStatus(status);
-                        matchRepository.save(m);
+	public void updateMatchStatus(Long matchId, MatchStatus status) {
+		var matchOpt = matchRepository.findById(matchId);
+		matchOpt.ifPresent(m -> {
+			m.setStatus(status);
+			matchRepository.save(m);
 
-                        if (status == MatchStatus.ACCEPTED) {
-                                // Assign first unassigned project from student to advisor
-                                var projects = projectRepository.findByStudent(m.getStudent());
-                                for (var p : projects) {
-                                        if (p.getAdvisor() == null) {
-                                                p.setAdvisor(m.getAdvisor());
-                                                p.setStatus(ProjectStatus.IN_PROGRESS);
-                                                projectRepository.save(p);
-                                                break;
-                                        }
-                                }
+			if (status == MatchStatus.ACCEPTED) {
+				// Assign first unassigned project from student to advisor
+				var projects = projectRepository.findByStudent(m.getStudent());
+				for (var p : projects) {
+					if (p.getAdvisor() == null) {
+						p.setAdvisor(m.getAdvisor());
+						p.setStatus(ProjectStatus.IN_PROGRESS);
+						projectRepository.save(p);
+						break;
+					}
+				}
 
-                                // Cancel other matches for this student
-                                var allMatches = matchRepository.findByStudent(m.getStudent());
-                                for (var other : allMatches) {
-                                        if (!other.getId().equals(m.getId()) && other.getStatus() != MatchStatus.REJECTED) {
-                                                other.setStatus(MatchStatus.REJECTED);
-                                                matchRepository.save(other);
-                                        }
-                                }
+				// Cancel other matches for this student
+				var allMatches = matchRepository.findByStudent(m.getStudent());
+				for (var other : allMatches) {
+					if (!other.getId().equals(m.getId()) && other.getStatus() != MatchStatus.REJECTED) {
+						other.setStatus(MatchStatus.REJECTED);
+						matchRepository.save(other);
+					}
+				}
 
-                                String msg = "El maestro " + m.getAdvisor().getFullName()
-                                                + " aprob\u00F3 ser tu tutor.";
-                                notificationService.notify(m.getStudent(), msg);
-                        } else if (status == MatchStatus.REJECTED) {
-                                String msg = "El maestro " + m.getAdvisor().getFullName()
-                                                + " no acept\u00F3 ser tu tutor.";
-                                notificationService.notify(m.getStudent(), msg);
-                        }
-                });
-        }
+				String msg = "El maestro " + m.getAdvisor().getFullName() + " aprob\u00F3 ser tu tutor.";
+				notificationService.notify(m.getStudent(), msg);
+			} else if (status == MatchStatus.REJECTED) {
+				String msg = "El maestro " + m.getAdvisor().getFullName() + " no acept\u00F3 ser tu tutor.";
+				notificationService.notify(m.getStudent(), msg);
+			}
+		});
+	}
 
-        public void requestMatch(Long studentId, Long advisorId, Double score) {
-                User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
-                User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
+	public void requestMatch(Long studentId, Long advisorId, Double score) {
+		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
+		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
 
-                boolean alreadyAssigned = matchRepository.existsByStudentIdAndStatus(studentId, MatchStatus.ACCEPTED);
-                if (alreadyAssigned) {
-                        throw new IllegalStateException("student already has an accepted match");
-                }
+		boolean alreadyAssigned = matchRepository.existsByStudentIdAndStatus(studentId, MatchStatus.ACCEPTED);
+		if (alreadyAssigned) {
+			throw new IllegalStateException("student already has an accepted match");
+		}
 
-                Match match = new Match();
-                match.setStudent(student);
-                match.setAdvisor(advisor);
+		Match match = new Match();
+		match.setStudent(student);
+		match.setAdvisor(advisor);
 		match.setCompatibilityScore(score);
 		match.setStatus(MatchStatus.PENDING);
 		match.setCreatedAt(LocalDateTime.now());

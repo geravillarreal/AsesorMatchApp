@@ -1,3 +1,5 @@
+package com.uanl.asesormatch.service;
+
 import com.uanl.asesormatch.dto.AdvisorProfileDTO;
 import com.uanl.asesormatch.entity.Profile;
 import com.uanl.asesormatch.entity.User;
@@ -14,47 +16,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class AdvisorServiceTests {
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    private AdvisorService advisorService;
+	private AdvisorService advisorService;
 
-    @BeforeEach
-    void setUp() {
-        advisorService = new AdvisorService(userRepository);
-    }
+	@BeforeEach
+	void setUp() {
+		advisorService = new AdvisorService(userRepository);
+	}
 
-    @Test
-    void getProfileReturnsAdvisorInfo() {
-        User advisor = new User();
-        advisor.setFullName("Advisor Test");
-        advisor.setEmail("advisor@test.com");
-        advisor.setFaculty("Science");
-        advisor.setRole(Role.ADVISOR);
+	@Test
+	void getProfileReturnsAdvisorInfo() {
+		User advisor = new User();
+		advisor.setFullName("Advisor Test");
+		advisor.setEmail("advisor@test.com");
+		advisor.setFaculty("Science");
+		advisor.setRole(Role.ADVISOR);
 
-        Profile profile = new Profile();
-        profile.setLevel("PhD");
-        profile.setUser(advisor);
-        advisor.setProfile(profile);
+		Profile profile = new Profile();
+		profile.setLevel("PhD");
+		profile.setUser(advisor);
+		advisor.setProfile(profile);
 
-        userRepository.save(advisor);
+		userRepository.save(advisor);
 
-        Optional<AdvisorProfileDTO> opt = advisorService.getProfile(advisor.getId());
-        assertTrue(opt.isPresent());
-        AdvisorProfileDTO dto = opt.get();
-        assertEquals("Advisor Test", dto.fullName());
-        assertNotNull(dto.profile());
-        assertEquals("PhD", dto.profile().getLevel());
-    }
+		Optional<AdvisorProfileDTO> opt = advisorService.getProfile(advisor.getId());
+		assertTrue(opt.isPresent());
+		AdvisorProfileDTO dto = opt.get();
+		assertEquals("Advisor Test", dto.fullName());
+		assertNotNull(dto.profile());
+		assertEquals("PhD", dto.profile().getLevel());
+	}
 
-    @Test
-    void getProfileReturnsEmptyForNonAdvisor() {
-        User student = new User();
-        student.setFullName("Student");
-        student.setEmail("student@test.com");
-        student.setRole(Role.STUDENT);
-        userRepository.save(student);
+	@Test
+	void getProfileReturnsEmptyForNonAdvisor() {
+		User student = new User();
+		student.setFullName("Student");
+		student.setEmail("student@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-        assertTrue(advisorService.getProfile(student.getId()).isEmpty());
-    }
+		assertTrue(advisorService.getProfile(student.getId()).isEmpty());
+	}
 }
