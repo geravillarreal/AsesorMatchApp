@@ -56,19 +56,21 @@
                                                         th:data-student-id="${match.student.id}" title="View profile">
                                                         <i class="bi bi-eye"></i>
                                                 </button>
-                                                <form th:action="@{/match/decision}" method="post"
-                                                        style="display: inline;">
-                                                        <input type="hidden" name="matchId" th:value="${match.id}" /> <input
-                                                                type="hidden" name="action" value="ACCEPTED" />
+                                                <form th:action="@{/match/decision}" method="post" style="display: inline;">
+                                                        <input type="hidden" name="matchId" th:value="${match.id}" />
+                                                        <input type="hidden" name="action" value="ACCEPTED" />
                                                         <button type="submit" class="btn btn-success btn-sm"
                                                                 th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Accept</button>
                                                 </form>
-                                                <form th:action="@{/match/decision}" method="post"
-                                                        style="display: inline;">
-                                                        <input type="hidden" name="matchId" th:value="${match.id}" /> <input
-                                                                type="hidden" name="action" value="REJECTED" />
+                                                <form th:action="@{/match/decision}" method="post" style="display: inline;">
+                                                        <input type="hidden" name="matchId" th:value="${match.id}" />
+                                                        <input type="hidden" name="action" value="REJECTED" />
                                                         <button type="submit" class="btn btn-danger btn-sm"
                                                                 th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Reject</button>
+                                                </form>
+                                                <form th:if="${match.status == T(com.uanl.asesormatch.enums.MatchStatus).ACCEPTED}" th:action="@{/project/complete}" method="post" style="display: inline;">
+                                                        <input type="hidden" name="matchId" th:value="${match.id}" />
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Completado</button>
                                                 </form>
                                         </td>
 
@@ -76,24 +78,42 @@
 			</tbody>
 		</table>
 		<h4 class="mt-5">Projects Assigned</h4>
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Student</th>
-					<th>Status</th>
-					<th>Start Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="project : ${projects}">
-					<td th:text="${project.title}">Project Title</td>
-					<td th:text="${project.student.fullName}">Student</td>
-					<td th:text="${project.status}">IN_PROGRESS</td>
+                <table class="table table-hover">
+                        <thead>
+                                <tr>
+                                        <th>Title</th>
+                                        <th>Student</th>
+                                        <th>Status</th>
+                                        <th>Start Date</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr th:each="project : ${projects}">
+                                        <td th:text="${project.title}">Project Title</td>
+                                        <td th:text="${project.student.fullName}">Student</td>
+                                        <td th:text="${project.status}">IN_PROGRESS</td>
                                         <td th:text="${#temporals.format(project.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-				</tr>
-			</tbody>
-		</table>
+                                </tr>
+                        </tbody>
+                </table>
+
+                <h4 class="mt-5">Proyectos completados con los estudiantes</h4>
+                <table class="table table-hover">
+                        <thead>
+                                <tr>
+                                        <th>Title</th>
+                                        <th>Student</th>
+                                        <th>Completed On</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr th:each="p : ${completedProjects}">
+                                        <td th:text="${p.title}">Project Title</td>
+                                        <td th:text="${p.student.fullName}">Student</td>
+                                        <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
+                                </tr>
+                        </tbody>
+                </table>
                 <div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
         </div>
         <script>

@@ -71,9 +71,9 @@ public class ProjectController {
 		return "redirect:/advisor-dashboard";
 	}
 	
-	@PostMapping("/reject")
-	public String rejectProject(@AuthenticationPrincipal OidcUser oidcUser,
-	                            @RequestParam Long projectId) {
+        @PostMapping("/reject")
+        public String rejectProject(@AuthenticationPrincipal OidcUser oidcUser,
+                                    @RequestParam Long projectId) {
 
 	    User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 	    Project project = projectRepository.findById(projectId).orElseThrow();
@@ -87,6 +87,19 @@ public class ProjectController {
 	        projectRepository.save(project);
 	    }
 
-	    return "redirect:/advisor-dashboard";
-	}
+            return "redirect:/advisor-dashboard";
+        }
+
+        @PostMapping("/complete")
+        public String completeProject(@RequestParam Long matchId) {
+                var match = matchRepository.findById(matchId).orElseThrow();
+                var optProject = projectRepository.findByStudentAndAdvisorAndStatus(
+                                match.getStudent(), match.getAdvisor(), ProjectStatus.IN_PROGRESS);
+                optProject.ifPresent(p -> {
+                        p.setStatus(ProjectStatus.COMPLETED);
+                        projectRepository.save(p);
+                });
+
+                return "redirect:/advisor-dashboard";
+        }
 }
