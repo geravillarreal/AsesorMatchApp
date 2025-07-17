@@ -61,14 +61,14 @@
                                                         <input type="hidden" name="matchId" th:value="${match.id}" /> <input
                                                                 type="hidden" name="action" value="ACCEPTED" />
                                                         <button type="submit" class="btn btn-success btn-sm"
-                                                                th:disabled="${match.status != 'PENDING'}">Accept</button>
+                                                                th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Accept</button>
                                                 </form>
                                                 <form th:action="@{/match/decision}" method="post"
                                                         style="display: inline;">
                                                         <input type="hidden" name="matchId" th:value="${match.id}" /> <input
                                                                 type="hidden" name="action" value="REJECTED" />
                                                         <button type="submit" class="btn btn-danger btn-sm"
-                                                                th:disabled="${match.status != 'PENDING'}">Reject</button>
+                                                                th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Reject</button>
                                                 </form>
                                         </td>
 
