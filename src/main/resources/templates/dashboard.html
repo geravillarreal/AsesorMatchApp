@@ -154,7 +154,7 @@
                 return '<p>No results found.</p>';
             }
 
-            const hasAboveHalf = recs.some(r => r.score > 0.50);
+            const hasAboveTen = recs.some(r => r.score > 0.10);
 
             const rows = recs.map(r => {
                 const percent  = Math.round(r.score * 100);
@@ -188,7 +188,7 @@
                     <tbody>${rows}</tbody>
                 </table>`;
 
-            if (!hasAboveHalf) {
+            if (!hasAboveTen) {
                 return `<div class="alert alert-warning">Por ahora no pudimos encontrar un maestro en base a tu perfil</div>` + table;
             }
             return table;
