@@ -84,6 +84,10 @@ public class MatchingService {
                                 String msg = "El maestro " + m.getAdvisor().getFullName()
                                                 + " aprob\u00F3 ser tu tutor.";
                                 notificationService.notify(m.getStudent(), msg);
+                        } else if (status == MatchStatus.REJECTED) {
+                                String msg = "El maestro " + m.getAdvisor().getFullName()
+                                                + " no acept\u00F3 ser tu tutor.";
+                                notificationService.notify(m.getStudent(), msg);
                         }
                 });
         }

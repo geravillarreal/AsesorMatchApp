@@ -67,4 +67,36 @@ class MatchingServiceTests {
         assertEquals(score, match.getCompatibilityScore());
         assertEquals(MatchStatus.PENDING, match.getStatus());
     }
+
+    @Test
+    void updateMatchStatusRejectedNotifiesStudent() {
+        User student = new User();
+        student.setFullName("Student Test");
+        student.setEmail("student@test.com");
+        student.setRole(Role.STUDENT);
+        userRepository.save(student);
+
+        User advisor = new User();
+        advisor.setFullName("Advisor Test");
+        advisor.setEmail("advisor@test.com");
+        advisor.setRole(Role.ADVISOR);
+        userRepository.save(advisor);
+
+        Match match = new Match();
+        match.setStudent(student);
+        match.setAdvisor(advisor);
+        match.setCompatibilityScore(0.5);
+        match.setStatus(MatchStatus.PENDING);
+        matchRepository.save(match);
+
+        matchingService.updateMatchStatus(match.getId(), MatchStatus.REJECTED);
+
+        Match updated = matchRepository.findById(match.getId()).orElseThrow();
+        assertEquals(MatchStatus.REJECTED, updated.getStatus());
+
+        var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
+        assertEquals(1, notifications.size());
+        String msg = notifications.get(0).getMessage();
+        assertEquals("El maestro " + advisor.getFullName() + " no acept\u00F3 ser tu tutor.", msg);
+    }
 }
