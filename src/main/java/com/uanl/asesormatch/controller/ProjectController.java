@@ -101,8 +101,11 @@ public class ProjectController {
                 optProject.ifPresent(p -> {
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
-                        String msg = "Tu proyecto '" + p.getTitle() + "' fue marcado como completado. Por favor da tu feedback.";
-                        notificationService.notify(match.getStudent(), msg + " /dashboard?feedbackMatchId=" + matchId);
+                        String url = "/dashboard?feedbackMatchId=" + matchId;
+                        String msg = "Tu proyecto '" + p.getTitle()
+                                        + "' fue marcado como completado. Por favor da tu feedback. <a href='"
+                                        + url + "'>aquí</a>";
+                        notificationService.notify(match.getStudent(), msg);
                 });
 
                 return "redirect:/advisor-dashboard?feedbackMatchId=" + matchId;
