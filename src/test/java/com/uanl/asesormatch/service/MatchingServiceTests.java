@@ -5,7 +5,10 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.MatchStatus;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.MatchRepository;
+import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.repository.NotificationRepository;
+import com.uanl.asesormatch.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,18 @@ class MatchingServiceTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     private MatchingService matchingService;
 
     @BeforeEach
     void setUp() {
-        matchingService = new MatchingService(matchRepository, userRepository);
+        NotificationService notificationService = new NotificationService(notificationRepository);
+        matchingService = new MatchingService(matchRepository, userRepository, projectRepository, notificationService);
     }
 
     @Test
