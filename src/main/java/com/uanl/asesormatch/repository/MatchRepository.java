@@ -13,9 +13,11 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
 	boolean existsByStudentIdAndAdvisorIdAndStatus(Long studentId, Long advisorId, MatchStatus status);
 	
-	boolean existsByStudentIdAndAdvisorId(Long studentId, Long advisorId);
+        boolean existsByStudentIdAndAdvisorId(Long studentId, Long advisorId);
 
-	List<Match> findByAdvisor(User advisor);
+        List<Match> findByAdvisor(User advisor);
 
-	List<Match> findByAdvisorAndStatus(User advisor, MatchStatus accepted);
+        List<Match> findByAdvisorAndStatus(User advisor, MatchStatus accepted);
+
+        boolean existsByStudentIdAndStatus(Long studentId, MatchStatus status);
 }

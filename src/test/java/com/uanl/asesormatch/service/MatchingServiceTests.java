@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 class MatchingServiceTests {
@@ -146,5 +147,36 @@ class MatchingServiceTests {
         assertEquals(1, notifications.size());
         String msg = notifications.get(0).getMessage();
         assertEquals("El maestro " + advisor1.getFullName() + " aprob\u00F3 ser tu tutor.", msg);
+    }
+
+    @Test
+    void requestMatchFailsIfAcceptedMatchExists() {
+        User student = new User();
+        student.setFullName("Student Test");
+        student.setEmail("student2@test.com");
+        student.setRole(Role.STUDENT);
+        userRepository.save(student);
+
+        User advisor1 = new User();
+        advisor1.setFullName("Advisor One");
+        advisor1.setEmail("advisor1@test.com");
+        advisor1.setRole(Role.ADVISOR);
+        userRepository.save(advisor1);
+
+        User advisor2 = new User();
+        advisor2.setFullName("Advisor Two");
+        advisor2.setEmail("advisor2@test.com");
+        advisor2.setRole(Role.ADVISOR);
+        userRepository.save(advisor2);
+
+        Match match = new Match();
+        match.setStudent(student);
+        match.setAdvisor(advisor1);
+        match.setCompatibilityScore(0.9);
+        match.setStatus(MatchStatus.ACCEPTED);
+        matchRepository.save(match);
+
+        assertThrows(IllegalStateException.class,
+                () -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
     }
 }

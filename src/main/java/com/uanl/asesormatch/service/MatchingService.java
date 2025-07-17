@@ -101,13 +101,18 @@ public class MatchingService {
                 });
         }
 
-	public void requestMatch(Long studentId, Long advisorId, Double score) {
-		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
-		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
+        public void requestMatch(Long studentId, Long advisorId, Double score) {
+                User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
+                User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
 
-		Match match = new Match();
-		match.setStudent(student);
-		match.setAdvisor(advisor);
+                boolean alreadyAssigned = matchRepository.existsByStudentIdAndStatus(studentId, MatchStatus.ACCEPTED);
+                if (alreadyAssigned) {
+                        throw new IllegalStateException("student already has an accepted match");
+                }
+
+                Match match = new Match();
+                match.setStudent(student);
+                match.setAdvisor(advisor);
 		match.setCompatibilityScore(score);
 		match.setStatus(MatchStatus.PENDING);
 		match.setCreatedAt(LocalDateTime.now());
