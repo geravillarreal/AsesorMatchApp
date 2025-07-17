@@ -1,6 +1,7 @@
 package com.uanl.asesormatch.controller.advisor;
 
 import com.uanl.asesormatch.enums.ProjectStatus;
+import com.uanl.asesormatch.enums.MatchStatus;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
@@ -36,12 +37,25 @@ public class AdvisorDashboardController {
         int matchCount = matchRepository.findByAdvisor(advisor).size();
         int projectCount = projectRepository.findByAdvisor(advisor).size();
 
+        var matches = matchRepository.findByAdvisor(advisor).stream()
+                .filter(m -> {
+                        if (m.getStatus() == MatchStatus.ACCEPTED) {
+                                return projectRepository.findByStudentAndAdvisorAndStatus(
+                                                m.getStudent(), m.getAdvisor(), ProjectStatus.COMPLETED)
+                                                .isEmpty();
+                        }
+                        return true;
+                }).toList();
+
+        var completedProjects = projectRepository.findByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
+
         model.addAttribute("matchCount", matchCount);
         model.addAttribute("projectCount", projectCount);
         model.addAttribute("completedProjectCount", completedProjectCount);
         model.addAttribute("advisor", advisor);
-        model.addAttribute("matches", matchRepository.findByAdvisor(advisor));
+        model.addAttribute("matches", matches);
         model.addAttribute("projects", projectRepository.findByAdvisor(advisor));
+        model.addAttribute("completedProjects", completedProjects);
 
         return "advisor-dashboard";
     }
