@@ -10,13 +10,14 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) 
     private User user;
 
     private String message;
 
     private LocalDateTime createdAt;
 
+    @Column(name = "is_read")  
     private boolean read;
 
     public Long getId() {
