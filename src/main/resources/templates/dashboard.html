@@ -154,9 +154,14 @@
                 return '<p>No results found.</p>';
             }
 
-            const hasAboveTen = recs.some(r => r.score > 0.10);
+            const filtered = recs.filter(r => r.score > 0);
+            if (!filtered.length) {
+                return '<p>No results found.</p>';
+            }
 
-            const rows = recs.map(r => {
+            const hasAboveTen = filtered.some(r => r.score > 0.10);
+
+            const rows = filtered.map(r => {
                 const percent  = Math.round(r.score * 100);
                 const badge    = r.score > 0.70 ?
                     ' <span class="badge bg-success ms-2">Este maestro es perfecto para ti</span>' : '';
