@@ -14,6 +14,8 @@ import com.uanl.asesormatch.service.MatchingService;
 import com.uanl.asesormatch.service.NotificationService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -43,10 +45,10 @@ public class DashboardController {
 
         @GetMapping("/api/recommendations")
         @ResponseBody
-        public java.util.Map<String, List<RecommendationDTO>> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
+        public Map<String, List<RecommendationDTO>> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
                 User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
-                java.util.Map<String, List<RecommendationDTO>> result = new java.util.HashMap<>();
+                Map<String, List<RecommendationDTO>> result = new HashMap<>();
                 if (user.getProfile() != null) {
                         List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
                         result.put("recommendations", recommendations);

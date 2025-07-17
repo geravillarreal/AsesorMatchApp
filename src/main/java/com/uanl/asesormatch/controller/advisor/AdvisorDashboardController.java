@@ -29,8 +29,7 @@ public class AdvisorDashboardController {
 
     @GetMapping("/advisor-dashboard")
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-        //User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
-        User advisor = userRepository.findByEmail("advisor.john.doe@uanl.edu.mx").orElseThrow();
+        User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
         long completedProjectCount =
                 projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
