@@ -60,15 +60,15 @@
                                                         <input type="hidden" name="matchId" th:value="${match.id}" />
                                                         <input type="hidden" name="action" value="ACCEPTED" />
                                                         <button type="submit" class="btn btn-success btn-sm"
-                                                                th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Accept</button>
+                                                                th:disabled="${match.status.name() != 'PENDING'}">Accept</button>
                                                 </form>
                                                 <form th:action="@{/match/decision}" method="post" style="display: inline;">
                                                         <input type="hidden" name="matchId" th:value="${match.id}" />
                                                         <input type="hidden" name="action" value="REJECTED" />
                                                         <button type="submit" class="btn btn-danger btn-sm"
-                                                                th:disabled="${match.status != T(com.uanl.asesormatch.enums.MatchStatus).PENDING}">Reject</button>
+                                                                th:disabled="${match.status.name() != 'PENDING'}">Reject</button>
                                                 </form>
-                                                <form th:if="${match.status == T(com.uanl.asesormatch.enums.MatchStatus).ACCEPTED}" th:action="@{/project/complete}" method="post" style="display: inline;">
+                                                <form th:if="${match.status.name() == 'ACCEPTED'}" th:action="@{/project/complete}" method="post" style="display: inline;">
                                                         <input type="hidden" name="matchId" th:value="${match.id}" />
                                                         <button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
                                                 </form>
