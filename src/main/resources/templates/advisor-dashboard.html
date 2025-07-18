@@ -232,6 +232,14 @@
         });
 
         const params = new URLSearchParams(window.location.search);
+        const feedbackModalEl = document.getElementById('feedbackModal');
+        if (feedbackModalEl) {
+            feedbackModalEl.addEventListener('hidden.bs.modal', () => {
+                params.delete('feedbackMatchId');
+                const q = params.toString();
+                history.replaceState(null, '', window.location.pathname + (q ? '?' + q : ''));
+            });
+        }
         if (params.has('feedbackMatchId')) {
             const id = params.get('feedbackMatchId');
             document.getElementById('feedbackMatchId').value = id;
