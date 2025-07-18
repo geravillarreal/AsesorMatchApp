@@ -81,7 +81,26 @@
 
 				</tr>
 			</tbody>
-		</table>
+                </table>
+
+                <h4 class="mt-5">Latest Completed Matches</h4>
+                <table class="table table-striped">
+                        <thead>
+                                <tr>
+                                        <th>Student</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr th:each="m : ${latestCompletedMatches}">
+                                        <td th:text="${m.student.fullName}">Student Name</td>
+                                        <td th:text="${T(java.lang.Math).round(m.compatibilityScore * 100)} + '%'">0%</td>
+                                        <td th:text="${#temporals.format(m.createdAt, 'dd/MM/yyyy')}">date</td>
+                                </tr>
+                        </tbody>
+                </table>
+
                 <h4 class="mt-5">Projects Assigned</h4>
                 <table class="table table-hover">
                         <thead>
