@@ -5,6 +5,7 @@
 
 	<div class="container mt-4">
 		<h2 th:text="'Welcome, ' + ${advisor.fullName}">Advisor Name</h2>
+                <a th:href="@{/profile/{id}/edit(id=${advisor.id})}" class="btn btn-primary mt-3">Edit Profile</a>
 
 		<div class="row text-center my-4">
 			<div class="col-md-4 mb-3">
