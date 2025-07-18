@@ -26,7 +26,7 @@ public class StudentService {
         return userRepo.findById(id)
                 .filter(u -> u.getRole() == Role.STUDENT)
                 .map(u -> {
-                    List<ProjectDTO> projects = projectRepo.findByStudent(u).stream().map(p -> {
+                    List<ProjectDTO> projects = projectRepo.findByStudentAndDeletedFalse(u).stream().map(p -> {
                         ProjectDTO dto = new ProjectDTO();
                         dto.setId(p.getId());
                         dto.setTitle(p.getTitle());

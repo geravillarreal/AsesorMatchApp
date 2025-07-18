@@ -56,7 +56,7 @@ public class DashboardController {
                        List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
                        result.put("recommendations", recommendations);
 
-                       List<Project> studentProjects = projectRepository.findByStudent(user);
+                       List<Project> studentProjects = projectRepository.findByStudentAndDeletedFalse(user);
                        if (studentProjects != null) {
                                for (Project p : studentProjects) {
                                        if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
@@ -82,7 +82,7 @@ public class DashboardController {
 
 		Profile profile = user.getProfile();
 		List<Match> matchHistory = matchingService.getMatchesForStudent(user);
-		List<Project> studentProjects = projectRepository.findByStudent(user);
+                List<Project> studentProjects = projectRepository.findByStudentAndDeletedFalse(user);
 		var notifications = notificationService.getNotificationsFor(user);
 
 		model.addAttribute("user", user);
