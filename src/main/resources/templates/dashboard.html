@@ -196,7 +196,8 @@
 		<div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
 		<div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
 	</div>
-	<script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
         /* ------------- utils ---------------- */
         function buildProfileHTML(user) {
             const p = user.profile ?? {};
@@ -343,6 +344,7 @@
             document.getElementById('feedbackMatchId').value = params.get('feedbackMatchId');
             new bootstrap.Modal('#feedbackModal').show();
         }
+        });
         </script>
 </body>
 </html>
