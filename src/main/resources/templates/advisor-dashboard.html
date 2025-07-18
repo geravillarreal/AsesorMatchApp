@@ -233,8 +233,17 @@
 
         const params = new URLSearchParams(window.location.search);
         if (params.has('feedbackMatchId')) {
-            document.getElementById('feedbackMatchId').value = params.get('feedbackMatchId');
-            new bootstrap.Modal('#feedbackModal').show();
+            const id = params.get('feedbackMatchId');
+            document.getElementById('feedbackMatchId').value = id;
+            fetch(`/api/matches/${id}`)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data) {
+                        document.getElementById('feedbackOtherName').textContent = data.otherUserName;
+                        document.getElementById('feedbackProjectTitle').textContent = data.projectTitle;
+                    }
+                    new bootstrap.Modal('#feedbackModal').show();
+                });
         }
         });
         </script>
