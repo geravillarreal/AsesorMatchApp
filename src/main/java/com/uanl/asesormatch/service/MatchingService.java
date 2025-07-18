@@ -68,26 +68,15 @@ public class MatchingService {
 			m.setStatus(status);
 			matchRepository.save(m);
 
-			if (status == MatchStatus.ACCEPTED) {
-				// Assign first unassigned project from student to advisor
-				var projects = projectRepository.findByStudent(m.getStudent());
-				for (var p : projects) {
-					if (p.getAdvisor() == null) {
-						p.setAdvisor(m.getAdvisor());
-						p.setStatus(ProjectStatus.IN_PROGRESS);
-						projectRepository.save(p);
-						break;
-					}
-				}
-
-				// Cancel other matches for this student
-				var allMatches = matchRepository.findByStudent(m.getStudent());
-				for (var other : allMatches) {
-					if (!other.getId().equals(m.getId()) && other.getStatus() != MatchStatus.REJECTED) {
-						other.setStatus(MatchStatus.REJECTED);
-						matchRepository.save(other);
-					}
-				}
+                        if (status == MatchStatus.ACCEPTED) {
+                                // Cancel other matches for this student
+                                var allMatches = matchRepository.findByStudent(m.getStudent());
+                                for (var other : allMatches) {
+                                        if (!other.getId().equals(m.getId()) && other.getStatus() != MatchStatus.REJECTED) {
+                                                other.setStatus(MatchStatus.REJECTED);
+                                                matchRepository.save(other);
+                                        }
+                                }
 
 				String msg = "El maestro " + m.getAdvisor().getFullName() + " aprob\u00F3 ser tu tutor.";
 				notificationService.notify(m.getStudent(), msg);

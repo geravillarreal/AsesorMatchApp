@@ -62,14 +62,18 @@ public class ProjectController {
 		User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 		Project project = projectRepository.findById(projectId).orElseThrow();
 
-		boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(project.getStudent().getId(),
-				advisor.getId(), MatchStatus.ACCEPTED);
+                boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(
+                                project.getStudent().getId(), advisor.getId(), MatchStatus.ACCEPTED);
 
-		if (project.getAdvisor() == null && hasMatch) {
-			project.setAdvisor(advisor);
-			project.setStatus(ProjectStatus.IN_PROGRESS);
-			projectRepository.save(project);
-		}
+                boolean hasActive = projectRepository
+                                .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
+                                .isPresent();
+
+                if (project.getAdvisor() == null && hasMatch && !hasActive) {
+                        project.setAdvisor(advisor);
+                        project.setStatus(ProjectStatus.IN_PROGRESS);
+                        projectRepository.save(project);
+                }
 
 		return "redirect:/advisor-dashboard";
 	}

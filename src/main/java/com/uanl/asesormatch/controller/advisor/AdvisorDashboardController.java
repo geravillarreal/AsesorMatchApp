@@ -48,12 +48,35 @@ public class AdvisorDashboardController {
 
         var completedProjects = projectRepository.findByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
+        var assignedProjects = projectRepository.findByAdvisor(advisor).stream()
+                        .filter(p -> p.getStatus() != ProjectStatus.COMPLETED)
+                        .toList();
+
+        var acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED);
+        java.util.List<com.uanl.asesormatch.entity.Project> available = new java.util.ArrayList<>();
+        java.util.Set<Long> blocked = new java.util.HashSet<>();
+        for (var p : assignedProjects) {
+                if (p.getStatus() == ProjectStatus.IN_PROGRESS) {
+                        blocked.add(p.getStudent().getId());
+                }
+        }
+        for (var m : acceptedMatches) {
+                var studentProjects = projectRepository.findByStudent(m.getStudent());
+                for (var p : studentProjects) {
+                        if (p.getStatus() != ProjectStatus.COMPLETED && p.getAdvisor() == null) {
+                                available.add(p);
+                        }
+                }
+        }
+
         model.addAttribute("matchCount", matchCount);
         model.addAttribute("projectCount", projectCount);
         model.addAttribute("completedProjectCount", completedProjectCount);
         model.addAttribute("advisor", advisor);
         model.addAttribute("matches", matches);
-        model.addAttribute("projects", projectRepository.findByAdvisor(advisor));
+        model.addAttribute("projects", assignedProjects);
+        model.addAttribute("availableProjects", available);
+        model.addAttribute("blockedStudentIds", blocked);
         model.addAttribute("completedProjects", completedProjects);
 
         return "advisor-dashboard";
