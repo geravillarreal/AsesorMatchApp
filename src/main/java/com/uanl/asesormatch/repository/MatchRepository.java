@@ -19,5 +19,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
         List<Match> findByAdvisorAndStatus(User advisor, MatchStatus accepted);
 
+        List<Match> findTop5ByAdvisorAndStatusOrderByCreatedAtDesc(User advisor, MatchStatus status);
+
         boolean existsByStudentIdAndStatus(Long studentId, MatchStatus status);
 }

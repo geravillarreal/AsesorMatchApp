@@ -40,7 +40,10 @@ public class AdvisorDashboardController {
         int matchCount = matchRepository.findByAdvisor(advisor).size();
         int projectCount = projectRepository.findByAdvisor(advisor).size();
 
-        var matches = matchRepository.findByAdvisor(advisor);
+        var matches = matchRepository.findByAdvisor(advisor)
+                        .stream()
+                        .filter(m -> m.getStatus() != MatchStatus.COMPLETED)
+                        .toList();
         for (var m : matches) {
                 boolean noneActive = projectRepository
                                 .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,
@@ -48,6 +51,9 @@ public class AdvisorDashboardController {
                                 .isEmpty();
                 m.setAllProjectsCompleted(noneActive);
         }
+
+        var latestCompletedMatches = matchRepository
+                        .findTop5ByAdvisorAndStatusOrderByCreatedAtDesc(advisor, MatchStatus.COMPLETED);
 
         var completedProjects = projectRepository.findByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
@@ -82,6 +88,7 @@ public class AdvisorDashboardController {
         model.addAttribute("completedProjectCount", completedProjectCount);
         model.addAttribute("advisor", advisor);
         model.addAttribute("matches", matches);
+        model.addAttribute("latestCompletedMatches", latestCompletedMatches);
         model.addAttribute("projects", assignedProjects);
         model.addAttribute("availableProjects", available);
         model.addAttribute("blockedStudentIds", blocked);
