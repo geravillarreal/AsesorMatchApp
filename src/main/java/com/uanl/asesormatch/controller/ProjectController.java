@@ -112,17 +112,22 @@ public class ProjectController {
                                 .stream()
                                 .findFirst();
 
-                optProject.ifPresent(p -> {
+                Project completed = null;
+                if (optProject.isPresent()) {
+                        var p = optProject.get();
+                        completed = p;
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
-                        String url = "/dashboard?feedbackMatchId=" + matchId;
+                        String url = "/dashboard?feedbackProjectId=" + p.getId();
                         String msg = "Tu proyecto '" + p.getTitle()
                                         + "' fue marcado como completado. Por favor da tu feedback. <a href='"
                                         + url + "'>aquí</a>";
                         notificationService.notify(match.getStudent(), msg);
-                });
+                }
 
-                return "redirect:/advisor-dashboard?feedbackMatchId=" + matchId;
+                return completed != null ?
+                        "redirect:/advisor-dashboard?feedbackProjectId=" + completed.getId() :
+                        "redirect:/advisor-dashboard";
         }
 
         @PostMapping("/complete-project")
@@ -137,14 +142,15 @@ public class ProjectController {
                                         .filter(m -> m.getStudent().equals(project.getStudent()))
                                         .findFirst();
                         matchOpt.ifPresent(m -> {
-                                String url = "/dashboard?feedbackMatchId=" + m.getId();
+                                String url = "/dashboard?feedbackProjectId=" + project.getId();
                                 String msg = "Tu proyecto '" + project.getTitle()
                                                 + "' fue marcado como completado. Por favor da tu feedback. <a href='"
                                                 + url + "'>aquí</a>";
                                 notificationService.notify(m.getStudent(), msg);
                         });
-                        return matchOpt.map(m -> "redirect:/advisor-dashboard?feedbackMatchId=" + m.getId())
-                                        .orElse("redirect:/advisor-dashboard");
+                        return matchOpt.isPresent()
+                                ? "redirect:/advisor-dashboard?feedbackProjectId=" + project.getId()
+                                : "redirect:/advisor-dashboard";
                 }
 
                 return "redirect:/advisor-dashboard";

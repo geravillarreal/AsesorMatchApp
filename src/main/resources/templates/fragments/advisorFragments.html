@@ -89,8 +89,8 @@
 		<div class="modal fade" id="feedbackModal" tabindex="-1">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<form th:action="@{/feedback/submit}" method="post">
-                                                <input type="hidden" name="matchId" id="feedbackMatchId" th:value="${feedbackMatchId}" />
+                                        <form th:action="@{/feedback/submit}" method="post">
+                                                <input type="hidden" name="projectId" id="feedbackProjectId" th:value="${feedbackProjectId}" />
 						<div class="modal-header">
 							<h5 class="modal-title">Feedback</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -102,15 +102,11 @@
                                                                 <strong id="feedbackOtherName" th:text="${feedbackOtherName}"></strong>
                                                                 en el proyecto <strong id="feedbackProjectTitle" th:text="${feedbackProjectTitle}"></strong>?
                                                         </p>
-                                                        <div id="otherFeedback" class="border rounded p-2 mb-3 d-none">
-                                                                <h6 class="fw-bold mb-1" id="otherFeedbackName"></h6>
-                                                                <p class="mb-1"><strong>Rating:</strong> <span id="otherRating"></span></p>
-                                                                <p class="mb-0" id="otherComment"></p>
+                                                        <div id="otherFeedback" class="alert alert-info d-none">
+                                                                El otro usuario ya envió su feedback.
                                                         </div>
-                                                        <div id="myFeedbackDisplay" class="border rounded p-2 mb-3 d-none">
-                                                                <h6 class="fw-bold mb-1">Tu feedback</h6>
-                                                                <p class="mb-1"><strong>Rating:</strong> <span id="myRating"></span></p>
-                                                                <p class="mb-0" id="myComment"></p>
+                                                        <div id="myFeedbackDisplay" class="alert alert-success d-none">
+                                                                Gracias por enviar tu feedback.
                                                         </div>
                                                         <div id="myFeedbackForm">
                                                                 <div class="mb-3">
@@ -162,22 +158,17 @@
                 document.getElementById('feedbackProjectTitle').textContent = data.projectTitle;
 
                 const otherDiv = document.getElementById('otherFeedback');
-                if (data.otherRating !== null || data.otherComment) {
+                if (data.otherFeedbackGiven) {
                     otherDiv.classList.remove('d-none');
-                    document.getElementById('otherFeedbackName').textContent = data.otherUserName;
-                    document.getElementById('otherRating').textContent = data.otherRating ?? '';
-                    document.getElementById('otherComment').textContent = data.otherComment ?? '';
                 } else {
                     otherDiv.classList.add('d-none');
                 }
 
                 const form = document.getElementById('myFeedbackForm');
                 const display = document.getElementById('myFeedbackDisplay');
-                if (data.myRating !== null || data.myComment) {
+                if (data.myFeedbackGiven) {
                     form.classList.add('d-none');
                     display.classList.remove('d-none');
-                    document.getElementById('myRating').textContent = data.myRating ?? '';
-                    document.getElementById('myComment').textContent = data.myComment ?? '';
                 } else {
                     form.classList.remove('d-none');
                     display.classList.add('d-none');
