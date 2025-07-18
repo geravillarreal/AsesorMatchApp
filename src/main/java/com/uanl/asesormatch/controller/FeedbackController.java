@@ -1,11 +1,11 @@
 package com.uanl.asesormatch.controller;
 
-import com.uanl.asesormatch.entity.Match;
+import com.uanl.asesormatch.entity.Project;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.entity.Feedback;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.FeedbackRepository;
-import com.uanl.asesormatch.repository.MatchRepository;
+import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.repository.NotificationRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/feedback")
 public class FeedbackController {
-    private final MatchRepository matchRepo;
+    private final ProjectRepository projectRepo;
     private final FeedbackRepository feedbackRepo;
     private final UserRepository userRepo;
     private final NotificationRepository notificationRepo;
 
-    public FeedbackController(MatchRepository matchRepo, FeedbackRepository feedbackRepo, UserRepository userRepo,
+    public FeedbackController(ProjectRepository projectRepo, FeedbackRepository feedbackRepo, UserRepository userRepo,
                               NotificationRepository notificationRepo) {
-        this.matchRepo = matchRepo;
+        this.projectRepo = projectRepo;
         this.feedbackRepo = feedbackRepo;
         this.userRepo = userRepo;
         this.notificationRepo = notificationRepo;
@@ -33,25 +33,25 @@ public class FeedbackController {
 
     @PostMapping("/submit")
     public String submitFeedback(@AuthenticationPrincipal OidcUser oidcUser,
-                                 @RequestParam Long matchId,
+                                 @RequestParam Long projectId,
                                  @RequestParam Integer rating,
                                  @RequestParam String comment) {
         User user = userRepo.findByEmail(oidcUser.getEmail()).orElseThrow();
-        Match match = matchRepo.findById(matchId).orElseThrow();
+        Project project = projectRepo.findById(projectId).orElseThrow();
 
-        if (!feedbackRepo.existsByMatchAndFromUser(match, user)) {
+        if (!feedbackRepo.existsByProjectAndFromUser(project, user)) {
             Feedback fb = new Feedback();
-            fb.setMatch(match);
+            fb.setProject(project);
             fb.setFromUser(user);
-            fb.setToUser(user.getId().equals(match.getStudent().getId()) ? match.getAdvisor() : match.getStudent());
+            fb.setToUser(user.getId().equals(project.getStudent().getId()) ? project.getAdvisor() : project.getStudent());
             fb.setCreatedAt(java.time.LocalDateTime.now());
             fb.setRating(rating);
             fb.setComment(comment);
             feedbackRepo.save(fb);
         }
 
-        String matchIdToken = "feedbackMatchId=" + matchId;
-        var notifications = notificationRepo.findByUserAndMessageContaining(user, matchIdToken);
+        String projectIdToken = "feedbackProjectId=" + projectId;
+        var notifications = notificationRepo.findByUserAndMessageContaining(user, projectIdToken);
         if (!notifications.isEmpty()) {
             notificationRepo.deleteAll(notifications);
         }

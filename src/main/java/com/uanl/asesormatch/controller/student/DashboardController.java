@@ -78,7 +78,7 @@ public class DashboardController {
 
 	@GetMapping("/dashboard")
         public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
-                                @RequestParam(required = false) Long feedbackMatchId) {
+                                @RequestParam(required = false) Long feedbackProjectId) {
                 User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
@@ -90,20 +90,14 @@ public class DashboardController {
                 List<Project> studentProjects = projectRepository.findByStudentAndDeletedFalse(user);
                 var notifications = notificationService.getNotificationsFor(user);
 
-                if (feedbackMatchId != null) {
-                        var matchOpt = matchRepository.findById(feedbackMatchId);
-                        if (matchOpt.isPresent() && matchOpt.get().getStudent().getId().equals(user.getId())) {
-                                var match = matchOpt.get();
-                                var title = projectRepository
-                                                .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(),
-                                                                ProjectStatus.COMPLETED)
-                                                .stream()
-                                                .findFirst()
-                                                .map(Project::getTitle)
-                                                .orElse("");
-                                model.addAttribute("feedbackMatchId", feedbackMatchId);
-                                model.addAttribute("feedbackOtherName", match.getAdvisor().getFullName());
-                                model.addAttribute("feedbackProjectTitle", title);
+                if (feedbackProjectId != null) {
+                        var projectOpt = projectRepository.findById(feedbackProjectId);
+                        if (projectOpt.isPresent() && projectOpt.get().getStudent().getId().equals(user.getId())) {
+                                var project = projectOpt.get();
+                                model.addAttribute("feedbackProjectId", feedbackProjectId);
+                                model.addAttribute("feedbackOtherName",
+                                        project.getAdvisor() != null ? project.getAdvisor().getFullName() : "");
+                                model.addAttribute("feedbackProjectTitle", project.getTitle());
                         }
                 }
 

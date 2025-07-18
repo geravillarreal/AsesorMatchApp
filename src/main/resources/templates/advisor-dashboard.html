@@ -250,15 +250,15 @@
         const feedbackModalEl = document.getElementById('feedbackModal');
         if (feedbackModalEl) {
             feedbackModalEl.addEventListener('hidden.bs.modal', () => {
-                params.delete('feedbackMatchId');
+                params.delete('feedbackProjectId');
                 const q = params.toString();
                 history.replaceState(null, '', window.location.pathname + (q ? '?' + q : ''));
             });
         }
-        if (params.has('feedbackMatchId')) {
-            const id = params.get('feedbackMatchId');
-            document.getElementById('feedbackMatchId').value = id;
-            fetch(`/api/matches/${id}`)
+        if (params.has('feedbackProjectId')) {
+            const id = params.get('feedbackProjectId');
+            document.getElementById('feedbackProjectId').value = id;
+            fetch(`/api/projects/${id}/feedback`)
                 .then(r => r.ok ? r.json() : null)
                 .then(data => {
                     if (data) {

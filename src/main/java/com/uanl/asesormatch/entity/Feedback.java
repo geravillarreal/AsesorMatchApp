@@ -12,7 +12,7 @@ public class Feedback {
     private Long id;
 
     @ManyToOne
-    private Match match;
+    private Project project;
 
     @ManyToOne
     private User fromUser;
@@ -35,12 +35,12 @@ public class Feedback {
         this.id = id;
     }
 
-    public Match getMatch() {
-        return match;
+    public Project getProject() {
+        return project;
     }
 
-    public void setMatch(Match match) {
-        this.match = match;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public User getFromUser() {

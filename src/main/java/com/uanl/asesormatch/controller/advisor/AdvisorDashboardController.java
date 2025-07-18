@@ -35,7 +35,7 @@ public class AdvisorDashboardController {
 
     @GetMapping("/advisor-dashboard")
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
-                                   @RequestParam(required = false) Long feedbackMatchId) {
+                                   @RequestParam(required = false) Long feedbackProjectId) {
         User advisor = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
         long completedProjectCount =
                 projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
@@ -86,20 +86,14 @@ public class AdvisorDashboardController {
                 }
         }
 
-        if (feedbackMatchId != null) {
-            var matchOpt = matchRepository.findById(feedbackMatchId);
-            if (matchOpt.isPresent() && matchOpt.get().getAdvisor().getId().equals(advisor.getId())) {
-                var match = matchOpt.get();
-                var title = projectRepository
-                                .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(),
-                                                ProjectStatus.COMPLETED)
-                                .stream()
-                                .findFirst()
-                                .map(Project::getTitle)
-                                .orElse("");
-                model.addAttribute("feedbackMatchId", feedbackMatchId);
-                model.addAttribute("feedbackOtherName", match.getStudent().getFullName());
-                model.addAttribute("feedbackProjectTitle", title);
+        if (feedbackProjectId != null) {
+            var projectOpt = projectRepository.findById(feedbackProjectId);
+            if (projectOpt.isPresent() && projectOpt.get().getAdvisor() != null &&
+                    projectOpt.get().getAdvisor().getId().equals(advisor.getId())) {
+                var project = projectOpt.get();
+                model.addAttribute("feedbackProjectId", feedbackProjectId);
+                model.addAttribute("feedbackOtherName", project.getStudent().getFullName());
+                model.addAttribute("feedbackProjectTitle", project.getTitle());
             }
         }
 
