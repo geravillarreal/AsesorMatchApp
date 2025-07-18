@@ -104,8 +104,12 @@ public class ProjectController {
         @PostMapping("/complete")
         public String completeProject(@RequestParam Long matchId) {
                 var match = matchRepository.findById(matchId).orElseThrow();
+                match.setStatus(MatchStatus.COMPLETED);
+                matchRepository.save(match);
+
                 var optProject = projectRepository.findByStudentAndAdvisorAndStatus(
                                 match.getStudent(), match.getAdvisor(), ProjectStatus.IN_PROGRESS);
+
                 optProject.ifPresent(p -> {
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
