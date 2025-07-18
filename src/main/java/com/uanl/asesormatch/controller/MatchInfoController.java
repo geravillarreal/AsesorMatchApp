@@ -40,7 +40,16 @@ public class MatchInfoController {
         if (match == null) {
             return ResponseEntity.notFound().build();
         }
-        User other = current.getId().equals(match.getStudent().getId()) ? match.getAdvisor() : match.getStudent();
+
+        // validate that the authenticated user belongs to the match
+        if (current.getRole() == Role.ADVISOR && !match.getAdvisor().getId().equals(current.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+        if (current.getRole() == Role.STUDENT && !match.getStudent().getId().equals(current.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        User other = current.getRole() == Role.ADVISOR ? match.getStudent() : match.getAdvisor();
         Project project = projectRepo
                 .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(), ProjectStatus.COMPLETED)
                 .stream()
