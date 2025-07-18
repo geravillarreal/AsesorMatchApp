@@ -43,31 +43,34 @@ public class DashboardController {
 		this.notificationService = notificationService;
 	}
 
-	@GetMapping("/api/recommendations")
-	@ResponseBody
-	public Map<String, List<RecommendationDTO>> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+       @GetMapping("/api/recommendations")
+       @ResponseBody
+       public Map<String, Object> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
+               User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
-		Map<String, List<RecommendationDTO>> result = new HashMap<>();
-		if (user.getProfile() != null) {
-			List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
-			result.put("recommendations", recommendations);
+               Map<String, Object> result = new HashMap<>();
+               boolean hasDraft = projectRepository.existsByStudentAndStatus(user, ProjectStatus.DRAFT);
+               result.put("noDraftProjects", !hasDraft);
 
-			List<Project> studentProjects = projectRepository.findByStudent(user);
-			if (studentProjects != null) {
-				for (Project p : studentProjects) {
-					if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
-						List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(user.getId());
-						List<RecommendationDTO> filtered = newRecs.stream().filter(rec -> !rec.getAdvisorId().toString()
-								.equals(p.getRejectedByAdvisor().getId().toString())).toList();
-						result.put("newRecommendations", filtered);
-						break;
-					}
-				}
-			}
-		}
-		return result;
-	}
+               if (hasDraft && user.getProfile() != null) {
+                       List<RecommendationDTO> recommendations = matchingEngineClient.getRecommendations(user.getId());
+                       result.put("recommendations", recommendations);
+
+                       List<Project> studentProjects = projectRepository.findByStudent(user);
+                       if (studentProjects != null) {
+                               for (Project p : studentProjects) {
+                                       if (p.getStatus() == ProjectStatus.REJECTED && p.getRejectedByAdvisor() != null) {
+                                               List<RecommendationDTO> newRecs = matchingEngineClient.getRecommendations(user.getId());
+                                               List<RecommendationDTO> filtered = newRecs.stream().filter(rec -> !rec.getAdvisorId().toString()
+                                                               .equals(p.getRejectedByAdvisor().getId().toString())).toList();
+                                               result.put("newRecommendations", filtered);
+                                               break;
+                                       }
+                               }
+                       }
+               }
+               return result;
+       }
 
 	@GetMapping("/dashboard")
 	public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {

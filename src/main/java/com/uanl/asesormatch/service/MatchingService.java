@@ -93,6 +93,11 @@ public class MatchingService {
                 User advisor = userRepository.findById(advisorId)
                                 .orElseThrow(() -> new IllegalArgumentException("advisor"));
 
+                boolean hasDraft = projectRepository.existsByStudentAndStatus(student, ProjectStatus.DRAFT);
+                if (!hasDraft) {
+                        throw new IllegalStateException("student has no draft projects");
+                }
+
                 boolean ongoingProject = projectRepository.existsByStudentAndStatus(student, ProjectStatus.IN_PROGRESS);
                 if (ongoingProject) {
                         throw new IllegalStateException("student already has an accepted match");
