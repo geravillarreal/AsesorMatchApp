@@ -7,6 +7,7 @@ import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.FeedbackRepository;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.repository.NotificationRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -20,11 +21,14 @@ public class FeedbackController {
     private final MatchRepository matchRepo;
     private final FeedbackRepository feedbackRepo;
     private final UserRepository userRepo;
+    private final NotificationRepository notificationRepo;
 
-    public FeedbackController(MatchRepository matchRepo, FeedbackRepository feedbackRepo, UserRepository userRepo) {
+    public FeedbackController(MatchRepository matchRepo, FeedbackRepository feedbackRepo, UserRepository userRepo,
+                              NotificationRepository notificationRepo) {
         this.matchRepo = matchRepo;
         this.feedbackRepo = feedbackRepo;
         this.userRepo = userRepo;
+        this.notificationRepo = notificationRepo;
     }
 
     @PostMapping("/submit")
@@ -42,6 +46,12 @@ public class FeedbackController {
             fb.setRating(rating);
             fb.setComment(comment);
             feedbackRepo.save(fb);
+        }
+
+        String matchIdToken = "feedbackMatchId=" + matchId;
+        var notifications = notificationRepo.findByUserAndMessageContaining(user, matchIdToken);
+        if (!notifications.isEmpty()) {
+            notificationRepo.deleteAll(notifications);
         }
 
         String redirect = user.getRole() == Role.ADVISOR ? "/advisor-dashboard" : "/dashboard";
