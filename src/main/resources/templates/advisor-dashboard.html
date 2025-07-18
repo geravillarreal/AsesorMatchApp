@@ -57,23 +57,23 @@
 							th:data-student-id="${match.student.id}" title="View profile">
 							<i class="bi bi-eye"></i>
 						</button>
-						<form th:action="@{/match/decision}" method="post"
-							style="display: inline;">
+                                                <form th:action="@{/match/decision}" method="post" class="decision-form"
+                                                        style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="ACCEPTED" />
 							<button type="submit" class="btn btn-success btn-sm"
 								th:disabled="${match.status.name() != 'PENDING'}">Accept</button>
 						</form>
-						<form th:action="@{/match/decision}" method="post"
-							style="display: inline;">
+                                                <form th:action="@{/match/decision}" method="post" class="decision-form"
+                                                        style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="REJECTED" />
 							<button type="submit" class="btn btn-danger btn-sm"
 								th:disabled="${match.status.name() != 'PENDING'}">Reject</button>
 						</form>
-						<form th:if="${match.status.name() == 'ACCEPTED'}"
-							th:action="@{/project/complete}" method="post"
-							style="display: inline;">
+                                                <form th:if="${match.status.name() == 'ACCEPTED' and match.allProjectsCompleted}"
+                                                        th:action="@{/project/complete}" method="post"
+                                                        style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" />
 							<button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
 						</form>
@@ -115,7 +115,12 @@
                                         <td th:text="${p.student.fullName}">Student</td>
                                         <td th:text="${p.status}">IN_PROGRESS</td>
                                         <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-                                        <td></td>
+                                        <td>
+                                                <form th:if="${p.status.name() == 'IN_PROGRESS'}" th:action="@{/project/complete-project}" method="post" style="display:inline;">
+                                                        <input type="hidden" name="projectId" th:value="${p.id}" />
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
+                                                </form>
+                                        </td>
                                 </tr>
                         </tbody>
                 </table>
@@ -196,6 +201,13 @@
                         `<p class="text-danger">Unable to load profile (status ${e}).</p>`;
                 }
                 mod.show();
+            });
+        });
+
+        document.querySelectorAll('.decision-form').forEach(form => {
+            form.addEventListener('submit', () => {
+                const td = form.closest('td');
+                td.querySelectorAll('.decision-form').forEach(f => f.style.display = 'none');
             });
         });
 
