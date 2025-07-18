@@ -13,3 +13,8 @@ body { background-color: var(--neutral); }
 .btn-primary { background-color: var(--primary); border-color: var(--primary); }
 .btn-primary:hover { background-color: var(--dark); border-color: var(--dark); }
 .btn-accent { background-color: var(--accent); color: #fff; }
+
+/* Feedback star rating */
+#feedbackModal .star {
+  cursor: pointer;
+}
