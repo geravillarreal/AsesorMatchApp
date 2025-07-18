@@ -87,22 +87,28 @@ public class MatchingService {
 		});
 	}
 
-	public void requestMatch(Long studentId, Long advisorId, Double score) {
-		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
-		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
+        public void requestMatch(Long studentId, Long advisorId, Double score) {
+                User student = userRepository.findById(studentId)
+                                .orElseThrow(() -> new IllegalArgumentException("student"));
+                User advisor = userRepository.findById(advisorId)
+                                .orElseThrow(() -> new IllegalArgumentException("advisor"));
 
                 boolean ongoingProject = projectRepository.existsByStudentAndStatus(student, ProjectStatus.IN_PROGRESS);
                 if (ongoingProject) {
                         throw new IllegalStateException("student already has an accepted match");
                 }
 
-		Match match = new Match();
-		match.setStudent(student);
-		match.setAdvisor(advisor);
-		match.setCompatibilityScore(score);
-		match.setStatus(MatchStatus.PENDING);
-		match.setCreatedAt(LocalDateTime.now());
+                Match match = matchRepository.findByStudentIdAndAdvisorId(studentId, advisorId).orElse(null);
+                if (match == null) {
+                        match = new Match();
+                        match.setStudent(student);
+                        match.setAdvisor(advisor);
+                }
 
-		matchRepository.save(match);
+                match.setCompatibilityScore(score);
+                match.setStatus(MatchStatus.PENDING);
+                match.setCreatedAt(LocalDateTime.now());
+
+                matchRepository.save(match);
 	}
 }
