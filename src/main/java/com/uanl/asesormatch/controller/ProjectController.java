@@ -9,6 +9,7 @@ import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.service.NotificationService;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -21,17 +22,20 @@ import java.time.LocalDate;
 @RequestMapping("/project")
 public class ProjectController {
 
-	private final UserRepository userRepository;
-	private final ProjectRepository projectRepository;
+        private final UserRepository userRepository;
+        private final ProjectRepository projectRepository;
     private final MatchRepository matchRepository;
     private final NotificationService notificationService;
+    private final AdvisorEmailProvider emailProvider;
 
     public ProjectController(UserRepository userRepository, ProjectRepository projectRepository,
-                        MatchRepository matchRepository, NotificationService notificationService) {
+                        MatchRepository matchRepository, NotificationService notificationService,
+                        AdvisorEmailProvider emailProvider) {
                 this.userRepository = userRepository;
                 this.projectRepository = projectRepository;
                 this.matchRepository = matchRepository;
                 this.notificationService = notificationService;
+                this.emailProvider = emailProvider;
         }
 
 	@GetMapping("/new")
@@ -59,7 +63,7 @@ public class ProjectController {
 	@PostMapping("/assign")
 	public String assignProject(@AuthenticationPrincipal OidcUser oidcUser, @RequestParam Long projectId) {
 
-		User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                User advisor = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 		Project project = projectRepository.findById(projectId).orElseThrow();
 
                 boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(
@@ -86,7 +90,7 @@ public class ProjectController {
         public String rejectProject(@AuthenticationPrincipal OidcUser oidcUser,
                                     @RequestParam Long projectId) {
 
-	    User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+            User advisor = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 	    Project project = projectRepository.findById(projectId).orElseThrow();
 
 	    boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(
