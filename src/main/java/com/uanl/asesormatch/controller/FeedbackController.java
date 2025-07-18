@@ -43,6 +43,8 @@ public class FeedbackController {
             Feedback fb = new Feedback();
             fb.setMatch(match);
             fb.setFromUser(user);
+            fb.setToUser(user.getId().equals(match.getStudent().getId()) ? match.getAdvisor() : match.getStudent());
+            fb.setCreatedAt(java.time.LocalDateTime.now());
             fb.setRating(rating);
             fb.setComment(comment);
             feedbackRepo.save(fb);

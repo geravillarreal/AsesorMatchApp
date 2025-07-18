@@ -247,8 +247,7 @@
                 .then(r => r.ok ? r.json() : null)
                 .then(data => {
                     if (data) {
-                        document.getElementById('feedbackOtherName').textContent = data.otherUserName;
-                        document.getElementById('feedbackProjectTitle').textContent = data.projectTitle;
+                        populateFeedbackModal(data);
                     }
                     new bootstrap.Modal('#feedbackModal').show();
                 });

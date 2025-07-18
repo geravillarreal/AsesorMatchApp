@@ -8,4 +8,6 @@ import com.uanl.asesormatch.entity.User;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     boolean existsByMatchAndFromUser(Match match, User fromUser);
+
+    java.util.Optional<Feedback> findByMatchAndFromUser(Match match, User fromUser);
 }
