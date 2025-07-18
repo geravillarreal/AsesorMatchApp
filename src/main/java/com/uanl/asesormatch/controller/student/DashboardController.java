@@ -9,6 +9,7 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.ProjectRepository;
+import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.service.MatchingService;
 import com.uanl.asesormatch.service.NotificationService;
@@ -22,6 +23,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -31,17 +33,19 @@ public class DashboardController {
 	private final MatchingEngineClient matchingEngineClient;
 	private final MatchingService matchingService;
 	private final ProjectRepository projectRepository;
-	private final NotificationService notificationService;
+        private final NotificationService notificationService;
+        private final MatchRepository matchRepository;
 
-	public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
-			MatchingService matchingService, ProjectRepository projectRepository,
-			NotificationService notificationService) {
-		this.userRepository = userRepository;
-		this.matchingEngineClient = matchingEngineClient;
-		this.matchingService = matchingService;
-		this.projectRepository = projectRepository;
-		this.notificationService = notificationService;
-	}
+        public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
+                        MatchingService matchingService, ProjectRepository projectRepository,
+                        NotificationService notificationService, MatchRepository matchRepository) {
+                this.userRepository = userRepository;
+                this.matchingEngineClient = matchingEngineClient;
+                this.matchingService = matchingService;
+                this.projectRepository = projectRepository;
+                this.notificationService = notificationService;
+                this.matchRepository = matchRepository;
+        }
 
        @GetMapping("/api/recommendations")
        @ResponseBody
@@ -73,17 +77,35 @@ public class DashboardController {
        }
 
 	@GetMapping("/dashboard")
-	public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+        public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
+                                @RequestParam(required = false) Long feedbackMatchId) {
+                User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
 			return "redirect:/advisor-dashboard";
 		}
 
-		Profile profile = user.getProfile();
-		List<Match> matchHistory = matchingService.getMatchesForStudent(user);
+                Profile profile = user.getProfile();
+                List<Match> matchHistory = matchingService.getMatchesForStudent(user);
                 List<Project> studentProjects = projectRepository.findByStudentAndDeletedFalse(user);
-		var notifications = notificationService.getNotificationsFor(user);
+                var notifications = notificationService.getNotificationsFor(user);
+
+                if (feedbackMatchId != null) {
+                        var matchOpt = matchRepository.findById(feedbackMatchId);
+                        if (matchOpt.isPresent() && matchOpt.get().getStudent().getId().equals(user.getId())) {
+                                var match = matchOpt.get();
+                                var title = projectRepository
+                                                .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(),
+                                                                ProjectStatus.COMPLETED)
+                                                .stream()
+                                                .findFirst()
+                                                .map(Project::getTitle)
+                                                .orElse("");
+                                model.addAttribute("feedbackMatchId", feedbackMatchId);
+                                model.addAttribute("feedbackOtherName", match.getAdvisor().getFullName());
+                                model.addAttribute("feedbackProjectTitle", title);
+                        }
+                }
 
 		model.addAttribute("user", user);
 		model.addAttribute("profile", profile);

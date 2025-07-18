@@ -90,7 +90,7 @@
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<form th:action="@{/feedback/submit}" method="post">
-						<input type="hidden" name="matchId" id="feedbackMatchId" />
+                                                <input type="hidden" name="matchId" id="feedbackMatchId" th:value="${feedbackMatchId}" />
 						<div class="modal-header">
 							<h5 class="modal-title">Feedback</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -99,8 +99,8 @@
                                                         <p class="small text-muted mb-3">
                                                                 Estos comentarios nos ayudaran a mejorar nuestro sistema de emparejamiento.
                                                                 ¿cómo te sentiste de trabajar con
-                                                                <strong id="feedbackOtherName"></strong>
-                                                                en el proyecto <strong id="feedbackProjectTitle"></strong>?
+                                                                <strong id="feedbackOtherName" th:text="${feedbackOtherName}"></strong>
+                                                                en el proyecto <strong id="feedbackProjectTitle" th:text="${feedbackProjectTitle}"></strong>?
                                                         </p>
                                                         <div id="otherFeedback" class="border rounded p-2 mb-3 d-none">
                                                                 <h6 class="fw-bold mb-1" id="otherFeedbackName"></h6>
