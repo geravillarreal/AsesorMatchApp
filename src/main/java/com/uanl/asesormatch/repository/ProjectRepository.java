@@ -17,9 +17,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     long countByAdvisorAndStatus(User advisor, ProjectStatus status);
 
-    java.util.Optional<Project> findByStudentAndAdvisorAndStatus(User student, User advisor, ProjectStatus status);
+    java.util.List<Project> findByStudentAndAdvisorAndStatus(User student, User advisor, ProjectStatus status);
 
-    java.util.Optional<Project> findByStudentAndAdvisorAndStatusAndDeletedFalse(User student, User advisor, ProjectStatus status);
+    java.util.List<Project> findByStudentAndAdvisorAndStatusAndDeletedFalse(User student, User advisor, ProjectStatus status);
 
     java.util.List<Project> findByAdvisorAndStatus(User advisor, ProjectStatus status);
 
