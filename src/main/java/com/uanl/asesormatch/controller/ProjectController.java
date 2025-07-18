@@ -73,11 +73,7 @@ public class ProjectController {
                                 .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
                                 .isPresent();
 
-                boolean hasCompleted = projectRepository
-                                .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.COMPLETED)
-                                .isPresent();
-
-                if (project.getAdvisor() == null && hasMatch && !hasActive && !hasCompleted) {
+                if (project.getAdvisor() == null && hasMatch && !hasActive) {
                         project.setAdvisor(advisor);
                         project.setStatus(ProjectStatus.IN_PROGRESS);
                         projectRepository.save(project);
@@ -121,6 +117,31 @@ public class ProjectController {
                 });
 
                 return "redirect:/advisor-dashboard?feedbackMatchId=" + matchId;
+        }
+
+        @PostMapping("/complete-project")
+        public String completeProjectById(@RequestParam Long projectId) {
+                Project project = projectRepository.findById(projectId).orElseThrow();
+                if (project.getAdvisor() != null && project.getStatus() == ProjectStatus.IN_PROGRESS) {
+                        project.setStatus(ProjectStatus.COMPLETED);
+                        projectRepository.save(project);
+
+                        var matchOpt = matchRepository.findByAdvisorAndStatus(project.getAdvisor(), MatchStatus.ACCEPTED)
+                                        .stream()
+                                        .filter(m -> m.getStudent().equals(project.getStudent()))
+                                        .findFirst();
+                        matchOpt.ifPresent(m -> {
+                                String url = "/dashboard?feedbackMatchId=" + m.getId();
+                                String msg = "Tu proyecto '" + project.getTitle()
+                                                + "' fue marcado como completado. Por favor da tu feedback. <a href='"
+                                                + url + "'>aquí</a>";
+                                notificationService.notify(m.getStudent(), msg);
+                        });
+                        return matchOpt.map(m -> "redirect:/advisor-dashboard?feedbackMatchId=" + m.getId())
+                                        .orElse("redirect:/advisor-dashboard");
+                }
+
+                return "redirect:/advisor-dashboard";
         }
 
         @PostMapping("/delete")

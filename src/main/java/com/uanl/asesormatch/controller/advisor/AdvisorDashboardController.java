@@ -40,15 +40,14 @@ public class AdvisorDashboardController {
         int matchCount = matchRepository.findByAdvisor(advisor).size();
         int projectCount = projectRepository.findByAdvisor(advisor).size();
 
-        var matches = matchRepository.findByAdvisor(advisor).stream()
-                .filter(m -> {
-                        if (m.getStatus() == MatchStatus.ACCEPTED) {
-                                return projectRepository.findByStudentAndAdvisorAndStatus(
-                                                m.getStudent(), m.getAdvisor(), ProjectStatus.COMPLETED)
-                                                .isEmpty();
-                        }
-                        return true;
-                }).toList();
+        var matches = matchRepository.findByAdvisor(advisor);
+        for (var m : matches) {
+                boolean noneActive = projectRepository
+                                .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,
+                                                ProjectStatus.IN_PROGRESS)
+                                .isEmpty();
+                m.setAllProjectsCompleted(noneActive);
+        }
 
         var completedProjects = projectRepository.findByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
@@ -56,13 +55,7 @@ public class AdvisorDashboardController {
                         .filter(p -> p.getStatus() != ProjectStatus.COMPLETED)
                         .toList();
 
-        var acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED)
-                        .stream()
-                        .filter(m -> projectRepository
-                                        .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,
-                                                        ProjectStatus.COMPLETED)
-                                        .isEmpty())
-                        .toList();
+        var acceptedMatches = matchRepository.findByAdvisorAndStatus(advisor, MatchStatus.ACCEPTED);
         java.util.List<com.uanl.asesormatch.entity.Project> available = new java.util.ArrayList<>();
         java.util.Set<Long> blocked = new java.util.HashSet<>();
         for (var p : assignedProjects) {
@@ -71,10 +64,15 @@ public class AdvisorDashboardController {
                 }
         }
         for (var m : acceptedMatches) {
-                var studentProjects = projectRepository.findByStudent(m.getStudent());
-                for (var p : studentProjects) {
-                        if (p.getStatus() != ProjectStatus.COMPLETED && p.getAdvisor() == null) {
-                                available.add(p);
+                if (projectRepository
+                                .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,
+                                                ProjectStatus.IN_PROGRESS)
+                                .isEmpty()) {
+                        var studentProjects = projectRepository.findByStudent(m.getStudent());
+                        for (var p : studentProjects) {
+                                if (p.getStatus() != ProjectStatus.COMPLETED && p.getAdvisor() == null) {
+                                        available.add(p);
+                                }
                         }
                 }
         }

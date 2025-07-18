@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 
@@ -34,7 +35,10 @@ public class Match {
 	@Enumerated(EnumType.STRING)
 	private MatchStatus status;
 
-	private String algorithmUsed;
+        private String algorithmUsed;
+
+        @Transient
+        private boolean allProjectsCompleted;
 
 	public Long getId() {
 		return id;
@@ -88,7 +92,15 @@ public class Match {
 		return algorithmUsed;
 	}
 
-	public void setAlgorithmUsed(String algorithmUsed) {
-		this.algorithmUsed = algorithmUsed;
-	}
+        public void setAlgorithmUsed(String algorithmUsed) {
+                this.algorithmUsed = algorithmUsed;
+        }
+
+        public boolean isAllProjectsCompleted() {
+                return allProjectsCompleted;
+        }
+
+        public void setAllProjectsCompleted(boolean allProjectsCompleted) {
+                this.allProjectsCompleted = allProjectsCompleted;
+        }
 }
