@@ -158,7 +158,7 @@ public class ProjectController {
                         return "redirect:/dashboard";
                 }
 
-                if (project.getStatus() == ProjectStatus.IN_PROGRESS || project.getAdvisor() != null) {
+                if (project.getStatus() == ProjectStatus.IN_PROGRESS) {
                         // cannot remove in progress or assigned projects
                         return "redirect:/dashboard";
                 }
