@@ -6,6 +6,7 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,16 +21,19 @@ public class AdvisorDashboardController {
     private final UserRepository userRepository;
     private final MatchRepository matchRepository;
     private final ProjectRepository projectRepository;
+    private final AdvisorEmailProvider emailProvider;
 
-    public AdvisorDashboardController(UserRepository userRepository, MatchRepository matchRepository, ProjectRepository projectRepository) {
+    public AdvisorDashboardController(UserRepository userRepository, MatchRepository matchRepository, ProjectRepository projectRepository,
+                                     AdvisorEmailProvider emailProvider) {
         this.userRepository = userRepository;
         this.matchRepository = matchRepository;
         this.projectRepository = projectRepository;
+        this.emailProvider = emailProvider;
     }
 
     @GetMapping("/advisor-dashboard")
     public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
-        User advisor = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+        User advisor = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
         long completedProjectCount =
                 projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
