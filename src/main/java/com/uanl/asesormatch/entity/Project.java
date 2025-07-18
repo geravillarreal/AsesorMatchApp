@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "projects")
@@ -28,6 +29,9 @@ public class Project {
     private ProjectStatus status;
 
     private LocalDate startDate;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     @ManyToOne
     private User student;
@@ -70,13 +74,21 @@ public class Project {
 		this.status = status;
 	}
 
-	public LocalDate getStartDate() {
-		return startDate;
-	}
+        public LocalDate getStartDate() {
+                return startDate;
+        }
 
-	public void setStartDate(LocalDate startDate) {
-		this.startDate = startDate;
-	}
+        public void setStartDate(LocalDate startDate) {
+                this.startDate = startDate;
+        }
+
+        public boolean isDeleted() {
+                return deleted;
+        }
+
+        public void setDeleted(boolean deleted) {
+                this.deleted = deleted;
+        }
 
 	public User getStudent() {
 		return student;

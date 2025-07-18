@@ -71,10 +71,10 @@ public class AdvisorDashboardController {
         }
         for (var m : acceptedMatches) {
                 if (projectRepository
-                                .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,
+                                .findByStudentAndAdvisorAndStatusAndDeletedFalse(m.getStudent(), advisor,
                                                 ProjectStatus.IN_PROGRESS)
                                 .isEmpty()) {
-                        var studentProjects = projectRepository.findByStudent(m.getStudent());
+                        var studentProjects = projectRepository.findByStudentAndDeletedFalse(m.getStudent());
                         for (var p : studentProjects) {
                                 if (p.getStatus() != ProjectStatus.COMPLETED && p.getAdvisor() == null) {
                                         available.add(p);

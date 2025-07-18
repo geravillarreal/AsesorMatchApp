@@ -70,7 +70,7 @@ public class ProjectController {
                                 project.getStudent().getId(), advisor.getId(), MatchStatus.ACCEPTED);
 
                 boolean hasActive = projectRepository
-                                .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
+                                .findByStudentAndAdvisorAndStatusAndDeletedFalse(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
                                 .isPresent();
 
                 if (project.getAdvisor() == null && hasMatch && !hasActive) {
@@ -107,7 +107,7 @@ public class ProjectController {
                 match.setStatus(MatchStatus.COMPLETED);
                 matchRepository.save(match);
 
-                var optProject = projectRepository.findByStudentAndAdvisorAndStatus(
+                var optProject = projectRepository.findByStudentAndAdvisorAndStatusAndDeletedFalse(
                                 match.getStudent(), match.getAdvisor(), ProjectStatus.IN_PROGRESS);
 
                 optProject.ifPresent(p -> {
@@ -154,7 +154,19 @@ public class ProjectController {
                 User student = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
                 Project project = projectRepository.findById(projectId).orElseThrow();
 
-                if (project.getStudent().getId().equals(student.getId())) {
+                if (!project.getStudent().getId().equals(student.getId())) {
+                        return "redirect:/dashboard";
+                }
+
+                if (project.getStatus() == ProjectStatus.IN_PROGRESS || project.getAdvisor() != null) {
+                        // cannot remove in progress or assigned projects
+                        return "redirect:/dashboard";
+                }
+
+                if (project.getStatus() == ProjectStatus.COMPLETED) {
+                        project.setDeleted(true);
+                        projectRepository.save(project);
+                } else {
                         projectRepository.delete(project);
                 }
 
