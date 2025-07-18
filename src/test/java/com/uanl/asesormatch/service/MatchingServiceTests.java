@@ -294,4 +294,22 @@ class MatchingServiceTests {
                 assertNull(reloaded.getAdvisor());
                 assertEquals(ProjectStatus.DRAFT, reloaded.getStatus());
         }
+
+        @Test
+        void requestMatchFailsWithoutDraftProjects() {
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("studentnodraft@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                User advisor = new User();
+                advisor.setFullName("Advisor Test");
+                advisor.setEmail("advisornodraft@test.com");
+                advisor.setRole(Role.ADVISOR);
+                userRepository.save(advisor);
+
+                assertThrows(IllegalStateException.class,
+                                () -> matchingService.requestMatch(student.getId(), advisor.getId(), 0.5));
+        }
 }

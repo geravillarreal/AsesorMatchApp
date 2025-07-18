@@ -325,9 +325,13 @@
                 if (!res.ok) throw new Error(res.status);
                 const data = await res.json();
 
-                content.innerHTML = buildRecommendationsTable(data.recommendations || []);
-                content.insertAdjacentHTML('beforeend', buildNewRecommendationsList(data.newRecommendations || []));
-                attachRecButtons();
+                if (data.noDraftProjects) {
+                    content.innerHTML = '<div class="alert alert-warning">No puedes emparejarte con un maestro porque no tienes proyectos disponibles.</div>';
+                } else {
+                    content.innerHTML = buildRecommendationsTable(data.recommendations || []);
+                    content.insertAdjacentHTML('beforeend', buildNewRecommendationsList(data.newRecommendations || []));
+                    attachRecButtons();
+                }
             } catch (e) {
                 content.innerHTML = '<p class="text-danger">Unable to load recommendations.</p>';
             }
