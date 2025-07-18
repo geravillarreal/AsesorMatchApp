@@ -1,5 +1,7 @@
 package com.uanl.asesormatch.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +16,11 @@ public class Feedback {
 
     @ManyToOne
     private User fromUser;
+
+    @ManyToOne
+    private User toUser;
+
+    private LocalDateTime createdAt;
 
     private Integer rating;
 
@@ -42,6 +49,22 @@ public class Feedback {
 
     public void setFromUser(User fromUser) {
         this.fromUser = fromUser;
+    }
+
+    public User getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(User toUser) {
+        this.toUser = toUser;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Integer getRating() {

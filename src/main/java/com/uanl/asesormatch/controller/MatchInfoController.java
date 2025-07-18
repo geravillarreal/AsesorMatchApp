@@ -8,6 +8,7 @@ import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.repository.FeedbackRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -22,11 +23,14 @@ public class MatchInfoController {
     private final MatchRepository matchRepo;
     private final ProjectRepository projectRepo;
     private final UserRepository userRepo;
+    private final FeedbackRepository feedbackRepo;
 
-    public MatchInfoController(MatchRepository matchRepo, ProjectRepository projectRepo, UserRepository userRepo) {
+    public MatchInfoController(MatchRepository matchRepo, ProjectRepository projectRepo, UserRepository userRepo,
+                               FeedbackRepository feedbackRepo) {
         this.matchRepo = matchRepo;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
+        this.feedbackRepo = feedbackRepo;
     }
 
     @GetMapping("/{id}")
@@ -41,7 +45,18 @@ public class MatchInfoController {
                 .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(), ProjectStatus.COMPLETED)
                 .orElse(null);
         String title = project != null ? project.getTitle() : "";
-        MatchInfoDTO dto = new MatchInfoDTO(match.getId(), other.getFullName(), title);
+        var myFb = feedbackRepo.findByMatchAndFromUser(match, current).orElse(null);
+        var otherFb = feedbackRepo.findByMatchAndFromUser(match, other).orElse(null);
+
+        MatchInfoDTO dto = new MatchInfoDTO(
+                match.getId(),
+                other.getFullName(),
+                title,
+                myFb != null ? myFb.getRating() : null,
+                myFb != null ? myFb.getComment() : null,
+                otherFb != null ? otherFb.getRating() : null,
+                otherFb != null ? otherFb.getComment() : null
+        );
         return ResponseEntity.ok(dto);
     }
 }
