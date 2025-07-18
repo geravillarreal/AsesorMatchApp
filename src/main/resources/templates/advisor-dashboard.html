@@ -62,14 +62,14 @@
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="ACCEPTED" />
 							<button type="submit" class="btn btn-success btn-sm"
-								th:disabled="${match.status.name() != 'PENDING'}">Accept</button>
+								th:unless="${match.status.name() != 'PENDING'}">Accept</button>
 						</form>
                                                 <form th:action="@{/match/decision}" method="post" class="decision-form"
                                                         style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="REJECTED" />
 							<button type="submit" class="btn btn-danger btn-sm"
-								th:disabled="${match.status.name() != 'PENDING'}">Reject</button>
+								th:unless="${match.status.name() != 'PENDING'}">Reject</button>
 						</form>
                                                 <form th:if="${match.status.name() == 'ACCEPTED' and match.allProjectsCompleted}"
                                                         th:action="@{/project/complete}" method="post"
