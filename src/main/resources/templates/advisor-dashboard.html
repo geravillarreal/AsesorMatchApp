@@ -5,7 +5,8 @@
 
 	<div class="container mt-4">
 		<h2 th:text="'Welcome, ' + ${advisor.fullName}">Advisor Name</h2>
-                <a th:href="@{/profile/{id}/edit(id=${advisor.id})}" class="btn btn-primary mt-3">Edit Profile</a>
+		<a th:href="@{/profile/{id}/edit(id=${advisor.id})}"
+			class="btn btn-primary mt-3">Edit Profile</a>
 
 		<div class="row text-center my-4">
 			<div class="col-md-4 mb-3">
@@ -58,23 +59,24 @@
 							th:data-student-id="${match.student.id}" title="View profile">
 							<i class="bi bi-eye"></i>
 						</button>
-                                                <form th:action="@{/match/decision}" method="post" class="decision-form"
-                                                        style="display: inline;">
+						<form th:action="@{/match/decision}" method="post"
+							class="decision-form" style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="ACCEPTED" />
 							<button type="submit" class="btn btn-success btn-sm"
 								th:unless="${match.status.name() != 'PENDING'}">Accept</button>
 						</form>
-                                                <form th:action="@{/match/decision}" method="post" class="decision-form"
-                                                        style="display: inline;">
+						<form th:action="@{/match/decision}" method="post"
+							class="decision-form" style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" /> <input
 								type="hidden" name="action" value="REJECTED" />
 							<button type="submit" class="btn btn-danger btn-sm"
 								th:unless="${match.status.name() != 'PENDING'}">Reject</button>
 						</form>
-                                                <form th:if="${match.status.name() == 'ACCEPTED' and match.allProjectsCompleted}"
-                                                        th:action="@{/project/complete}" method="post"
-                                                        style="display: inline;">
+						<form
+							th:if="${match.status.name() == 'ACCEPTED' and match.allProjectsCompleted}"
+							th:action="@{/project/complete}" method="post"
+							style="display: inline;">
 							<input type="hidden" name="matchId" th:value="${match.id}" />
 							<button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
 						</form>
@@ -82,69 +84,59 @@
 
 				</tr>
 			</tbody>
-                </table>
+		</table>
 
-                <h4 class="mt-5">Latest Completed Matches</h4>
-                <table class="table table-striped">
-                        <thead>
-                                <tr>
-                                        <th>Student</th>
-                                        <th>Score</th>
-                                        <th>Date</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <tr th:each="m : ${latestCompletedMatches}">
-                                        <td th:text="${m.student.fullName}">Student Name</td>
-                                        <td th:text="${T(java.lang.Math).round(m.compatibilityScore * 100)} + '%'">0%</td>
-                                        <td th:text="${#temporals.format(m.createdAt, 'dd/MM/yyyy')}">date</td>
-                                </tr>
-                        </tbody>
-                </table>
+		<th:block th:if="${!#lists.isEmpty(availableProjects)}">
+		<h4 class="mt-5">Projects Assigned</h4>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Description</th>
+					<th>Student</th>
+					<th>Status</th>
+					<th>Start Date</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="p : ${availableProjects}">
+					<td th:text="${p.title}">Title</td>
+					<td th:text="${p.description}">Description</td>
+					<td th:text="${p.student.fullName}">Student</td>
+					<td th:text="${p.status}">DRAFT</td>
+					<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
+					<td>
+						<form
+							th:if="${p.advisor == null and !#lists.contains(blockedStudentIds, p.student.id)}"
+							th:action="@{/project/assign}" method="post"
+							style="display: inline;">
+							<input type="hidden" name="projectId" th:value="${p.id}" />
+							<button type="submit" class="btn btn-primary btn-sm">Accept</button>
+						</form> <span th:if="${#lists.contains(blockedStudentIds, p.student.id)}"
+						class="text-muted">Blocked</span>
+					</td>
+				</tr>
+				<tr th:each="p : ${projects}">
+					<td th:text="${p.title}">Title</td>
+					<td th:text="${p.description}">Description</td>
+					<td th:text="${p.student.fullName}">Student</td>
+					<td th:text="${p.status}">IN_PROGRESS</td>
+					<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
+					<td>
+						<form th:if="${p.status.name() == 'IN_PROGRESS'}"
+							th:action="@{/project/complete-project}" method="post"
+							style="display: inline;">
+							<input type="hidden" name="projectId" th:value="${p.id}" />
+							<button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</th:block>
 
-                <h4 class="mt-5">Projects Assigned</h4>
-                <table class="table table-hover">
-                        <thead>
-                                <tr>
-                                        <th>Title</th>
-                                        <th>Description</th>
-                                        <th>Student</th>
-                                        <th>Status</th>
-                                        <th>Start Date</th>
-                                        <th>Actions</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <tr th:each="p : ${availableProjects}">
-                                        <td th:text="${p.title}">Title</td>
-                                        <td th:text="${p.description}">Description</td>
-                                        <td th:text="${p.student.fullName}">Student</td>
-                                        <td th:text="${p.status}">DRAFT</td>
-                                        <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-                                        <td>
-                                                <form th:if="${p.advisor == null and !#lists.contains(blockedStudentIds, p.student.id)}" th:action="@{/project/assign}" method="post" style="display:inline;">
-                                                        <input type="hidden" name="projectId" th:value="${p.id}" />
-                                                        <button type="submit" class="btn btn-primary btn-sm">Accept</button>
-                                                </form>
-                                                <span th:if="${#lists.contains(blockedStudentIds, p.student.id)}" class="text-muted">Blocked</span>
-                                        </td>
-                                </tr>
-                                <tr th:each="p : ${projects}">
-                                        <td th:text="${p.title}">Title</td>
-                                        <td th:text="${p.description}">Description</td>
-                                        <td th:text="${p.student.fullName}">Student</td>
-                                        <td th:text="${p.status}">IN_PROGRESS</td>
-                                        <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-                                        <td>
-                                                <form th:if="${p.status.name() == 'IN_PROGRESS'}" th:action="@{/project/complete-project}" method="post" style="display:inline;">
-                                                        <input type="hidden" name="projectId" th:value="${p.id}" />
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Completed</button>
-                                                </form>
-                                        </td>
-                                </tr>
-                        </tbody>
-                </table>
-
+		<th:block th:if="${!#lists.isEmpty(latestCompletedMatches)}">
 		<h4 class="mt-5">Projects completed with students</h4>
 		<table class="table table-hover">
 			<thead>
@@ -162,10 +154,32 @@
 				</tr>
 			</tbody>
 		</table>
+		</th:block>
+
+		<th:block th:if="${!#lists.isEmpty(latestCompletedMatches)}">
+		<h4 class="mt-5">Latest Completed Matches</h4>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Student</th>
+					<th>Score</th>
+					<th>Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="m : ${latestCompletedMatches}">
+					<td th:text="${m.student.fullName}">Student Name</td>
+					<td
+						th:text="${T(java.lang.Math).round(m.compatibilityScore * 100)} + '%'">0%</td>
+					<td th:text="${#temporals.format(m.createdAt, 'dd/MM/yyyy')}">date</td>
+				</tr>
+			</tbody>
+		</table>
+		</th:block>
 		<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
 		<div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
 	</div>
-        <script>
+	<script>
         document.addEventListener('DOMContentLoaded', function() {
         function buildStudentProfileHTML(user) {
             const p = user.profile ?? {};
