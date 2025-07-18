@@ -43,6 +43,8 @@ public class MatchInfoController {
         User other = current.getId().equals(match.getStudent().getId()) ? match.getAdvisor() : match.getStudent();
         Project project = projectRepo
                 .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(), ProjectStatus.COMPLETED)
+                .stream()
+                .findFirst()
                 .orElse(null);
         String title = project != null ? project.getTitle() : "";
         var myFb = feedbackRepo.findByMatchAndFromUser(match, current).orElse(null);

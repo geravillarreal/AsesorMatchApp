@@ -69,9 +69,9 @@ public class ProjectController {
                 boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(
                                 project.getStudent().getId(), advisor.getId(), MatchStatus.ACCEPTED);
 
-                boolean hasActive = projectRepository
+                boolean hasActive = !projectRepository
                                 .findByStudentAndAdvisorAndStatusAndDeletedFalse(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
-                                .isPresent();
+                                .isEmpty();
 
                 if (project.getAdvisor() == null && hasMatch && !hasActive) {
                         project.setAdvisor(advisor);
@@ -108,7 +108,9 @@ public class ProjectController {
                 matchRepository.save(match);
 
                 var optProject = projectRepository.findByStudentAndAdvisorAndStatusAndDeletedFalse(
-                                match.getStudent(), match.getAdvisor(), ProjectStatus.IN_PROGRESS);
+                                match.getStudent(), match.getAdvisor(), ProjectStatus.IN_PROGRESS)
+                                .stream()
+                                .findFirst();
 
                 optProject.ifPresent(p -> {
                         p.setStatus(ProjectStatus.COMPLETED);
