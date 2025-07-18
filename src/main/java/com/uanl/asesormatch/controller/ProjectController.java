@@ -69,7 +69,11 @@ public class ProjectController {
                                 .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.IN_PROGRESS)
                                 .isPresent();
 
-                if (project.getAdvisor() == null && hasMatch && !hasActive) {
+                boolean hasCompleted = projectRepository
+                                .findByStudentAndAdvisorAndStatus(project.getStudent(), advisor, ProjectStatus.COMPLETED)
+                                .isPresent();
+
+                if (project.getAdvisor() == null && hasMatch && !hasActive && !hasCompleted) {
                         project.setAdvisor(advisor);
                         project.setStatus(ProjectStatus.IN_PROGRESS);
                         projectRepository.save(project);
