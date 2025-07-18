@@ -68,7 +68,9 @@ class ProjectAssignmentTests {
         projectRepository.save(p2);
 
         boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(student.getId(), advisor.getId(), MatchStatus.ACCEPTED);
-        boolean hasActive = projectRepository.findByStudentAndAdvisorAndStatus(student, advisor, ProjectStatus.IN_PROGRESS).isPresent();
+        boolean hasActive = !projectRepository
+                .findByStudentAndAdvisorAndStatus(student, advisor, ProjectStatus.IN_PROGRESS)
+                .isEmpty();
         if (p2.getAdvisor() == null && hasMatch && !hasActive) {
             p2.setAdvisor(advisor);
             p2.setStatus(ProjectStatus.IN_PROGRESS);
@@ -97,7 +99,9 @@ class ProjectAssignmentTests {
         projectRepository.save(p2);
 
         boolean hasMatch = matchRepository.existsByStudentIdAndAdvisorIdAndStatus(student.getId(), advisor.getId(), MatchStatus.ACCEPTED);
-        boolean hasActive = projectRepository.findByStudentAndAdvisorAndStatus(student, advisor, ProjectStatus.IN_PROGRESS).isPresent();
+        boolean hasActive = !projectRepository
+                .findByStudentAndAdvisorAndStatus(student, advisor, ProjectStatus.IN_PROGRESS)
+                .isEmpty();
         if (p2.getAdvisor() == null && hasMatch && !hasActive) {
             p2.setAdvisor(advisor);
             p2.setStatus(ProjectStatus.IN_PROGRESS);
