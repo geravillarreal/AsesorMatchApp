@@ -1,5 +1,6 @@
 package com.uanl.asesormatch.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +20,14 @@ import java.util.Map;
 @Component
 public class MatchingEngineClient {
 
+    private final String baseUrl;
+
+    public MatchingEngineClient(@Value("${matching.engine.base-url:http://localhost:8000}") String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     public List<RecommendationDTO> getRecommendations(Long studentId) {
         RestTemplate restTemplate = new RestTemplate();
-        String baseUrl = "http://localhost:8000";
 
         // Login to obtain JWT token
         String loginUrl = baseUrl + "/login";
@@ -30,7 +36,12 @@ public class MatchingEngineClient {
         HttpHeaders loginHeaders = new HttpHeaders();
         loginHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Long>> loginRequest = new HttpEntity<>(loginBody, loginHeaders);
-        ResponseEntity<Map> loginResponse = restTemplate.postForEntity(loginUrl, loginRequest, Map.class);
+        ResponseEntity<Map<String, Object>> loginResponse = restTemplate.exchange(
+            loginUrl,
+            HttpMethod.POST,
+            loginRequest,
+            new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
         String token = loginResponse.getBody() != null ? (String) loginResponse.getBody().get("token") : null;
 
         String url = baseUrl + "/match/calculate";
