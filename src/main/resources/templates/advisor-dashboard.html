@@ -164,7 +164,8 @@
 		<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
 		<div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
 	</div>
-	<script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
         function buildStudentProfileHTML(user) {
             const p = user.profile ?? {};
             const books = (p.books ?? []).map(b =>
@@ -235,6 +236,7 @@
             document.getElementById('feedbackMatchId').value = params.get('feedbackMatchId');
             new bootstrap.Modal('#feedbackModal').show();
         }
+        });
         </script>
 </body>
 </html>
