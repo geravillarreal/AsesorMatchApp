@@ -229,4 +229,39 @@ class MatchingServiceTests {
                 List<Match> matches = matchRepository.findAll();
                 assertEquals(2, matches.size());
         }
+
+        @Test
+        void acceptingMatchDoesNotAssignProjectAutomatically() {
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("student4@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                User advisor = new User();
+                advisor.setFullName("Advisor");
+                advisor.setEmail("advisor4@test.com");
+                advisor.setRole(Role.ADVISOR);
+                userRepository.save(advisor);
+
+                Project project = new Project();
+                project.setTitle("P1");
+                project.setDescription("D1");
+                project.setStatus(ProjectStatus.DRAFT);
+                project.setStudent(student);
+                projectRepository.save(project);
+
+                Match match = new Match();
+                match.setStudent(student);
+                match.setAdvisor(advisor);
+                match.setCompatibilityScore(0.5);
+                match.setStatus(MatchStatus.PENDING);
+                matchRepository.save(match);
+
+                matchingService.updateMatchStatus(match.getId(), MatchStatus.ACCEPTED);
+
+                Project reloaded = projectRepository.findById(project.getId()).orElseThrow();
+                assertNull(reloaded.getAdvisor());
+                assertEquals(ProjectStatus.DRAFT, reloaded.getStatus());
+        }
 }
