@@ -3,6 +3,7 @@ package com.uanl.asesormatch.controller.advisor;
 import com.uanl.asesormatch.enums.ProjectStatus;
 import com.uanl.asesormatch.enums.MatchStatus;
 import com.uanl.asesormatch.entity.User;
+import com.uanl.asesormatch.entity.Project;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AdvisorDashboardController {
@@ -32,7 +34,8 @@ public class AdvisorDashboardController {
     }
 
     @GetMapping("/advisor-dashboard")
-    public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
+    public String advisorDashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
+                                   @RequestParam(required = false) Long feedbackMatchId) {
         User advisor = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
         long completedProjectCount =
                 projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
@@ -81,6 +84,23 @@ public class AdvisorDashboardController {
                                 }
                         }
                 }
+        }
+
+        if (feedbackMatchId != null) {
+            var matchOpt = matchRepository.findById(feedbackMatchId);
+            if (matchOpt.isPresent() && matchOpt.get().getAdvisor().getId().equals(advisor.getId())) {
+                var match = matchOpt.get();
+                var title = projectRepository
+                                .findByStudentAndAdvisorAndStatus(match.getStudent(), match.getAdvisor(),
+                                                ProjectStatus.COMPLETED)
+                                .stream()
+                                .findFirst()
+                                .map(Project::getTitle)
+                                .orElse("");
+                model.addAttribute("feedbackMatchId", feedbackMatchId);
+                model.addAttribute("feedbackOtherName", match.getStudent().getFullName());
+                model.addAttribute("feedbackProjectTitle", title);
+            }
         }
 
         model.addAttribute("matchCount", matchCount);
