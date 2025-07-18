@@ -45,7 +45,7 @@ class MatchingServiceTests {
 	}
 
 	@Test
-	void requestMatchPersistsPendingMatch() {
+        void requestMatchPersistsPendingMatch() {
 		User student = new User();
 		student.setFullName("Student Test");
 		student.setEmail("student@test.com");
@@ -188,6 +188,35 @@ class MatchingServiceTests {
 
                 assertThrows(IllegalStateException.class,
                                 () -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
+        }
+
+        @Test
+        void requestMatchUpdatesExistingRecordWhenMatchingAgain() {
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("studentre@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                User advisor = new User();
+                advisor.setFullName("Advisor Test");
+                advisor.setEmail("advisorre@test.com");
+                advisor.setRole(Role.ADVISOR);
+                userRepository.save(advisor);
+
+                matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
+
+                Match existing = matchRepository.findAll().get(0);
+                existing.setStatus(MatchStatus.REJECTED);
+                matchRepository.save(existing);
+
+                matchingService.requestMatch(student.getId(), advisor.getId(), 0.9);
+
+                List<Match> persisted = matchRepository.findAll();
+                assertEquals(1, persisted.size());
+                Match match = persisted.get(0);
+                assertEquals(MatchStatus.PENDING, match.getStatus());
+                assertEquals(0.9, match.getCompatibilityScore());
         }
 
         @Test
