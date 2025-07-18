@@ -35,6 +35,7 @@
 			</div>
 		</div>
 
+		<th:block th:if="${!#lists.isEmpty(matches)}">
 		<h4 class="mt-4">Matches Assigned to You</h4>
 		<table class="table table-striped">
 			<thead>
@@ -85,8 +86,9 @@
 				</tr>
 			</tbody>
 		</table>
+		</th:block>
 
-		<th:block th:if="${!#lists.isEmpty(availableProjects)}">
+		<th:block th:if="${!#lists.isEmpty(availableProjects)} OR ${!#lists.isEmpty(projects)}">
 		<h4 class="mt-5">Projects Assigned</h4>
 		<table class="table table-hover">
 			<thead>
@@ -136,7 +138,7 @@
 		</table>
 		</th:block>
 
-		<th:block th:if="${!#lists.isEmpty(latestCompletedMatches)}">
+		<th:block th:if="${!#lists.isEmpty(completedProjects)}">
 		<h4 class="mt-5">Projects completed with students</h4>
 		<table class="table table-hover">
 			<thead>
