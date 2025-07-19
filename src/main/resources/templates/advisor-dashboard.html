@@ -97,8 +97,9 @@
 					<th>Description</th>
 					<th>Student</th>
 					<th>Status</th>
-					<th>Start Date</th>
-					<th>Actions</th>
+                                        <th>Start Date</th>
+                                        <th>Stories</th>
+                                        <th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -107,8 +108,9 @@
 					<td th:text="${p.description}">Description</td>
 					<td th:text="${p.student.fullName}">Student</td>
 					<td th:text="${p.status}">DRAFT</td>
-					<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-					<td>
+                                        <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
+                                        <td></td>
+                                        <td>
 						<form
 							th:if="${p.advisor == null and !#lists.contains(blockedStudentIds, p.student.id)}"
 							th:action="@{/project/assign}" method="post"
@@ -124,8 +126,12 @@
 					<td th:text="${p.description}">Description</td>
 					<td th:text="${p.student.fullName}">Student</td>
 					<td th:text="${p.status}">IN_PROGRESS</td>
-					<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
-					<td>
+                                        <td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
+                                        <td>
+                                                <a th:href="@{/story/list(projectId=${p.id})}"
+                                                   class="btn btn-outline-secondary btn-sm">View Stories</a>
+                                        </td>
+                                        <td>
 						<form th:if="${p.status.name() == 'IN_PROGRESS'}"
 							th:action="@{/project/complete-project}" method="post"
 							style="display: inline;">

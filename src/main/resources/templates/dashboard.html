@@ -165,18 +165,24 @@
 								<th>Title</th>
 								<th>Description</th>
 								<th>Status</th>
-								<th></th>
+                                                                <th>Stories</th>
+                                                                <th></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="p : ${studentProjects}">
 								<td th:text="${p.title}">Title</td>
 								<td th:text="${p.description}">Description</td>
-								<td th:text="${p.status}">Status</td>
-								<td>
-									<form th:action="@{/project/delete}" method="post" th:if="${p.status.name() != 'IN_PROGRESS'}"
-										style="display: inline;">
-										<input type="hidden" name="projectId" th:value="${p.id}" />
+                                                                <td th:text="${p.status}">Status</td>
+                                                                <td>
+                                                                        <a th:if="${p.status.name() == 'IN_PROGRESS'}"
+                                                                           th:href="@{/story/list(projectId=${p.id})}"
+                                                                           class="btn btn-outline-secondary btn-sm">View Stories</a>
+                                                                </td>
+                                                                <td>
+                                                                        <form th:action="@{/project/delete}" method="post" th:if="${p.status.name() != 'IN_PROGRESS'}"
+                                                                               style="display: inline;">
+                                                                               <input type="hidden" name="projectId" th:value="${p.id}" />
 										<button type="submit" class="btn btn-danger btn-sm">Delete</button>
 									</form>
 								</td>
