@@ -4,6 +4,7 @@ import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import com.uanl.asesormatch.entity.Project;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.service.StoryService;
+import com.uanl.asesormatch.service.NotificationService;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,13 +23,16 @@ public class StoryController {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final AdvisorEmailProvider emailProvider;
+    private final NotificationService notificationService;
 
     public StoryController(StoryService storyService, ProjectRepository projectRepository,
-                           UserRepository userRepository, AdvisorEmailProvider emailProvider) {
+                           UserRepository userRepository, AdvisorEmailProvider emailProvider,
+                           NotificationService notificationService) {
         this.storyService = storyService;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.emailProvider = emailProvider;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/list")
@@ -57,6 +61,11 @@ public class StoryController {
             return "redirect:/dashboard";
         }
         storyService.createStory(project, user, title, description);
+        if (!project.getStudent().getId().equals(user.getId())) {
+            String msg = "El maestro ha agregado una story a tu proyecto (" +
+                    project.getTitle() + "): " + title + ".";
+            notificationService.notify(project.getStudent(), msg);
+        }
         return "redirect:/story/list?projectId=" + projectId;
     }
 
