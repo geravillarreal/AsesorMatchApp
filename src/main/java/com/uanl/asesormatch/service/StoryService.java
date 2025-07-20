@@ -37,6 +37,10 @@ public class StoryService {
         return storyRepository.findById(id).orElseThrow();
     }
 
+    public boolean hasPendingStories(Project project) {
+        return storyRepository.countByProjectAndStatusNot(project, StoryStatus.DONE) > 0;
+    }
+
     public void advanceStatus(Long storyId, User user) {
         Story story = getStory(storyId);
         if (!user.getId().equals(story.getProject().getStudent().getId())) {

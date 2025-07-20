@@ -9,6 +9,7 @@ import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.service.NotificationService;
+import com.uanl.asesormatch.service.StoryService;
 import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -27,15 +28,17 @@ public class ProjectController {
     private final MatchRepository matchRepository;
     private final NotificationService notificationService;
     private final AdvisorEmailProvider emailProvider;
+    private final StoryService storyService;
 
     public ProjectController(UserRepository userRepository, ProjectRepository projectRepository,
                         MatchRepository matchRepository, NotificationService notificationService,
-                        AdvisorEmailProvider emailProvider) {
+                        AdvisorEmailProvider emailProvider, StoryService storyService) {
                 this.userRepository = userRepository;
                 this.projectRepository = projectRepository;
                 this.matchRepository = matchRepository;
                 this.notificationService = notificationService;
                 this.emailProvider = emailProvider;
+                this.storyService = storyService;
         }
 
 	@GetMapping("/new")
@@ -115,6 +118,9 @@ public class ProjectController {
                 Project completed = null;
                 if (optProject.isPresent()) {
                         var p = optProject.get();
+                        if (storyService.hasPendingStories(p)) {
+                                return "redirect:/advisor-dashboard?pendingStories";
+                        }
                         completed = p;
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
@@ -134,6 +140,9 @@ public class ProjectController {
         public String completeProjectById(@RequestParam Long projectId) {
                 Project project = projectRepository.findById(projectId).orElseThrow();
                 if (project.getAdvisor() != null && project.getStatus() == ProjectStatus.IN_PROGRESS) {
+                        if (storyService.hasPendingStories(project)) {
+                                return "redirect:/advisor-dashboard?pendingStories";
+                        }
                         project.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(project);
 
