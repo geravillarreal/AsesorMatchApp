@@ -48,7 +48,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="match : ${matches}">
+                                <tr th:each="match : ${matches}" th:if="${match.status.name() != 'REJECTED'}">
 					<td th:text="${match.student.fullName}">Student Name</td>
 					<td
 						th:text="${T(java.lang.Math).round(match.compatibilityScore * 100)} + '%'">0%</td>

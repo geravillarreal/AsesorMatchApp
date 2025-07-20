@@ -58,9 +58,10 @@ public class MatchingService {
 		return matches;
 	}
 
-	public List<Match> getMatchesForStudent(User student) {
-		return matchRepository.findByStudent(student);
-	}
+        public List<Match> getMatchesForStudent(User student) {
+                return matchRepository
+                                .findByStudentAndStatusNot(student, MatchStatus.REJECTED);
+        }
 
 	public void updateMatchStatus(Long matchId, MatchStatus status) {
 		var matchOpt = matchRepository.findById(matchId);

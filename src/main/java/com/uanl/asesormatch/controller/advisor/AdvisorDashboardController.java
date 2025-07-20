@@ -40,13 +40,9 @@ public class AdvisorDashboardController {
         long completedProjectCount =
                 projectRepository.countByAdvisorAndStatus(advisor, ProjectStatus.COMPLETED);
 
-        int matchCount = matchRepository.findByAdvisor(advisor).size();
+        var matches = matchRepository.findByAdvisorAndStatusNot(advisor, MatchStatus.REJECTED);
+        int matchCount = matches.size();
         int projectCount = projectRepository.findByAdvisor(advisor).size();
-
-        var matches = matchRepository.findByAdvisor(advisor)
-                        .stream()
-                        .filter(m -> m.getStatus() != MatchStatus.COMPLETED)
-                        .toList();
         for (var m : matches) {
                 boolean noneActive = projectRepository
                                 .findByStudentAndAdvisorAndStatus(m.getStudent(), advisor,

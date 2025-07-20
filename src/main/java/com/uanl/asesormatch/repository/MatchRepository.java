@@ -9,7 +9,9 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.MatchStatus;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
-	List<Match> findByStudent(User student);
+        List<Match> findByStudent(User student);
+
+        List<Match> findByStudentAndStatusNot(User student, MatchStatus status);
 
         boolean existsByStudentIdAndAdvisorIdAndStatus(Long studentId, Long advisorId, MatchStatus status);
 
@@ -18,6 +20,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
         boolean existsByStudentIdAndAdvisorId(Long studentId, Long advisorId);
 
         List<Match> findByAdvisor(User advisor);
+
+        List<Match> findByAdvisorAndStatusNot(User advisor, MatchStatus status);
 
         List<Match> findByAdvisorAndStatus(User advisor, MatchStatus accepted);
 
