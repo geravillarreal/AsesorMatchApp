@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -55,6 +57,12 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 			userRepository.save(user);
 		}
 
-		response.sendRedirect("/dashboard");
-	}
+                HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+                SavedRequest savedRequest = requestCache.getRequest(request, response);
+                String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/dashboard";
+                if (savedRequest != null) {
+                        requestCache.removeRequest(request, response);
+                }
+                response.sendRedirect(targetUrl);
+        }
 }
