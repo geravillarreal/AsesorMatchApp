@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::body}, 'Project Stories')}">
 <body>
-<div class="mt-4">
+<div class="container my-4">
     <h3 th:text="${project.title}">Project</h3>
     <form th:action="@{/story/add}" method="post" class="mb-3">
         <input type="hidden" name="projectId" th:value="${project.id}" />
