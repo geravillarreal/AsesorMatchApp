@@ -50,7 +50,7 @@ class MatchingServiceTests {
 		matchingService = new MatchingService(matchRepository, userRepository, projectRepository, notificationService);
 	}
 
-	@Test
+        @Test
         void requestMatchPersistsPendingMatch() {
                 User student = new User();
                 student.setFullName("Student Test");
@@ -81,8 +81,37 @@ class MatchingServiceTests {
 		assertEquals(student.getId(), match.getStudent().getId());
 		assertEquals(advisor.getId(), match.getAdvisor().getId());
 		assertEquals(score, match.getCompatibilityScore());
-		assertEquals(MatchStatus.PENDING, match.getStatus());
-	}
+                assertEquals(MatchStatus.PENDING, match.getStatus());
+        }
+
+        @Test
+        void requestMatchNotifiesAdvisor() {
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("student@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                Project draft = new Project();
+                draft.setTitle("Draft");
+                draft.setDescription("Draft");
+                draft.setStatus(ProjectStatus.DRAFT);
+                draft.setStudent(student);
+                projectRepository.save(draft);
+
+                User advisor = new User();
+                advisor.setFullName("Advisor Test");
+                advisor.setEmail("advisor@test.com");
+                advisor.setRole(Role.ADVISOR);
+                userRepository.save(advisor);
+
+                matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
+
+                var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
+                assertEquals(1, notes.size());
+                String msg = notes.get(0).getMessage();
+                assertEquals("Student " + student.getFullName() + " requested you to be their mentor.", msg);
+        }
 
 	@Test
 	void updateMatchStatusRejectedNotifiesStudent() {
