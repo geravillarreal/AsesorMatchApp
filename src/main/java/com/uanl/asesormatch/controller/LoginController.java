@@ -16,7 +16,7 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "as", required = false) String as,
+    public String loginPage(@RequestParam(required = false) String as,
                             HttpSession session) {
         if ("advisor".equalsIgnoreCase(as) && advisorOverrideEmail != null && !advisorOverrideEmail.isBlank()) {
             session.setAttribute("overrideEmail", advisorOverrideEmail);
