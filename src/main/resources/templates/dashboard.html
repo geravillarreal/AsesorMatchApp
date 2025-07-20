@@ -138,7 +138,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="match : ${matches}">
+                                                        <tr th:each="match : ${matches}" th:if="${match.status.name() != 'REJECTED'}">
 								<td><a href="#" class="view-profile"
 									th:data-advisor-id="${match.advisor.id}"
 									th:text="${match.advisor.fullName}">Advisor</a></td>
@@ -199,9 +199,19 @@
 		</div>
 
 		<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
-		<div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
-		<div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
-	</div>
+                <div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
+                <div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
+                <div class="toast-container position-fixed top-0 end-0 p-3">
+                    <div id="matchToast" class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Match request sent. Please wait for the advisor to accept or reject your request.
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+        </div>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
         const initialTab = /*[[${activeTab}]]*/ '';
@@ -353,6 +363,17 @@
         });
 
         const params = new URLSearchParams(window.location.search);
+        if (params.has('matchRequested')) {
+            const toastEl = document.getElementById('matchToast');
+            if (toastEl) {
+                new bootstrap.Toast(toastEl).show();
+                toastEl.addEventListener('hidden.bs.toast', () => {
+                    params.delete('matchRequested');
+                    const q = params.toString();
+                    history.replaceState(null, '', window.location.pathname + (q ? '?' + q : ''));
+                });
+            }
+        }
         const feedbackModalEl = document.getElementById('feedbackModal');
         if (feedbackModalEl) {
             feedbackModalEl.addEventListener('hidden.bs.modal', () => {
