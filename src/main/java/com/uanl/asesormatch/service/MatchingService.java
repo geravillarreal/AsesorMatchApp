@@ -116,5 +116,9 @@ public class MatchingService {
                 match.setCreatedAt(LocalDateTime.now());
 
                 matchRepository.save(match);
-	}
+
+                String msg = "Student " + student.getFullName()
+                                + " requested you to be their mentor.";
+                notificationService.notify(advisor, msg);
+        }
 }
