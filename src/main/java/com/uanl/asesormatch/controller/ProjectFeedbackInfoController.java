@@ -6,6 +6,7 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.repository.FeedbackRepository;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -20,18 +21,20 @@ public class ProjectFeedbackInfoController {
     private final ProjectRepository projectRepo;
     private final UserRepository userRepo;
     private final FeedbackRepository feedbackRepo;
+    private final AdvisorEmailProvider emailProvider;
 
     public ProjectFeedbackInfoController(ProjectRepository projectRepo, UserRepository userRepo,
-                                         FeedbackRepository feedbackRepo) {
+                                         FeedbackRepository feedbackRepo, AdvisorEmailProvider emailProvider) {
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
         this.feedbackRepo = feedbackRepo;
+        this.emailProvider = emailProvider;
     }
 
     @GetMapping("/{id}/feedback")
     public ResponseEntity<ProjectFeedbackInfoDTO> info(@AuthenticationPrincipal OidcUser oidcUser,
                                                        @PathVariable Long id) {
-        User current = userRepo.findByEmail(oidcUser.getEmail()).orElseThrow();
+        User current = userRepo.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
         Project project = projectRepo.findById(id).orElse(null);
         if (project == null) {
             return ResponseEntity.notFound().build();

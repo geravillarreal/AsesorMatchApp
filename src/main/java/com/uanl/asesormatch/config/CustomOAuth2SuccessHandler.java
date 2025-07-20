@@ -3,6 +3,7 @@ package com.uanl.asesormatch.config;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,9 +22,11 @@ import java.util.Optional;
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
+    private final AdvisorEmailProvider emailProvider;
 
-    public CustomOAuth2SuccessHandler(UserRepository userRepository) {
+    public CustomOAuth2SuccessHandler(UserRepository userRepository, AdvisorEmailProvider emailProvider) {
         this.userRepository = userRepository;
+        this.emailProvider = emailProvider;
     }
 
 	@Override
@@ -31,16 +34,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 			Authentication authentication) throws IOException, ServletException {
 
         OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
-        String email = oidcUser.getEmail();
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            String override = (String) session.getAttribute("overrideEmail");
-            if (override != null && !override.isBlank()) {
-                email = override;
-            } else {
-                session.removeAttribute("overrideEmail");
-            }
-        }
+        String email = emailProvider.resolveEmail(oidcUser);
         String name = oidcUser.getFullName();
         String universityId = oidcUser.getPreferredUsername();
 

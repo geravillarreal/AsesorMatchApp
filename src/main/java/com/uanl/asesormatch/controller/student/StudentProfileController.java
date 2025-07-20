@@ -18,6 +18,7 @@ import com.uanl.asesormatch.entity.Profile;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.ProfileRepository;
 import com.uanl.asesormatch.repository.UserRepository;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 
 import jakarta.validation.Valid;
 
@@ -25,13 +26,16 @@ import jakarta.validation.Valid;
 @RequestMapping("/profile")
 public class StudentProfileController {
 
-	private final UserRepository userRepository;
-	private final ProfileRepository profileRepository;
+        private final UserRepository userRepository;
+        private final ProfileRepository profileRepository;
+        private final AdvisorEmailProvider emailProvider;
 
-	public StudentProfileController(UserRepository userRepository, ProfileRepository profileRepository) {
-		this.userRepository = userRepository;
-		this.profileRepository = profileRepository;
-	}
+        public StudentProfileController(UserRepository userRepository, ProfileRepository profileRepository,
+                                        AdvisorEmailProvider emailProvider) {
+                this.userRepository = userRepository;
+                this.profileRepository = profileRepository;
+                this.emailProvider = emailProvider;
+        }
 
 	@GetMapping("/{id}/edit")
 	public String editProfileForm(@PathVariable Long id, Model model) {
@@ -61,7 +65,7 @@ public class StudentProfileController {
 			return "edit-profile";
 		}
 
-		User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
 
 		profile.setAreas(dto.getAreas());
