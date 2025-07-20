@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface StoryRepository extends JpaRepository<Story, Long> {
     List<Story> findByProjectOrderByCreatedAtAsc(Project project);
+
+    long countByProjectAndStatusNot(Project project, com.uanl.asesormatch.enums.StoryStatus status);
 }
