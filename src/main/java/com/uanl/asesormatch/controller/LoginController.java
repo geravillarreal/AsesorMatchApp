@@ -11,7 +11,7 @@ public class LoginController {
 
     private final String advisorOverrideEmail;
 
-    public LoginController(@Value("${advisor.override-email:}") String advisorOverrideEmail) {
+    public LoginController(@Value("${advisor.override-email}") String advisorOverrideEmail) {
         this.advisorOverrideEmail = advisorOverrideEmail;
     }
 
