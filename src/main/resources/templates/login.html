@@ -2,12 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	th:replace="~{layout :: layout(~{::body}, 'Login')}">
 <body>
-	<div class="container mt-5 text-center">
-		<h1 class="mb-4">Academic Matching Platform</h1>
-		<p class="lead">Log in with your university account to continue</p>
+    <div class="container mt-5 text-center">
+        <h1 class="mb-4">Academic Matching Platform</h1>
+        <p class="lead">Log in with your university account to continue</p>
 
-		<a href="/oauth2/authorization/azure"
-			class="btn btn-primary btn-lg mt-3"> Sign in with Microsoft </a>
-	</div>
+        <a href="/oauth2/authorization/azure"
+                class="btn btn-primary btn-lg mt-3"> Sign in with Microsoft </a>
+    </div>
+    <script th:src="@{/js/incognito.js}"></script>
 </body>
 </html>
