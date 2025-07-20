@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::body}, 'Project Stories')}">
 <body>
 <div class="container my-4">
+    <div th:replace="~{fragments/commonFragments :: backButton(@{/project/{id}(id=${project.id})}, 'Back to the Project')}"></div>
     <h3 th:text="${project.title}">Project</h3>
     <form th:action="@{/story/add}" method="post" class="mb-3">
         <input type="hidden" name="projectId" th:value="${project.id}" />

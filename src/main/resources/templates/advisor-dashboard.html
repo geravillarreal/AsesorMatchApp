@@ -103,8 +103,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="p : ${availableProjects}">
-					<td th:text="${p.title}">Title</td>
+                                <tr th:each="p : ${availableProjects}">
+                                        <td><a th:href="@{/project/{id}(id=${p.id})}" th:text="${p.title}">Title</a></td>
 					<td th:text="${p.description}">Description</td>
 					<td th:text="${p.student.fullName}">Student</td>
 					<td th:text="${p.status}">DRAFT</td>
@@ -121,8 +121,8 @@
 						class="text-muted">Blocked</span>
 					</td>
 				</tr>
-				<tr th:each="p : ${projects}">
-					<td th:text="${p.title}">Title</td>
+                                <tr th:each="p : ${projects}">
+                                        <td><a th:href="@{/project/{id}(id=${p.id})}" th:text="${p.title}">Title</a></td>
 					<td th:text="${p.description}">Description</td>
 					<td th:text="${p.student.fullName}">Student</td>
 					<td th:text="${p.status}">IN_PROGRESS</td>
@@ -155,8 +155,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="p : ${completedProjects}">
-					<td th:text="${p.title}">Project Title</td>
+                                <tr th:each="p : ${completedProjects}">
+                                        <td><a th:href="@{/project/{id}(id=${p.id})}" th:text="${p.title}">Project Title</a></td>
 					<td th:text="${p.student.fullName}">Student</td>
 					<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
 				</tr>

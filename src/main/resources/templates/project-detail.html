@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body}, 'Project Detail')}">
+<body>
+<div class="container my-4">
+    <div th:replace="~{fragments/commonFragments :: backButton(${studentView} ? '/dashboard?tab=projects' : '/advisor-dashboard', 'Back to Projects')}"></div>
+    <h3 th:text="${project.title}">Project title</h3>
+    <p th:text="${project.description}">Project description</p>
+    <p><strong>Status:</strong> <span th:text="${project.status}">Status</span></p>
+    <p><strong>Student:</strong> <span th:text="${project.student.fullName}">Student</span></p>
+    <p th:if="${project.advisor != null}"><strong>Advisor:</strong> <span th:text="${project.advisor.fullName}">Advisor</span></p>
+    <a th:href="@{/story/list(projectId=${project.id})}" class="btn btn-outline-secondary mt-3">View Stories</a>
+</div>
+</body>
+</html>
