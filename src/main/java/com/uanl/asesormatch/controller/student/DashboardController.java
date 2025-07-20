@@ -13,6 +13,7 @@ import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.service.MatchingService;
 import com.uanl.asesormatch.service.NotificationService;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -29,28 +30,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class DashboardController {
 
-	private final UserRepository userRepository;
-	private final MatchingEngineClient matchingEngineClient;
-	private final MatchingService matchingService;
-	private final ProjectRepository projectRepository;
+        private final UserRepository userRepository;
+        private final MatchingEngineClient matchingEngineClient;
+        private final MatchingService matchingService;
+        private final ProjectRepository projectRepository;
         private final NotificationService notificationService;
         private final MatchRepository matchRepository;
+        private final AdvisorEmailProvider emailProvider;
 
         public DashboardController(UserRepository userRepository, MatchingEngineClient matchingEngineClient,
                         MatchingService matchingService, ProjectRepository projectRepository,
-                        NotificationService notificationService, MatchRepository matchRepository) {
+                        NotificationService notificationService, MatchRepository matchRepository,
+                        AdvisorEmailProvider emailProvider) {
                 this.userRepository = userRepository;
                 this.matchingEngineClient = matchingEngineClient;
                 this.matchingService = matchingService;
                 this.projectRepository = projectRepository;
                 this.notificationService = notificationService;
                 this.matchRepository = matchRepository;
+                this.emailProvider = emailProvider;
         }
 
        @GetMapping("/api/recommendations")
        @ResponseBody
        public Map<String, Object> recommendations(@AuthenticationPrincipal OidcUser oidcUser) {
-               User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+               User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 
                Map<String, Object> result = new HashMap<>();
                boolean hasDraft = projectRepository.existsByStudentAndStatus(user, ProjectStatus.DRAFT);
@@ -79,7 +83,7 @@ public class DashboardController {
 	@GetMapping("/dashboard")
         public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
                                 @RequestParam(required = false) Long feedbackProjectId) {
-                User user = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
 			return "redirect:/advisor-dashboard";

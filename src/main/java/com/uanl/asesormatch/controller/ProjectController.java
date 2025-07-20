@@ -47,7 +47,7 @@ public class ProjectController {
 	@PostMapping("/new")
 	public String submitProject(@AuthenticationPrincipal OidcUser oidcUser, @ModelAttribute("project") ProjectDTO dto) {
 
-		User student = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                User student = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 
 		Project project = new Project();
 		project.setTitle(dto.getTitle());
@@ -159,7 +159,7 @@ public class ProjectController {
         @PostMapping("/delete")
         public String deleteProject(@AuthenticationPrincipal OidcUser oidcUser,
                                     @RequestParam Long projectId) {
-                User student = userRepository.findByEmail(oidcUser.getEmail()).orElseThrow();
+                User student = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
                 Project project = projectRepository.findById(projectId).orElseThrow();
 
                 if (!project.getStudent().getId().equals(student.getId())) {

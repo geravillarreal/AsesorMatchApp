@@ -16,25 +16,29 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.service.MatchingService;
 import com.uanl.asesormatch.service.UserService;
 import com.uanl.asesormatch.enums.MatchStatus;
+import com.uanl.asesormatch.config.AdvisorEmailProvider;
 
 @RestController
 @RequestMapping("/match")
 public class MatchController {
 
-	private final MatchingService matchingService;
-	private final UserService userService;
+        private final MatchingService matchingService;
+        private final UserService userService;
+        private final AdvisorEmailProvider emailProvider;
 
-	public MatchController(MatchingService matchingService, UserService userService) {
-		this.matchingService = matchingService;
-		this.userService = userService;
-	}
+        public MatchController(MatchingService matchingService, UserService userService,
+                               AdvisorEmailProvider emailProvider) {
+                this.matchingService = matchingService;
+                this.userService = userService;
+                this.emailProvider = emailProvider;
+        }
 
         @PostMapping("/request")
         public ResponseEntity<Void> requestMatch(@AuthenticationPrincipal OidcUser principal,
                         @RequestParam Long advisorId, @RequestParam Double score) {
 
-		User student = userService.findByEmail(principal.getEmail())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                User student = userService.findByEmail(emailProvider.resolveEmail(principal))
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
 		matchingService.requestMatch(student.getId(), advisorId, score);
 
