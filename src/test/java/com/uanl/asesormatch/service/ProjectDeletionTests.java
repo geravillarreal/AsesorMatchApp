@@ -9,10 +9,14 @@ import com.uanl.asesormatch.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import com.uanl.asesormatch.config.TestEntityScanConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@Import(TestEntityScanConfig.class)
 class ProjectDeletionTests {
     @Autowired
     private ProjectRepository projectRepository;
