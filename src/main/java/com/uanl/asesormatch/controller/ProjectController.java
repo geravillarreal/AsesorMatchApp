@@ -5,6 +5,7 @@ import com.uanl.asesormatch.entity.Project;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.enums.MatchStatus;
 import com.uanl.asesormatch.enums.ProjectStatus;
+import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.repository.MatchRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
@@ -37,9 +38,27 @@ public class ProjectController {
                 this.projectRepository = projectRepository;
                 this.matchRepository = matchRepository;
                 this.notificationService = notificationService;
-                this.emailProvider = emailProvider;
-                this.storyService = storyService;
+        this.emailProvider = emailProvider;
+        this.storyService = storyService;
+    }
+
+    @GetMapping("/{id}")
+    public String viewProject(@AuthenticationPrincipal OidcUser oidcUser,
+                              @PathVariable Long id, Model model) {
+        User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
+        Project project = projectRepository.findById(id).orElseThrow();
+
+        boolean allowed = project.getStudent().getId().equals(user.getId()) ||
+                (project.getAdvisor() != null && project.getAdvisor().getId().equals(user.getId()));
+        if (!allowed) {
+            String redirect = user.getRole() == Role.ADVISOR ? "/advisor-dashboard" : "/dashboard";
+            return "redirect:" + redirect;
         }
+
+        model.addAttribute("project", project);
+        model.addAttribute("studentView", project.getStudent().getId().equals(user.getId()));
+        return "project-detail";
+    }
 
 	@GetMapping("/new")
 	public String newProjectForm(Model model) {
@@ -59,8 +78,8 @@ public class ProjectController {
 		project.setStudent(student);
 		project.setStartDate(LocalDate.now());
 
-		projectRepository.save(project);
-		return "redirect:/dashboard";
+                projectRepository.save(project);
+                return "redirect:/dashboard?tab=projects";
 	}
 
 	@PostMapping("/assign")
@@ -172,12 +191,12 @@ public class ProjectController {
                 Project project = projectRepository.findById(projectId).orElseThrow();
 
                 if (!project.getStudent().getId().equals(student.getId())) {
-                        return "redirect:/dashboard";
+                        return "redirect:/dashboard?tab=projects";
                 }
 
                 if (project.getStatus() == ProjectStatus.IN_PROGRESS) {
                         // cannot remove in progress or assigned projects
-                        return "redirect:/dashboard";
+                        return "redirect:/dashboard?tab=projects";
                 }
 
                 if (project.getStatus() == ProjectStatus.COMPLETED) {
@@ -187,6 +206,6 @@ public class ProjectController {
                         projectRepository.delete(project);
                 }
 
-                return "redirect:/dashboard";
+                return "redirect:/dashboard?tab=projects";
         }
 }

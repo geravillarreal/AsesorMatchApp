@@ -80,9 +80,10 @@ public class DashboardController {
                return result;
        }
 
-	@GetMapping("/dashboard")
+        @GetMapping("/dashboard")
         public String dashboard(@AuthenticationPrincipal OidcUser oidcUser, Model model,
-                                @RequestParam(required = false) Long feedbackProjectId) {
+                                @RequestParam(required = false) Long feedbackProjectId,
+                                @RequestParam(required = false) String tab) {
                 User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 
 		if (user.getRole() == Role.ADVISOR) {
@@ -109,7 +110,8 @@ public class DashboardController {
 		model.addAttribute("profile", profile);
 		model.addAttribute("matches", matchHistory);
 		model.addAttribute("studentProjects", studentProjects);
-		model.addAttribute("notifications", notifications);
+                model.addAttribute("notifications", notifications);
+                model.addAttribute("activeTab", tab);
 
 		return "dashboard";
 	}
