@@ -24,22 +24,26 @@
 				</p>
 			</div>
 		</div>
-                <div id="notificationsContainer"
-                     class="toast-container position-fixed top-0 end-0 p-3"
-                     th:classappend="${notifications == null or #lists.isEmpty(notifications)} ? ' d-none'">
-                    <div class="toast align-items-center text-bg-info" th:each="n : ${notifications}"
-                         role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                <span th:utext="${n.message}"></span>
-                            </div>
-                            <form th:action="@{/notification/delete}" method="post" style="display:inline;">
-                                <input type="hidden" name="id" th:value="${n.id}" />
-                                <button type="submit" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+		<div id="notificationsContainer"
+			class="toast-container position-fixed top-0 end-0 p-3"
+			th:classappend="${notifications == null or #lists.isEmpty(notifications)} ? ' d-none'">
+			<div class="toast align-items-center text-bg-info"
+				th:each="n : ${notifications}" role="alert" aria-live="assertive"
+				aria-atomic="true" data-bs-autohide="false">
+				<div class="d-flex">
+					<div class="toast-body">
+						<span th:utext="${n.message}"></span>
+					</div>
+					<form th:action="@{/notification/delete}" method="post"
+						class="d-flex align-items-center" style="display: inline;">
+						<input type="hidden" name="id" th:value="${n.id}" />
+						<button type="submit"
+							class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
+					</form>
+
+				</div>
+			</div>
+		</div>
 
 		<ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -142,7 +146,8 @@
 							</tr>
 						</thead>
 						<tbody>
-                                                        <tr th:each="match : ${matches}" th:if="${match.status.name() != 'REJECTED'}">
+							<tr th:each="match : ${matches}"
+								th:if="${match.status.name() != 'REJECTED'}">
 								<td><a href="#" class="view-profile"
 									th:data-advisor-id="${match.advisor.id}"
 									th:text="${match.advisor.fullName}">Advisor</a></td>
@@ -169,24 +174,24 @@
 								<th>Title</th>
 								<th>Description</th>
 								<th>Status</th>
-                                                                <th>Stories</th>
-                                                                <th></th>
+								<th>Stories</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
-                                                        <tr th:each="p : ${studentProjects}">
-                                                                <td><a th:href="@{/project/{id}(id=${p.id})}" th:text="${p.title}">Title</a></td>
+							<tr th:each="p : ${studentProjects}">
+								<td><a th:href="@{/project/{id}(id=${p.id})}"
+									th:text="${p.title}">Title</a></td>
 								<td th:text="${p.description}">Description</td>
-                                                                <td th:text="${p.status}">Status</td>
-                                                                <td>
-                                                                        <a th:if="${p.status.name() == 'IN_PROGRESS'}"
-                                                                           th:href="@{/story/list(projectId=${p.id})}"
-                                                                           class="btn btn-outline-secondary btn-sm">View Stories</a>
-                                                                </td>
-                                                                <td>
-                                                                        <form th:action="@{/project/delete}" method="post" th:if="${p.status.name() != 'IN_PROGRESS'}"
-                                                                               style="display: inline;">
-                                                                               <input type="hidden" name="projectId" th:value="${p.id}" />
+								<td th:text="${p.status}">Status</td>
+								<td><a th:if="${p.status.name() == 'IN_PROGRESS'}"
+									th:href="@{/story/list(projectId=${p.id})}"
+									class="btn btn-outline-secondary btn-sm">View Stories</a></td>
+								<td>
+									<form th:action="@{/project/delete}" method="post"
+										th:if="${p.status.name() != 'IN_PROGRESS'}"
+										style="display: inline;">
+										<input type="hidden" name="projectId" th:value="${p.id}" />
 										<button type="submit" class="btn btn-danger btn-sm">Delete</button>
 									</form>
 								</td>
@@ -203,20 +208,21 @@
 		</div>
 
 		<div th:replace="~{fragments/advisorFragments :: profileModal}"></div>
-                <div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
-                <div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
-                <div class="toast-container position-fixed top-0 end-0 p-3">
-                    <div id="matchToast" class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                Match request sent. Please wait for the advisor to accept or reject your request.
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>
-                </div>
-        </div>
-        <script>
+		<div th:replace="~{fragments/advisorFragments :: matchModal}"></div>
+		<div th:replace="~{fragments/advisorFragments :: feedbackModal}"></div>
+		<div class="toast-container position-fixed top-0 end-0 p-3">
+			<div id="matchToast" class="toast align-items-center text-bg-success"
+				role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body">Match request sent. Please wait for
+						the advisor to accept or reject your request.</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto"
+						data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
         document.addEventListener('DOMContentLoaded', function() {
         const initialTab = /*[[${activeTab}]]*/ '';
         if (initialTab) {
