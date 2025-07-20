@@ -27,7 +27,7 @@
                 <div th:if="${notifications != null and !#lists.isEmpty(notifications)}"
                      id="notificationsContainer"
                      class="toast-container position-fixed top-0 end-0 p-3">
-                    <div class="toast text-bg-info" th:each="n : ${notifications}"
+                    <div class="toast align-items-center text-bg-info" th:each="n : ${notifications}"
                          role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
                         <div class="d-flex">
                             <div class="toast-body">
