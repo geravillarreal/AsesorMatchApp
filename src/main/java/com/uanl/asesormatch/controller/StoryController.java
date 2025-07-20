@@ -62,7 +62,7 @@ public class StoryController {
         }
         storyService.createStory(project, user, title, description);
         if (!project.getStudent().getId().equals(user.getId())) {
-            String msg = "El maestro ha agregado una story a tu proyecto (" +
+            String msg = "The advisor added a story to your project (" +
                     project.getTitle() + "): " + title + ".";
             notificationService.notify(project.getStudent(), msg);
         }

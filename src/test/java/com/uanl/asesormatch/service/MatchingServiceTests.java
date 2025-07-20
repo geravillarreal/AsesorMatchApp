@@ -112,8 +112,8 @@ class MatchingServiceTests {
 
 		var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
 		assertEquals(1, notifications.size());
-		String msg = notifications.get(0).getMessage();
-		assertEquals("El maestro " + advisor.getFullName() + " no acept\u00F3 ser tu tutor.", msg);
+                String msg = notifications.get(0).getMessage();
+                assertEquals("Advisor " + advisor.getFullName() + " declined to be your mentor.", msg);
 	}
 
 	@Test
@@ -160,8 +160,8 @@ class MatchingServiceTests {
 
 		var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
 		assertEquals(1, notifications.size());
-		String msg = notifications.get(0).getMessage();
-		assertEquals("El maestro " + advisor1.getFullName() + " aprob\u00F3 ser tu tutor.", msg);
+                String msg = notifications.get(0).getMessage();
+                assertEquals("Advisor " + advisor1.getFullName() + " agreed to be your mentor.", msg);
 	}
 
 	@Test
