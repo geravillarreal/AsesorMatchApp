@@ -354,7 +354,7 @@
                 const data = await res.json();
 
                 if (data.noDraftProjects) {
-                    content.innerHTML = '<div class="alert alert-warning">No puedes emparejarte con un maestro porque no tienes proyectos disponibles.</div>';
+                    content.innerHTML = '<div class="alert alert-warning">You cannot request a match because you have no available projects.</div>';
                 } else {
                     content.innerHTML = buildRecommendationsTable(data.recommendations || []);
                     content.insertAdjacentHTML('beforeend', buildNewRecommendationsList(data.newRecommendations || []));

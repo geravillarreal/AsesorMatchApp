@@ -62,8 +62,8 @@ public class FeedbackService {
             String url = otherUser.getRole() == Role.ADVISOR
                     ? "/advisor-dashboard?feedbackProjectId=" + projectId
                     : "/dashboard?feedbackProjectId=" + projectId;
-            String msg = "El otro participante ya env\u00EDo su feedback para el proyecto '"
-                    + project.getTitle() + "'. Por favor da el tuyo <a href='" + url + "'>aqu\u00ED</a>";
+            String msg = "The other participant has already submitted their feedback for project '"
+                    + project.getTitle() + "'. Please provide yours <a href='" + url + "'>here</a>";
             notificationService.notify(otherUser, msg);
         }
     }

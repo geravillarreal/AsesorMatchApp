@@ -144,9 +144,9 @@ public class ProjectController {
                         p.setStatus(ProjectStatus.COMPLETED);
                         projectRepository.save(p);
                         String url = "/dashboard?feedbackProjectId=" + p.getId();
-                        String msg = "Tu proyecto '" + p.getTitle()
-                                        + "' fue marcado como completado. Por favor da tu feedback. <a href='"
-                                        + url + "'>aquí</a>";
+                        String msg = "Your project '" + p.getTitle()
+                                        + "' was marked as completed. Please provide your feedback <a href='"
+                                        + url + "'>here</a>";
                         notificationService.notify(match.getStudent(), msg);
                 }
 
@@ -171,9 +171,9 @@ public class ProjectController {
                                         .findFirst();
                         matchOpt.ifPresent(m -> {
                                 String url = "/dashboard?feedbackProjectId=" + project.getId();
-                                String msg = "Tu proyecto '" + project.getTitle()
-                                                + "' fue marcado como completado. Por favor da tu feedback. <a href='"
-                                                + url + "'>aquí</a>";
+                                String msg = "Your project '" + project.getTitle()
+                                                + "' was marked as completed. Please provide your feedback <a href='"
+                                                + url + "'>here</a>";
                                 notificationService.notify(m.getStudent(), msg);
                         });
                         return matchOpt.isPresent()

@@ -79,12 +79,12 @@ public class MatchingService {
                                         }
                                 }
 
-				String msg = "El maestro " + m.getAdvisor().getFullName() + " aprob\u00F3 ser tu tutor.";
-				notificationService.notify(m.getStudent(), msg);
-			} else if (status == MatchStatus.REJECTED) {
-				String msg = "El maestro " + m.getAdvisor().getFullName() + " no acept\u00F3 ser tu tutor.";
-				notificationService.notify(m.getStudent(), msg);
-			}
+                                String msg = "Advisor " + m.getAdvisor().getFullName() + " agreed to be your mentor.";
+                                notificationService.notify(m.getStudent(), msg);
+                        } else if (status == MatchStatus.REJECTED) {
+                                String msg = "Advisor " + m.getAdvisor().getFullName() + " declined to be your mentor.";
+                                notificationService.notify(m.getStudent(), msg);
+                        }
 		});
 	}
 
