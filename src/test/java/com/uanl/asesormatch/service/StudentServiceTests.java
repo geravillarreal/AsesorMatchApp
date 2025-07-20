@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Import(TestEntityScanConfig.class)
 class StudentServiceTests {
 	@Autowired

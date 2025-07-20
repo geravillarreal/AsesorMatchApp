@@ -19,7 +19,7 @@ import com.uanl.asesormatch.config.TestEntityScanConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Import(TestEntityScanConfig.class)
 class StoryServiceTests {
     @Autowired
