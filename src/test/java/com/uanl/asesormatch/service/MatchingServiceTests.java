@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Import(TestEntityScanConfig.class)
 class MatchingServiceTests {
 
