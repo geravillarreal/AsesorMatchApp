@@ -52,11 +52,18 @@ class MatchingServiceTests {
 
 	@Test
         void requestMatchPersistsPendingMatch() {
-		User student = new User();
-		student.setFullName("Student Test");
-		student.setEmail("student@test.com");
-		student.setRole(Role.STUDENT);
-		userRepository.save(student);
+                User student = new User();
+                student.setFullName("Student Test");
+                student.setEmail("student@test.com");
+                student.setRole(Role.STUDENT);
+                userRepository.save(student);
+
+                Project draft = new Project();
+                draft.setTitle("Draft");
+                draft.setDescription("Draft");
+                draft.setStatus(ProjectStatus.DRAFT);
+                draft.setStudent(student);
+                projectRepository.save(draft);
 
 		User advisor = new User();
 		advisor.setFullName("Advisor Test");
@@ -204,6 +211,13 @@ class MatchingServiceTests {
                 student.setRole(Role.STUDENT);
                 userRepository.save(student);
 
+                Project draft = new Project();
+                draft.setTitle("Draft");
+                draft.setDescription("Draft");
+                draft.setStatus(ProjectStatus.DRAFT);
+                draft.setStudent(student);
+                projectRepository.save(draft);
+
                 User advisor = new User();
                 advisor.setFullName("Advisor Test");
                 advisor.setEmail("advisorre@test.com");
@@ -232,6 +246,13 @@ class MatchingServiceTests {
                 student.setEmail("student3@test.com");
                 student.setRole(Role.STUDENT);
                 userRepository.save(student);
+
+                Project draft = new Project();
+                draft.setTitle("Draft");
+                draft.setDescription("Draft");
+                draft.setStatus(ProjectStatus.DRAFT);
+                draft.setStudent(student);
+                projectRepository.save(draft);
 
                 User advisor1 = new User();
                 advisor1.setFullName("Advisor One");
