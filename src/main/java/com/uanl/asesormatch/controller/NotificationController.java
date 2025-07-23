@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Controller
 @RequestMapping("/notification")
@@ -20,16 +19,12 @@ public class NotificationController {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final AdvisorEmailProvider emailProvider;
-    private final com.uanl.asesormatch.service.NotificationService notificationService;
-
     public NotificationController(NotificationRepository notificationRepository,
                                   UserRepository userRepository,
-                                  AdvisorEmailProvider emailProvider,
-                                  com.uanl.asesormatch.service.NotificationService notificationService) {
+                                  AdvisorEmailProvider emailProvider) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.emailProvider = emailProvider;
-        this.notificationService = notificationService;
     }
 
     @PostMapping("/delete")
@@ -43,9 +38,4 @@ public class NotificationController {
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/stream")
-    public SseEmitter stream(@AuthenticationPrincipal OidcUser oidcUser) {
-        User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
-        return notificationService.register(user.getId());
-    }
 }
