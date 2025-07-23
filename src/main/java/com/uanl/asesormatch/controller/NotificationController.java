@@ -5,6 +5,8 @@ import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.NotificationRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import com.uanl.asesormatch.config.AdvisorEmailProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ public class NotificationController {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final AdvisorEmailProvider emailProvider;
+    private static final Logger logger = LogManager.getLogger(NotificationController.class);
     public NotificationController(NotificationRepository notificationRepository,
                                   UserRepository userRepository,
                                   AdvisorEmailProvider emailProvider) {
@@ -34,6 +37,7 @@ public class NotificationController {
         Notification n = notificationRepository.findById(id).orElse(null);
         if (n != null && n.getUser().getId().equals(user.getId())) {
             notificationRepository.delete(n);
+            logger.info("Notification {} deleted for user {}", id, user.getId());
         }
         return "redirect:/dashboard";
     }

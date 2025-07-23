@@ -4,6 +4,8 @@ import java.net.URI;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +27,7 @@ public class MatchController {
         private final MatchingService matchingService;
         private final UserService userService;
         private final AdvisorEmailProvider emailProvider;
+        private static final Logger logger = LogManager.getLogger(MatchController.class);
 
         public MatchController(MatchingService matchingService, UserService userService,
                                AdvisorEmailProvider emailProvider) {
@@ -39,8 +42,8 @@ public class MatchController {
 
                 User student = userService.findByEmail(emailProvider.resolveEmail(principal))
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-		matchingService.requestMatch(student.getId(), advisorId, score);
+                logger.info("Requesting match: student {} advisor {} score {}", student.getId(), advisorId, score);
+                matchingService.requestMatch(student.getId(), advisorId, score);
 
                 URI location = URI.create("/dashboard?matchRequested"); // optional query flag
                 return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
@@ -54,6 +57,8 @@ public class MatchController {
                 } catch (IllegalArgumentException e) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
                 }
+
+                logger.info("Advisor decision for match {}: {}", matchId, status);
 
                 matchingService.updateMatchStatus(matchId, status);
 
