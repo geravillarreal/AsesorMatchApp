@@ -9,6 +9,8 @@ import com.uanl.asesormatch.repository.NotificationRepository;
 import com.uanl.asesormatch.repository.ProjectRepository;
 import com.uanl.asesormatch.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +21,7 @@ public class FeedbackService {
     private final UserRepository userRepo;
     private final NotificationRepository notificationRepo;
     private final NotificationService notificationService;
+    private static final Logger logger = LogManager.getLogger(FeedbackService.class);
 
     public FeedbackService(ProjectRepository projectRepo,
                            FeedbackRepository feedbackRepo,
@@ -33,6 +36,7 @@ public class FeedbackService {
     }
 
     public void submitFeedback(User user, Long projectId, Integer rating, String comment) {
+        logger.info("User {} submitting feedback for project {}", user.getId(), projectId);
         Project project = projectRepo.findById(projectId).orElseThrow();
 
         if (!feedbackRepo.existsByProjectAndFromUser(project, user)) {
@@ -47,6 +51,7 @@ public class FeedbackService {
             fb.setRating(rating);
             fb.setComment(comment);
             feedbackRepo.save(fb);
+            logger.debug("Feedback saved for project {} from user {}", projectId, user.getId());
         }
 
         String projectIdToken = "feedbackProjectId=" + projectId;
@@ -65,6 +70,7 @@ public class FeedbackService {
             String msg = "The other participant has already submitted their feedback for project '"
                     + project.getTitle() + "'. Please provide yours <a href='" + url + "'>here</a>";
             notificationService.notify(otherUser, msg);
+            logger.info("Notification sent to user {} requesting feedback for project {}", otherUser.getId(), projectId);
         }
     }
 }
