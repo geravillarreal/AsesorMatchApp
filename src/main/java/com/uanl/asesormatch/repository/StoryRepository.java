@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface StoryRepository extends JpaRepository<Story, Long> {
-    List<Story> findByProjectOrderByCreatedAtAsc(Project project);
+	List<Story> findByProjectOrderByCreatedAtAsc(Project project);
 
-    long countByProjectAndStatusNot(Project project, com.uanl.asesormatch.enums.StoryStatus status);
+	long countByProjectAndStatusNot(Project project, com.uanl.asesormatch.enums.StoryStatus status);
 }

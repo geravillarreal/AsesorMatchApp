@@ -14,16 +14,14 @@ import com.uanl.asesormatch.service.StudentService;
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
 public class StudentController {
-    private final StudentService studentService;
+	private final StudentService studentService;
 
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
+	public StudentController(StudentService studentService) {
+		this.studentService = studentService;
+	}
 
-    @GetMapping("/profile/{id}")
-    public ResponseEntity<StudentProfileDTO> profile(@PathVariable Long id) {
-        return studentService.getProfile(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+	@GetMapping("/profile/{id}")
+	public ResponseEntity<StudentProfileDTO> profile(@PathVariable Long id) {
+		return studentService.getProfile(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+	}
 }

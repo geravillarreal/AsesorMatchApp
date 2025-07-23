@@ -24,45 +24,45 @@ import com.uanl.asesormatch.config.AdvisorEmailProvider;
 @RequestMapping("/match")
 public class MatchController {
 
-        private final MatchingService matchingService;
-        private final UserService userService;
-        private final AdvisorEmailProvider emailProvider;
-        private static final Logger logger = LogManager.getLogger(MatchController.class);
+	private final MatchingService matchingService;
+	private final UserService userService;
+	private final AdvisorEmailProvider emailProvider;
+	private static final Logger logger = LogManager.getLogger(MatchController.class);
 
-        public MatchController(MatchingService matchingService, UserService userService,
-                               AdvisorEmailProvider emailProvider) {
-                this.matchingService = matchingService;
-                this.userService = userService;
-                this.emailProvider = emailProvider;
-        }
+	public MatchController(MatchingService matchingService, UserService userService,
+			AdvisorEmailProvider emailProvider) {
+		this.matchingService = matchingService;
+		this.userService = userService;
+		this.emailProvider = emailProvider;
+	}
 
-        @PostMapping("/request")
-        public ResponseEntity<Void> requestMatch(@AuthenticationPrincipal OidcUser principal,
-                        @RequestParam Long advisorId, @RequestParam Double score) {
+	@PostMapping("/request")
+	public ResponseEntity<Void> requestMatch(@AuthenticationPrincipal OidcUser principal, @RequestParam Long advisorId,
+			@RequestParam Double score) {
 
-                User student = userService.findByEmail(emailProvider.resolveEmail(principal))
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-                logger.info("Requesting match: student {} advisor {} score {}", student.getId(), advisorId, score);
-                matchingService.requestMatch(student.getId(), advisorId, score);
+		User student = userService.findByEmail(emailProvider.resolveEmail(principal))
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+		logger.info("Requesting match: student {} advisor {} score {}", student.getId(), advisorId, score);
+		matchingService.requestMatch(student.getId(), advisorId, score);
 
-                URI location = URI.create("/dashboard?matchRequested"); // optional query flag
-                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
-        }
+		URI location = URI.create("/dashboard?matchRequested"); // optional query flag
+		return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+	}
 
-        @PostMapping("/decision")
-        public ResponseEntity<Void> decideMatch(@RequestParam Long matchId, @RequestParam String action) {
-                MatchStatus status;
-                try {
-                        status = MatchStatus.valueOf(action.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
-                }
+	@PostMapping("/decision")
+	public ResponseEntity<Void> decideMatch(@RequestParam Long matchId, @RequestParam String action) {
+		MatchStatus status;
+		try {
+			status = MatchStatus.valueOf(action.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
+		}
 
-                logger.info("Advisor decision for match {}: {}", matchId, status);
+		logger.info("Advisor decision for match {}: {}", matchId, status);
 
-                matchingService.updateMatchStatus(matchId, status);
+		matchingService.updateMatchStatus(matchId, status);
 
-                URI location = URI.create("/advisor-dashboard");
-                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
-        }
+		URI location = URI.create("/advisor-dashboard");
+		return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+	}
 }

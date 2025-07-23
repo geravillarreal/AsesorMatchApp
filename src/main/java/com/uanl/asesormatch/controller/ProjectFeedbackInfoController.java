@@ -18,47 +18,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectFeedbackInfoController {
-    private final ProjectRepository projectRepo;
-    private final UserRepository userRepo;
-    private final FeedbackRepository feedbackRepo;
-    private final AdvisorEmailProvider emailProvider;
+	private final ProjectRepository projectRepo;
+	private final UserRepository userRepo;
+	private final FeedbackRepository feedbackRepo;
+	private final AdvisorEmailProvider emailProvider;
 
-    public ProjectFeedbackInfoController(ProjectRepository projectRepo, UserRepository userRepo,
-                                         FeedbackRepository feedbackRepo, AdvisorEmailProvider emailProvider) {
-        this.projectRepo = projectRepo;
-        this.userRepo = userRepo;
-        this.feedbackRepo = feedbackRepo;
-        this.emailProvider = emailProvider;
-    }
+	public ProjectFeedbackInfoController(ProjectRepository projectRepo, UserRepository userRepo,
+			FeedbackRepository feedbackRepo, AdvisorEmailProvider emailProvider) {
+		this.projectRepo = projectRepo;
+		this.userRepo = userRepo;
+		this.feedbackRepo = feedbackRepo;
+		this.emailProvider = emailProvider;
+	}
 
-    @GetMapping("/{id}/feedback")
-    public ResponseEntity<ProjectFeedbackInfoDTO> info(@AuthenticationPrincipal OidcUser oidcUser,
-                                                       @PathVariable Long id) {
-        User current = userRepo.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
-        Project project = projectRepo.findById(id).orElse(null);
-        if (project == null) {
-            return ResponseEntity.notFound().build();
-        }
+	@GetMapping("/{id}/feedback")
+	public ResponseEntity<ProjectFeedbackInfoDTO> info(@AuthenticationPrincipal OidcUser oidcUser,
+			@PathVariable Long id) {
+		User current = userRepo.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
+		Project project = projectRepo.findById(id).orElse(null);
+		if (project == null) {
+			return ResponseEntity.notFound().build();
+		}
 
-        if (project.getAdvisor() != null && !current.getId().equals(project.getStudent().getId())
-                && !current.getId().equals(project.getAdvisor().getId())) {
-            return ResponseEntity.status(403).build();
-        }
+		if (project.getAdvisor() != null && !current.getId().equals(project.getStudent().getId())
+				&& !current.getId().equals(project.getAdvisor().getId())) {
+			return ResponseEntity.status(403).build();
+		}
 
-        User other = current.getId().equals(project.getStudent().getId())
-                ? project.getAdvisor()
-                : project.getStudent();
+		User other = current.getId().equals(project.getStudent().getId()) ? project.getAdvisor() : project.getStudent();
 
-        boolean myGiven = feedbackRepo.existsByProjectAndFromUser(project, current);
-        boolean otherGiven = other != null && feedbackRepo.existsByProjectAndFromUser(project, other);
+		boolean myGiven = feedbackRepo.existsByProjectAndFromUser(project, current);
+		boolean otherGiven = other != null && feedbackRepo.existsByProjectAndFromUser(project, other);
 
-        ProjectFeedbackInfoDTO dto = new ProjectFeedbackInfoDTO(
-                project.getId(),
-                other != null ? other.getFullName() : "",
-                project.getTitle(),
-                myGiven,
-                otherGiven
-        );
-        return ResponseEntity.ok(dto);
-    }
+		ProjectFeedbackInfoDTO dto = new ProjectFeedbackInfoDTO(project.getId(),
+				other != null ? other.getFullName() : "", project.getTitle(), myGiven, otherGiven);
+		return ResponseEntity.ok(dto);
+	}
 }

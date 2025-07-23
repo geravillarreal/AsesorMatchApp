@@ -3,11 +3,9 @@ package com.uanl.asesormatch.config;
 import com.uanl.asesormatch.enums.Role;
 import com.uanl.asesormatch.entity.User;
 import com.uanl.asesormatch.repository.UserRepository;
-import com.uanl.asesormatch.config.AdvisorEmailProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -23,22 +21,22 @@ import java.util.Optional;
 
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final UserRepository userRepository;
-    private final AdvisorEmailProvider emailProvider;
+	private final UserRepository userRepository;
+	private final AdvisorEmailProvider emailProvider;
 
-    public CustomOAuth2SuccessHandler(UserRepository userRepository, AdvisorEmailProvider emailProvider) {
-        this.userRepository = userRepository;
-        this.emailProvider = emailProvider;
-    }
+	public CustomOAuth2SuccessHandler(UserRepository userRepository, AdvisorEmailProvider emailProvider) {
+		this.userRepository = userRepository;
+		this.emailProvider = emailProvider;
+	}
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 
-        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
-        String email = emailProvider.resolveEmail(oidcUser);
-        String name = oidcUser.getFullName();
-        String universityId = oidcUser.getPreferredUsername();
+		OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
+		String email = emailProvider.resolveEmail(oidcUser);
+		String name = oidcUser.getFullName();
+		String universityId = oidcUser.getPreferredUsername();
 
 		Optional<User> existingUser = userRepository.findByEmail(email);
 
@@ -57,12 +55,12 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 			userRepository.save(user);
 		}
 
-                HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
-                SavedRequest savedRequest = requestCache.getRequest(request, response);
-                String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/dashboard";
-                if (savedRequest != null) {
-                        requestCache.removeRequest(request, response);
-                }
-                response.sendRedirect(targetUrl);
-        }
+		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/dashboard";
+		if (savedRequest != null) {
+			requestCache.removeRequest(request, response);
+		}
+		response.sendRedirect(targetUrl);
+	}
 }

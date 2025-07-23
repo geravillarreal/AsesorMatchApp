@@ -35,10 +35,10 @@ public class Match {
 	@Enumerated(EnumType.STRING)
 	private MatchStatus status;
 
-        private String algorithmUsed;
+	private String algorithmUsed;
 
-        @Transient
-        private boolean allProjectsCompleted;
+	@Transient
+	private boolean allProjectsCompleted;
 
 	public Long getId() {
 		return id;
@@ -92,15 +92,15 @@ public class Match {
 		return algorithmUsed;
 	}
 
-        public void setAlgorithmUsed(String algorithmUsed) {
-                this.algorithmUsed = algorithmUsed;
-        }
+	public void setAlgorithmUsed(String algorithmUsed) {
+		this.algorithmUsed = algorithmUsed;
+	}
 
-        public boolean isAllProjectsCompleted() {
-                return allProjectsCompleted;
-        }
+	public boolean isAllProjectsCompleted() {
+		return allProjectsCompleted;
+	}
 
-        public void setAllProjectsCompleted(boolean allProjectsCompleted) {
-                this.allProjectsCompleted = allProjectsCompleted;
-        }
+	public void setAllProjectsCompleted(boolean allProjectsCompleted) {
+		this.allProjectsCompleted = allProjectsCompleted;
+	}
 }

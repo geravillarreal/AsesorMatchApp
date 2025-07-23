@@ -23,64 +23,64 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Import(TestEntityScanConfig.class)
 class FeedbackServiceTests {
-    @Autowired
-    private ProjectRepository projectRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private FeedbackRepository feedbackRepository;
-    @Autowired
-    private NotificationRepository notificationRepository;
+	@Autowired
+	private ProjectRepository projectRepository;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private FeedbackRepository feedbackRepository;
+	@Autowired
+	private NotificationRepository notificationRepository;
 
-    private FeedbackService feedbackService;
+	private FeedbackService feedbackService;
 
-    private User student;
-    private User advisor;
-    private Project project;
+	private User student;
+	private User advisor;
+	private Project project;
 
-    @BeforeEach
-    void setUp() {
-        NotificationService notificationService = new NotificationService(notificationRepository);
-        feedbackService = new FeedbackService(projectRepository, feedbackRepository,
-                userRepository, notificationRepository, notificationService);
+	@BeforeEach
+	void setUp() {
+		NotificationService notificationService = new NotificationService(notificationRepository);
+		feedbackService = new FeedbackService(projectRepository, feedbackRepository, userRepository,
+				notificationRepository, notificationService);
 
-        student = new User();
-        student.setFullName("Student");
-        student.setEmail("s@test.com");
-        student.setRole(Role.STUDENT);
-        userRepository.save(student);
+		student = new User();
+		student.setFullName("Student");
+		student.setEmail("s@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-        advisor = new User();
-        advisor.setFullName("Advisor");
-        advisor.setEmail("a@test.com");
-        advisor.setRole(Role.ADVISOR);
-        userRepository.save(advisor);
+		advisor = new User();
+		advisor.setFullName("Advisor");
+		advisor.setEmail("a@test.com");
+		advisor.setRole(Role.ADVISOR);
+		userRepository.save(advisor);
 
-        project = new Project();
-        project.setTitle("P1");
-        project.setDescription("D1");
-        project.setStudent(student);
-        project.setAdvisor(advisor);
-        project.setStatus(ProjectStatus.COMPLETED);
-        projectRepository.save(project);
-    }
+		project = new Project();
+		project.setTitle("P1");
+		project.setDescription("D1");
+		project.setStudent(student);
+		project.setAdvisor(advisor);
+		project.setStatus(ProjectStatus.COMPLETED);
+		projectRepository.save(project);
+	}
 
-    @Test
-    void otherUserGetsNotificationIfNoFeedback() {
-        feedbackService.submitFeedback(student, project.getId(), 5, "Great");
+	@Test
+	void otherUserGetsNotificationIfNoFeedback() {
+		feedbackService.submitFeedback(student, project.getId(), 5, "Great");
 
-        assertTrue(feedbackRepository.existsByProjectAndFromUser(project, student));
-        var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
-        assertEquals(1, notes.size());
-    }
+		assertTrue(feedbackRepository.existsByProjectAndFromUser(project, student));
+		var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
+		assertEquals(1, notes.size());
+	}
 
-    @Test
-    void notificationRemovedWhenOtherGivesFeedback() {
-        feedbackService.submitFeedback(student, project.getId(), 5, "Great");
-        feedbackService.submitFeedback(advisor, project.getId(), 4, "Ok");
+	@Test
+	void notificationRemovedWhenOtherGivesFeedback() {
+		feedbackService.submitFeedback(student, project.getId(), 5, "Great");
+		feedbackService.submitFeedback(advisor, project.getId(), 4, "Ok");
 
-        assertTrue(feedbackRepository.existsByProjectAndFromUser(project, advisor));
-        var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
-        assertTrue(notes.isEmpty());
-    }
+		assertTrue(feedbackRepository.existsByProjectAndFromUser(project, advisor));
+		var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
+		assertTrue(notes.isEmpty());
+	}
 }

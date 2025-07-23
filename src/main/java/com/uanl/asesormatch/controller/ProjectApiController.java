@@ -17,32 +17,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectApiController {
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
-    private final StoryService storyService;
-    private final AdvisorEmailProvider emailProvider;
+	private final ProjectRepository projectRepository;
+	private final UserRepository userRepository;
+	private final StoryService storyService;
+	private final AdvisorEmailProvider emailProvider;
 
-    public ProjectApiController(ProjectRepository projectRepository, UserRepository userRepository,
-                                StoryService storyService, AdvisorEmailProvider emailProvider) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-        this.storyService = storyService;
-        this.emailProvider = emailProvider;
-    }
+	public ProjectApiController(ProjectRepository projectRepository, UserRepository userRepository,
+			StoryService storyService, AdvisorEmailProvider emailProvider) {
+		this.projectRepository = projectRepository;
+		this.userRepository = userRepository;
+		this.storyService = storyService;
+		this.emailProvider = emailProvider;
+	}
 
-    @GetMapping("/{id}/pending-stories")
-    public ResponseEntity<Boolean> pendingStories(@AuthenticationPrincipal OidcUser oidcUser,
-                                                  @PathVariable Long id) {
-        User current = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (project.getAdvisor() != null && !current.getId().equals(project.getStudent().getId())
-                && !current.getId().equals(project.getAdvisor().getId())) {
-            return ResponseEntity.status(403).build();
-        }
-        boolean pending = storyService.hasPendingStories(project);
-        return ResponseEntity.ok(pending);
-    }
+	@GetMapping("/{id}/pending-stories")
+	public ResponseEntity<Boolean> pendingStories(@AuthenticationPrincipal OidcUser oidcUser, @PathVariable Long id) {
+		User current = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
+		Project project = projectRepository.findById(id).orElse(null);
+		if (project == null) {
+			return ResponseEntity.notFound().build();
+		}
+		if (project.getAdvisor() != null && !current.getId().equals(project.getStudent().getId())
+				&& !current.getId().equals(project.getAdvisor().getId())) {
+			return ResponseEntity.status(403).build();
+		}
+		boolean pending = storyService.hasPendingStories(project);
+		return ResponseEntity.ok(pending);
+	}
 }

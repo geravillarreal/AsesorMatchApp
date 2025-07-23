@@ -50,20 +50,20 @@ class MatchingServiceTests {
 		matchingService = new MatchingService(matchRepository, userRepository, projectRepository, notificationService);
 	}
 
-        @Test
-        void requestMatchPersistsPendingMatch() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("student@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void requestMatchPersistsPendingMatch() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("student@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                Project draft = new Project();
-                draft.setTitle("Draft");
-                draft.setDescription("Draft");
-                draft.setStatus(ProjectStatus.DRAFT);
-                draft.setStudent(student);
-                projectRepository.save(draft);
+		Project draft = new Project();
+		draft.setTitle("Draft");
+		draft.setDescription("Draft");
+		draft.setStatus(ProjectStatus.DRAFT);
+		draft.setStudent(student);
+		projectRepository.save(draft);
 
 		User advisor = new User();
 		advisor.setFullName("Advisor Test");
@@ -81,37 +81,37 @@ class MatchingServiceTests {
 		assertEquals(student.getId(), match.getStudent().getId());
 		assertEquals(advisor.getId(), match.getAdvisor().getId());
 		assertEquals(score, match.getCompatibilityScore());
-                assertEquals(MatchStatus.PENDING, match.getStatus());
-        }
+		assertEquals(MatchStatus.PENDING, match.getStatus());
+	}
 
-        @Test
-        void requestMatchNotifiesAdvisor() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("student@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void requestMatchNotifiesAdvisor() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("student@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                Project draft = new Project();
-                draft.setTitle("Draft");
-                draft.setDescription("Draft");
-                draft.setStatus(ProjectStatus.DRAFT);
-                draft.setStudent(student);
-                projectRepository.save(draft);
+		Project draft = new Project();
+		draft.setTitle("Draft");
+		draft.setDescription("Draft");
+		draft.setStatus(ProjectStatus.DRAFT);
+		draft.setStudent(student);
+		projectRepository.save(draft);
 
-                User advisor = new User();
-                advisor.setFullName("Advisor Test");
-                advisor.setEmail("advisor@test.com");
-                advisor.setRole(Role.ADVISOR);
-                userRepository.save(advisor);
+		User advisor = new User();
+		advisor.setFullName("Advisor Test");
+		advisor.setEmail("advisor@test.com");
+		advisor.setRole(Role.ADVISOR);
+		userRepository.save(advisor);
 
-                matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
+		matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
 
-                var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
-                assertEquals(1, notes.size());
-                String msg = notes.get(0).getMessage();
-                assertEquals("Student " + student.getFullName() + " requested you to be their mentor.", msg);
-        }
+		var notes = notificationRepository.findByUserOrderByCreatedAtDesc(advisor);
+		assertEquals(1, notes.size());
+		String msg = notes.get(0).getMessage();
+		assertEquals("Student " + student.getFullName() + " requested you to be their mentor.", msg);
+	}
 
 	@Test
 	void updateMatchStatusRejectedNotifiesStudent() {
@@ -141,8 +141,8 @@ class MatchingServiceTests {
 
 		var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
 		assertEquals(1, notifications.size());
-                String msg = notifications.get(0).getMessage();
-                assertEquals("Advisor " + advisor.getFullName() + " declined to be your mentor.", msg);
+		String msg = notifications.get(0).getMessage();
+		assertEquals("Advisor " + advisor.getFullName() + " declined to be your mentor.", msg);
 	}
 
 	@Test
@@ -189,12 +189,12 @@ class MatchingServiceTests {
 
 		var notifications = notificationRepository.findByUserOrderByCreatedAtDesc(student);
 		assertEquals(1, notifications.size());
-                String msg = notifications.get(0).getMessage();
-                assertEquals("Advisor " + advisor1.getFullName() + " agreed to be your mentor.", msg);
+		String msg = notifications.get(0).getMessage();
+		assertEquals("Advisor " + advisor1.getFullName() + " agreed to be your mentor.", msg);
 	}
 
 	@Test
-        void requestMatchFailsIfAcceptedMatchExists() {
+	void requestMatchFailsIfAcceptedMatchExists() {
 		User student = new User();
 		student.setFullName("Student Test");
 		student.setEmail("student2@test.com");
@@ -213,159 +213,159 @@ class MatchingServiceTests {
 		advisor2.setRole(Role.ADVISOR);
 		userRepository.save(advisor2);
 
-                Match match = new Match();
-                match.setStudent(student);
-                match.setAdvisor(advisor1);
-                match.setCompatibilityScore(0.9);
-                match.setStatus(MatchStatus.ACCEPTED);
-                matchRepository.save(match);
+		Match match = new Match();
+		match.setStudent(student);
+		match.setAdvisor(advisor1);
+		match.setCompatibilityScore(0.9);
+		match.setStatus(MatchStatus.ACCEPTED);
+		matchRepository.save(match);
 
-                Project project = new Project();
-                project.setTitle("P1");
-                project.setDescription("D1");
-                project.setStatus(ProjectStatus.IN_PROGRESS);
-                project.setStudent(student);
-                project.setAdvisor(advisor1);
-                projectRepository.save(project);
+		Project project = new Project();
+		project.setTitle("P1");
+		project.setDescription("D1");
+		project.setStatus(ProjectStatus.IN_PROGRESS);
+		project.setStudent(student);
+		project.setAdvisor(advisor1);
+		projectRepository.save(project);
 
-                assertThrows(IllegalStateException.class,
-                                () -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
-        }
+		assertThrows(IllegalStateException.class,
+				() -> matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8));
+	}
 
-        @Test
-        void requestMatchUpdatesExistingRecordWhenMatchingAgain() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("studentre@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void requestMatchUpdatesExistingRecordWhenMatchingAgain() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("studentre@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                Project draft = new Project();
-                draft.setTitle("Draft");
-                draft.setDescription("Draft");
-                draft.setStatus(ProjectStatus.DRAFT);
-                draft.setStudent(student);
-                projectRepository.save(draft);
+		Project draft = new Project();
+		draft.setTitle("Draft");
+		draft.setDescription("Draft");
+		draft.setStatus(ProjectStatus.DRAFT);
+		draft.setStudent(student);
+		projectRepository.save(draft);
 
-                User advisor = new User();
-                advisor.setFullName("Advisor Test");
-                advisor.setEmail("advisorre@test.com");
-                advisor.setRole(Role.ADVISOR);
-                userRepository.save(advisor);
+		User advisor = new User();
+		advisor.setFullName("Advisor Test");
+		advisor.setEmail("advisorre@test.com");
+		advisor.setRole(Role.ADVISOR);
+		userRepository.save(advisor);
 
-                matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
+		matchingService.requestMatch(student.getId(), advisor.getId(), 0.5);
 
-                Match existing = matchRepository.findAll().get(0);
-                existing.setStatus(MatchStatus.REJECTED);
-                matchRepository.save(existing);
+		Match existing = matchRepository.findAll().get(0);
+		existing.setStatus(MatchStatus.REJECTED);
+		matchRepository.save(existing);
 
-                matchingService.requestMatch(student.getId(), advisor.getId(), 0.9);
+		matchingService.requestMatch(student.getId(), advisor.getId(), 0.9);
 
-                List<Match> persisted = matchRepository.findAll();
-                assertEquals(1, persisted.size());
-                Match match = persisted.get(0);
-                assertEquals(MatchStatus.PENDING, match.getStatus());
-                assertEquals(0.9, match.getCompatibilityScore());
-        }
+		List<Match> persisted = matchRepository.findAll();
+		assertEquals(1, persisted.size());
+		Match match = persisted.get(0);
+		assertEquals(MatchStatus.PENDING, match.getStatus());
+		assertEquals(0.9, match.getCompatibilityScore());
+	}
 
-        @Test
-        void requestMatchAllowedAfterProjectCompleted() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("student3@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void requestMatchAllowedAfterProjectCompleted() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("student3@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                Project draft = new Project();
-                draft.setTitle("Draft");
-                draft.setDescription("Draft");
-                draft.setStatus(ProjectStatus.DRAFT);
-                draft.setStudent(student);
-                projectRepository.save(draft);
+		Project draft = new Project();
+		draft.setTitle("Draft");
+		draft.setDescription("Draft");
+		draft.setStatus(ProjectStatus.DRAFT);
+		draft.setStudent(student);
+		projectRepository.save(draft);
 
-                User advisor1 = new User();
-                advisor1.setFullName("Advisor One");
-                advisor1.setEmail("advisor1b@test.com");
-                advisor1.setRole(Role.ADVISOR);
-                userRepository.save(advisor1);
+		User advisor1 = new User();
+		advisor1.setFullName("Advisor One");
+		advisor1.setEmail("advisor1b@test.com");
+		advisor1.setRole(Role.ADVISOR);
+		userRepository.save(advisor1);
 
-                User advisor2 = new User();
-                advisor2.setFullName("Advisor Two");
-                advisor2.setEmail("advisor2b@test.com");
-                advisor2.setRole(Role.ADVISOR);
-                userRepository.save(advisor2);
+		User advisor2 = new User();
+		advisor2.setFullName("Advisor Two");
+		advisor2.setEmail("advisor2b@test.com");
+		advisor2.setRole(Role.ADVISOR);
+		userRepository.save(advisor2);
 
-                Match match = new Match();
-                match.setStudent(student);
-                match.setAdvisor(advisor1);
-                match.setCompatibilityScore(0.9);
-                match.setStatus(MatchStatus.ACCEPTED);
-                matchRepository.save(match);
+		Match match = new Match();
+		match.setStudent(student);
+		match.setAdvisor(advisor1);
+		match.setCompatibilityScore(0.9);
+		match.setStatus(MatchStatus.ACCEPTED);
+		matchRepository.save(match);
 
-                Project project = new Project();
-                project.setTitle("P1");
-                project.setDescription("D1");
-                project.setStatus(ProjectStatus.COMPLETED);
-                project.setStudent(student);
-                project.setAdvisor(advisor1);
-                projectRepository.save(project);
+		Project project = new Project();
+		project.setTitle("P1");
+		project.setDescription("D1");
+		project.setStatus(ProjectStatus.COMPLETED);
+		project.setStudent(student);
+		project.setAdvisor(advisor1);
+		projectRepository.save(project);
 
-                matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8);
+		matchingService.requestMatch(student.getId(), advisor2.getId(), 0.8);
 
-                List<Match> matches = matchRepository.findAll();
-                assertEquals(2, matches.size());
-        }
+		List<Match> matches = matchRepository.findAll();
+		assertEquals(2, matches.size());
+	}
 
-        @Test
-        void acceptingMatchDoesNotAssignProjectAutomatically() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("student4@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void acceptingMatchDoesNotAssignProjectAutomatically() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("student4@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                User advisor = new User();
-                advisor.setFullName("Advisor");
-                advisor.setEmail("advisor4@test.com");
-                advisor.setRole(Role.ADVISOR);
-                userRepository.save(advisor);
+		User advisor = new User();
+		advisor.setFullName("Advisor");
+		advisor.setEmail("advisor4@test.com");
+		advisor.setRole(Role.ADVISOR);
+		userRepository.save(advisor);
 
-                Project project = new Project();
-                project.setTitle("P1");
-                project.setDescription("D1");
-                project.setStatus(ProjectStatus.DRAFT);
-                project.setStudent(student);
-                projectRepository.save(project);
+		Project project = new Project();
+		project.setTitle("P1");
+		project.setDescription("D1");
+		project.setStatus(ProjectStatus.DRAFT);
+		project.setStudent(student);
+		projectRepository.save(project);
 
-                Match match = new Match();
-                match.setStudent(student);
-                match.setAdvisor(advisor);
-                match.setCompatibilityScore(0.5);
-                match.setStatus(MatchStatus.PENDING);
-                matchRepository.save(match);
+		Match match = new Match();
+		match.setStudent(student);
+		match.setAdvisor(advisor);
+		match.setCompatibilityScore(0.5);
+		match.setStatus(MatchStatus.PENDING);
+		matchRepository.save(match);
 
-                matchingService.updateMatchStatus(match.getId(), MatchStatus.ACCEPTED);
+		matchingService.updateMatchStatus(match.getId(), MatchStatus.ACCEPTED);
 
-                Project reloaded = projectRepository.findById(project.getId()).orElseThrow();
-                assertNull(reloaded.getAdvisor());
-                assertEquals(ProjectStatus.DRAFT, reloaded.getStatus());
-        }
+		Project reloaded = projectRepository.findById(project.getId()).orElseThrow();
+		assertNull(reloaded.getAdvisor());
+		assertEquals(ProjectStatus.DRAFT, reloaded.getStatus());
+	}
 
-        @Test
-        void requestMatchFailsWithoutDraftProjects() {
-                User student = new User();
-                student.setFullName("Student Test");
-                student.setEmail("studentnodraft@test.com");
-                student.setRole(Role.STUDENT);
-                userRepository.save(student);
+	@Test
+	void requestMatchFailsWithoutDraftProjects() {
+		User student = new User();
+		student.setFullName("Student Test");
+		student.setEmail("studentnodraft@test.com");
+		student.setRole(Role.STUDENT);
+		userRepository.save(student);
 
-                User advisor = new User();
-                advisor.setFullName("Advisor Test");
-                advisor.setEmail("advisornodraft@test.com");
-                advisor.setRole(Role.ADVISOR);
-                userRepository.save(advisor);
+		User advisor = new User();
+		advisor.setFullName("Advisor Test");
+		advisor.setEmail("advisornodraft@test.com");
+		advisor.setRole(Role.ADVISOR);
+		userRepository.save(advisor);
 
-                assertThrows(IllegalStateException.class,
-                                () -> matchingService.requestMatch(student.getId(), advisor.getId(), 0.5));
-        }
+		assertThrows(IllegalStateException.class,
+				() -> matchingService.requestMatch(student.getId(), advisor.getId(), 0.5));
+	}
 }

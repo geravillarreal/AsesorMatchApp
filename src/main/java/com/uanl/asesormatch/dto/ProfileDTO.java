@@ -3,24 +3,23 @@ package com.uanl.asesormatch.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import jakarta.validation.constraints.NotEmpty;
 
 public class ProfileDTO {
 	private Long id = null;
-	
+
 	@NotEmpty(message = "Interests must not be empty")
 	private List<String> interests = new ArrayList<>();
-	
+
 	@NotEmpty(message = "Areas must not be empty")
 	private List<String> areas = new ArrayList<>();
-	
+
 	@NotEmpty(message = "Availability must not be empty")
 	private List<String> availability = new ArrayList<>();
 	private List<BookDTO> books = new ArrayList<>();
 	private String level = null;
 	private String modality = null;
-        private String language = null;
+	private String language = null;
 
 	public Long getId() {
 		return id;
@@ -78,18 +77,18 @@ public class ProfileDTO {
 		this.modality = modality;
 	}
 
-        public String getLanguage() {
-                return language;
-        }
+	public String getLanguage() {
+		return language;
+	}
 
 	public void setLanguage(String language) {
 		this.language = language;
 	}
 
-        @Override
-        public String toString() {
-                return "ProfileDTO [id=" + id + ", interests=" + interests + ", areas=" + areas + ", availability="
-                                + availability + ", books=" + books + ", level=" + level + ", modality=" + modality
-                                + ", language=" + language + "]";
-        }
+	@Override
+	public String toString() {
+		return "ProfileDTO [id=" + id + ", interests=" + interests + ", areas=" + areas + ", availability="
+				+ availability + ", books=" + books + ", level=" + level + ", modality=" + modality + ", language="
+				+ language + "]";
+	}
 }

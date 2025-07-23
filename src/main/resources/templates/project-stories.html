@@ -1,49 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::body}, 'Project Stories')}">
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{layout :: layout(~{::body}, 'Project Stories')}">
 <body>
-<div class="container my-4">
-    <div th:replace="~{fragments/commonFragments :: backButton(@{/project/{id}(id=${project.id})}, 'Back to the Project')}"></div>
-    <h3 th:text="${project.title}">Project</h3>
-    <form th:action="@{/story/add}" method="post" class="mb-3">
-        <input type="hidden" name="projectId" th:value="${project.id}" />
-        <div class="mb-2">
-            <label class="form-label">Title</label>
-            <input class="form-control" name="title" required />
-        </div>
-        <div class="mb-2">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" name="description" rows="3"></textarea>
-        </div>
-        <button class="btn btn-primary" type="submit">Add Story</button>
-    </form>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Author</th>
-                <th>Created</th>
-                <th th:if="${showActions}">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="s : ${stories}">
-                <td th:text="${s.title}">Title</td>
-                <td th:text="${s.status}">Status</td>
-                <td th:text="${s.author.fullName}">Author</td>
-                <td th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy')}">Date</td>
-                <td th:if="${showActions}">
-                    <form th:action="@{/story/next}" method="post" th:if="${s.status.name() != 'DONE'}">
-                        <input type="hidden" name="storyId" th:value="${s.id}" />
-                        <button class="btn btn-outline-primary btn-sm" type="submit"
-                                th:text="${s.status.name() == 'TO_DO' ? 'Move to In Progress' : s.status.name() == 'IN_PROGRESS' ? 'Move to Testing' : 'Move to Done'}">
-                            Next
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+	<div class="container my-4">
+		<div
+			th:replace="~{fragments/commonFragments :: backButton(@{/project/{id}(id=${project.id})}, 'Back to the Project')}"></div>
+		<h3 th:text="${project.title}">Project</h3>
+		<form th:action="@{/story/add}" method="post" class="mb-3">
+			<input type="hidden" name="projectId" th:value="${project.id}" />
+			<div class="mb-2">
+				<label class="form-label">Title</label> <input class="form-control"
+					name="title" required />
+			</div>
+			<div class="mb-2">
+				<label class="form-label">Description</label>
+				<textarea class="form-control" name="description" rows="3"></textarea>
+			</div>
+			<button class="btn btn-primary" type="submit">Add Story</button>
+		</form>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Status</th>
+					<th>Author</th>
+					<th>Created</th>
+					<th th:if="${showActions}">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="s : ${stories}">
+					<td th:text="${s.title}">Title</td>
+					<td th:text="${s.status}">Status</td>
+					<td th:text="${s.author.fullName}">Author</td>
+					<td th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy')}">Date</td>
+					<td th:if="${showActions}">
+						<form th:action="@{/story/next}" method="post"
+							th:if="${s.status.name() != 'DONE'}">
+							<input type="hidden" name="storyId" th:value="${s.id}" />
+							<button class="btn btn-outline-primary btn-sm" type="submit"
+								th:text="${s.status.name() == 'TO_DO' ? 'Move to In Progress' : s.status.name() == 'IN_PROGRESS' ? 'Move to Testing' : 'Move to Done'}">
+								Next</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
 </html>

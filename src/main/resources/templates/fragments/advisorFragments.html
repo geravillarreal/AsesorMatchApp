@@ -89,43 +89,43 @@
 		<div class="modal fade" id="feedbackModal" tabindex="-1">
 			<div class="modal-dialog">
 				<div class="modal-content">
-                                        <form th:action="@{/feedback/submit}" method="post">
-                                                <input type="hidden" name="projectId" id="feedbackProjectId" th:value="${feedbackProjectId}" />
+					<form th:action="@{/feedback/submit}" method="post">
+						<input type="hidden" name="projectId" id="feedbackProjectId"
+							th:value="${feedbackProjectId}" />
 						<div class="modal-header">
 							<h5 class="modal-title">Feedback</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 						</div>
-                                                <div class="modal-body">
-                                                        <p class="small text-muted mb-3">
-                                                                These comments help us improve our matching system.
-                                                                How did you feel working with
-                                                                <strong id="feedbackOtherName" th:text="${feedbackOtherName}"></strong>
-                                                                on the project <strong id="feedbackProjectTitle" th:text="${feedbackProjectTitle}"></strong>?
-                                                        </p>
-                                                        <div id="otherFeedback" class="alert alert-info d-none">
-                                                                The other user already submitted their feedback.
-                                                        </div>
-                                                        <div id="myFeedbackDisplay" class="alert alert-success d-none">
-                                                                Thanks for submitting your feedback.
-                                                        </div>
-                                                        <div id="myFeedbackForm">
-                                                                <div class="mb-3">
-                                                                        <label class="form-label d-block" for="rating">Rating</label>
-                                                                        <input type="hidden" name="rating" id="rating" value="0" />
-                                                                        <span class="rating-stars">
-                                                                                <i class="bi bi-star fs-3 star text-secondary" data-value="1"></i>
-                                                                                <i class="bi bi-star fs-3 star text-secondary" data-value="2"></i>
-                                                                                <i class="bi bi-star fs-3 star text-secondary" data-value="3"></i>
-                                                                                <i class="bi bi-star fs-3 star text-secondary" data-value="4"></i>
-                                                                                <i class="bi bi-star fs-3 star text-secondary" data-value="5"></i>
-                                                                        </span>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                        <label class="form-label" for="comment">Comment</label>
-                                                                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
-                                                                </div>
-                                                        </div>
-                                                </div>
+						<div class="modal-body">
+							<p class="small text-muted mb-3">
+								These comments help us improve our matching system. How did you
+								feel working with <strong id="feedbackOtherName"
+									th:text="${feedbackOtherName}"></strong> on the project <strong
+									id="feedbackProjectTitle" th:text="${feedbackProjectTitle}"></strong>?
+							</p>
+							<div id="otherFeedback" class="alert alert-info d-none">
+								The other user already submitted their feedback.</div>
+							<div id="myFeedbackDisplay" class="alert alert-success d-none">
+								Thanks for submitting your feedback.</div>
+							<div id="myFeedbackForm">
+								<div class="mb-3">
+									<label class="form-label d-block" for="rating">Rating</label> <input
+										type="hidden" name="rating" id="rating" value="0" /> <span
+										class="rating-stars"> <i
+										class="bi bi-star fs-3 star text-secondary" data-value="1"></i>
+										<i class="bi bi-star fs-3 star text-secondary" data-value="2"></i>
+										<i class="bi bi-star fs-3 star text-secondary" data-value="3"></i>
+										<i class="bi bi-star fs-3 star text-secondary" data-value="4"></i>
+										<i class="bi bi-star fs-3 star text-secondary" data-value="5"></i>
+									</span>
+								</div>
+								<div class="mb-3">
+									<label class="form-label" for="comment">Comment</label>
+									<textarea class="form-control" id="comment" name="comment"
+										rows="3"></textarea>
+								</div>
+							</div>
+						</div>
 						<div class="modal-footer">
 							<button class="btn btn-primary" type="submit">Submit</button>
 							<button type="button" class="btn btn-secondary"
@@ -134,28 +134,28 @@
 					</form>
 				</div>
 			</div>
-                </div>
+		</div>
 
-        <div th:fragment="pendingStoriesModal">
-                <div class="modal fade" id="pendingStoriesModal" tabindex="-1">
-                        <div class="modal-dialog">
-                                <div class="modal-content">
-                                        <div class="modal-header">
-                                                <h5 class="modal-title">Warning</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                                This project still has stories pending.
-                                        </div>
-                                        <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        </div>
-                                </div>
-                        </div>
-                </div>
-        </div>
+		<div th:fragment="pendingStoriesModal">
+			<div class="modal fade" id="pendingStoriesModal" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Warning</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						</div>
+						<div class="modal-body">This project still has stories
+							pending.</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        <script>
+		<script>
         document.addEventListener('DOMContentLoaded', function () {
             const stars = document.querySelectorAll('#feedbackModal .star');
             const input = document.getElementById('rating');
@@ -204,6 +204,6 @@
             });
         });
         </script>
-        </div>
+	</div>
 </body>
 </html>

@@ -18,29 +18,29 @@ import jakarta.persistence.Column;
 @Table(name = "projects")
 public class Project {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String title;
-    private String description;
+	private String title;
+	private String description;
 
-    @Enumerated(EnumType.STRING)
-    private ProjectStatus status;
+	@Enumerated(EnumType.STRING)
+	private ProjectStatus status;
 
-    private LocalDate startDate;
+	private LocalDate startDate;
 
-    @Column(nullable = false)
-    private boolean deleted = false;
+	@Column(nullable = false)
+	private boolean deleted = false;
 
-    @ManyToOne
-    private User student;
+	@ManyToOne
+	private User student;
 
-    @ManyToOne
-    private User advisor;
-    
-    @ManyToOne
-    private User rejectedByAdvisor;
+	@ManyToOne
+	private User advisor;
+
+	@ManyToOne
+	private User rejectedByAdvisor;
 
 	public Long getId() {
 		return id;
@@ -74,21 +74,21 @@ public class Project {
 		this.status = status;
 	}
 
-        public LocalDate getStartDate() {
-                return startDate;
-        }
+	public LocalDate getStartDate() {
+		return startDate;
+	}
 
-        public void setStartDate(LocalDate startDate) {
-                this.startDate = startDate;
-        }
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
 
-        public boolean isDeleted() {
-                return deleted;
-        }
+	public boolean isDeleted() {
+		return deleted;
+	}
 
-        public void setDeleted(boolean deleted) {
-                this.deleted = deleted;
-        }
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	public User getStudent() {
 		return student;

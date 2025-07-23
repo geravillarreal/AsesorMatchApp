@@ -26,16 +26,16 @@ import jakarta.validation.Valid;
 @RequestMapping("/profile")
 public class StudentProfileController {
 
-        private final UserRepository userRepository;
-        private final ProfileRepository profileRepository;
-        private final AdvisorEmailProvider emailProvider;
+	private final UserRepository userRepository;
+	private final ProfileRepository profileRepository;
+	private final AdvisorEmailProvider emailProvider;
 
-        public StudentProfileController(UserRepository userRepository, ProfileRepository profileRepository,
-                                        AdvisorEmailProvider emailProvider) {
-                this.userRepository = userRepository;
-                this.profileRepository = profileRepository;
-                this.emailProvider = emailProvider;
-        }
+	public StudentProfileController(UserRepository userRepository, ProfileRepository profileRepository,
+			AdvisorEmailProvider emailProvider) {
+		this.userRepository = userRepository;
+		this.profileRepository = profileRepository;
+		this.emailProvider = emailProvider;
+	}
 
 	@GetMapping("/{id}/edit")
 	public String editProfileForm(@PathVariable Long id, Model model) {
@@ -65,7 +65,7 @@ public class StudentProfileController {
 			return "edit-profile";
 		}
 
-                User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
+		User user = userRepository.findByEmail(emailProvider.resolveEmail(oidcUser)).orElseThrow();
 		Profile profile = user.getProfile() == null ? new Profile() : user.getProfile();
 
 		profile.setAreas(dto.getAreas());

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Common Fragments</title>
+<title>Common Fragments</title>
 </head>
 <body>
-<div th:fragment="backButton(url, text)">
-    <a th:href="${url}" class="btn btn-link text-decoration-none d-inline-flex align-items-center mb-3">
-        <i class="bi bi-arrow-left me-2"></i> <span th:text="${text}">Back</span>
-    </a>
-</div>
+	<div th:fragment="backButton(url, text)">
+		<a th:href="${url}"
+			class="btn btn-link text-decoration-none d-inline-flex align-items-center mb-3">
+			<i class="bi bi-arrow-left me-2"></i> <span th:text="${text}">Back</span>
+		</a>
+	</div>
 </body>
 </html>

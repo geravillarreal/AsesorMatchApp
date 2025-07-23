@@ -11,19 +11,19 @@ import com.uanl.asesormatch.repository.UserRepository;
 @Controller
 public class AdvisorProfileController {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    public AdvisorProfileController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	public AdvisorProfileController(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    @GetMapping("/advisor/{id}")
-    public String viewAdvisor(@PathVariable Long id, Model model) {
-        User advisor = userRepository.findById(id).orElseThrow();
+	@GetMapping("/advisor/{id}")
+	public String viewAdvisor(@PathVariable Long id, Model model) {
+		User advisor = userRepository.findById(id).orElseThrow();
 
-        model.addAttribute("advisor", advisor);
-        model.addAttribute("profile", advisor.getProfile());
+		model.addAttribute("advisor", advisor);
+		model.addAttribute("profile", advisor.getProfile());
 
-        return "advisor-detail";
-    }
+		return "advisor-detail";
+	}
 }
