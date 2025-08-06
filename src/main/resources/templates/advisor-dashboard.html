@@ -100,7 +100,7 @@
 						<th>Student</th>
 						<th>Status</th>
 						<th>Start Date</th>
-						<th>Stories</th>
+						<th>Tasks</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -133,7 +133,7 @@
 						<td th:text="${p.status}">IN_PROGRESS</td>
 						<td th:text="${#temporals.format(p.startDate, 'dd/MM/yyyy')}">2025-06-28</td>
 						<td><a th:href="@{/story/list(projectId=${p.id})}"
-							class="btn btn-outline-secondary btn-sm">View Stories</a></td>
+							class="btn btn-outline-secondary btn-sm">View Tasks</a></td>
 						<td>
 							<form th:if="${p.status.name() == 'IN_PROGRESS'}"
 								th:action="@{/project/complete-project}" method="post"

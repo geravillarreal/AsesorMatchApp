@@ -174,7 +174,7 @@
 								<th>Title</th>
 								<th>Description</th>
 								<th>Status</th>
-								<th>Stories</th>
+								<th>Tasks</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -186,7 +186,7 @@
 								<td th:text="${p.status}">Status</td>
 								<td><a th:if="${p.status.name() == 'IN_PROGRESS'}"
 									th:href="@{/story/list(projectId=${p.id})}"
-									class="btn btn-outline-secondary btn-sm">View Stories</a></td>
+									class="btn btn-outline-secondary btn-sm">View Tasks</a></td>
 								<td>
 									<form th:action="@{/project/delete}" method="post"
 										th:if="${p.status.name() != 'IN_PROGRESS'}"
