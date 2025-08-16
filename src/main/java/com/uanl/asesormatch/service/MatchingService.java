@@ -65,20 +65,20 @@ public class MatchingService {
 		return matches;
 	}
 
-        public List<Match> getMatchesForStudent(User student) {
-                return matchRepository.findByStudentAndStatusNot(student, MatchStatus.REJECTED);
-        }
+	public List<Match> getMatchesForStudent(User student) {
+		return matchRepository.findByStudentAndStatusNot(student, MatchStatus.REJECTED);
+	}
 
-        public double computeCompatibility(Set<String> studentInterests, Set<String> advisorAreas) {
-                if (studentInterests == null || studentInterests.isEmpty()) {
-                        return 0.0;
-                }
-                if (advisorAreas == null) {
-                        advisorAreas = Set.of();
-                }
-                long matches = studentInterests.stream().filter(advisorAreas::contains).count();
-                return (double) matches / studentInterests.size();
-        }
+	public double computeCompatibility(Set<String> studentInterests, Set<String> advisorAreas) {
+		if (studentInterests == null || studentInterests.isEmpty()) {
+			return 0.0;
+		}
+		if (advisorAreas == null) {
+			advisorAreas = Set.of();
+		}
+		long matches = studentInterests.stream().filter(advisorAreas::contains).count();
+		return (double) matches / studentInterests.size();
+	}
 
 	public void updateMatchStatus(Long matchId, MatchStatus status) {
 		logger.info("Updating match {} to status {}", matchId, status);
