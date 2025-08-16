@@ -47,6 +47,10 @@ class MatchingServiceStatusTest {
                 User student = new User();
                 student.setId(1L);
                 chosen.setStudent(student);
+                User advisor = new User();
+                advisor.setId(2L);
+                advisor.setFullName("Advisor A");
+                chosen.setAdvisor(advisor);
                 chosen.setStatus(MatchStatus.PENDING);
 
                 Match other1 = new Match();
