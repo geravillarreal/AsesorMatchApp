@@ -107,15 +107,19 @@ public class MatchingService {
 		});
 	}
 
-	public void requestMatch(Long studentId, Long advisorId, Double score) {
-		logger.info("Student {} requesting advisor {} with score {}", studentId, advisorId, score);
-		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
-		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
+        public void requestMatch(Long studentId, Long advisorId, Double score) {
+                logger.info("Student {} requesting advisor {} with score {}", studentId, advisorId, score);
+                User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
+                User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
 
-		boolean hasDraft = projectRepository.existsByStudentAndStatus(student, ProjectStatus.DRAFT);
-		if (!hasDraft) {
-			throw new IllegalStateException("student has no draft projects");
-		}
+                // Ensure previously saved entities are written so existence checks see them
+                projectRepository.flush();
+                matchRepository.flush();
+
+                boolean hasDraft = projectRepository.existsByStudentAndStatus(student, ProjectStatus.DRAFT);
+                if (!hasDraft) {
+                        throw new IllegalStateException("student has no draft projects");
+                }
 
 		boolean ongoingProject = projectRepository.existsByStudentAndStatus(student, ProjectStatus.IN_PROGRESS);
 		if (ongoingProject) {
