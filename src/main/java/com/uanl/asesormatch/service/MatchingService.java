@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class MatchingService {
@@ -68,6 +69,17 @@ public class MatchingService {
 		return matchRepository.findByStudentAndStatusNot(student, MatchStatus.REJECTED);
 	}
 
+	public double computeCompatibility(Set<String> studentInterests, Set<String> advisorAreas) {
+		if (studentInterests == null || studentInterests.isEmpty()) {
+			return 0.0;
+		}
+		if (advisorAreas == null) {
+			advisorAreas = Set.of();
+		}
+		long matches = studentInterests.stream().filter(advisorAreas::contains).count();
+		return (double) matches / studentInterests.size();
+	}
+
 	public void updateMatchStatus(Long matchId, MatchStatus status) {
 		logger.info("Updating match {} to status {}", matchId, status);
 		var matchOpt = matchRepository.findById(matchId);
@@ -95,15 +107,19 @@ public class MatchingService {
 		});
 	}
 
-	public void requestMatch(Long studentId, Long advisorId, Double score) {
-		logger.info("Student {} requesting advisor {} with score {}", studentId, advisorId, score);
-		User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
-		User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
+        public void requestMatch(Long studentId, Long advisorId, Double score) {
+                logger.info("Student {} requesting advisor {} with score {}", studentId, advisorId, score);
+                User student = userRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("student"));
+                User advisor = userRepository.findById(advisorId).orElseThrow(() -> new IllegalArgumentException("advisor"));
 
-		boolean hasDraft = projectRepository.existsByStudentAndStatus(student, ProjectStatus.DRAFT);
-		if (!hasDraft) {
-			throw new IllegalStateException("student has no draft projects");
-		}
+                // Ensure previously saved entities are written so existence checks see them
+                projectRepository.flush();
+                matchRepository.flush();
+
+                boolean hasDraft = projectRepository.existsByStudentAndStatus(student, ProjectStatus.DRAFT);
+                if (!hasDraft) {
+                        throw new IllegalStateException("student has no draft projects");
+                }
 
 		boolean ongoingProject = projectRepository.existsByStudentAndStatus(student, ProjectStatus.IN_PROGRESS);
 		if (ongoingProject) {
